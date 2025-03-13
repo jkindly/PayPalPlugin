@@ -205,6 +205,36 @@
     )
     ```
 
+   `Sylius\PayPalPlugin\Controller\ProcessPayPalOrderAction`:
+    ```diff
+    public function __construct(
+        private readonly OrderRepositoryInterface $orderRepository,
+        private readonly CustomerRepositoryInterface $customerRepository,
+        private readonly FactoryInterface $customerFactory,
+        private readonly AddressFactoryInterface $addressFactory,
+        private readonly ObjectManager $orderManager,
+        private readonly StateMachineFactoryInterface|StateMachineInterface $stateMachineFactory,
+        private readonly PaymentStateManagerInterface $paymentStateManager,
+        private readonly CacheAuthorizeClientApiInterface $authorizeClientApi,
+        private readonly OrderDetailsApiInterface $orderDetailsApi,
+        private readonly OrderProviderInterface $orderProvider,
+    +   private readonly ?PaymentAmountVerifierInterface $paymentAmountVerifier = null,
+    )
+    ```
+
+   `Sylius\PayPalPlugin\Controller\CompletePayPalOrderFromPaymentPageAction`:
+    ```diff
+    public function __construct(
+        private readonly PaymentStateManagerInterface $paymentStateManager,
+        private readonly UrlGeneratorInterface $router,
+        private readonly OrderProviderInterface $orderProvider,
+        private readonly FactoryInterface|StateMachineInterface $stateMachine,
+        private readonly ObjectManager $orderManager,
+    +   private readonly ?PaymentAmountVerifierInterface $paymentAmountVerifier = null,
+    +   private readonly ?OrderProcessorInterface $orderProcessor = null,
+    )
+    ```
+
 ### UPGRADE FROM 1.5.1 to 1.6.0
 
 1. Support for Sylius 1.13 has been added, it is now the recommended Sylius version to use.
