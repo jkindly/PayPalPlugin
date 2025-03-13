@@ -76,7 +76,7 @@ final class CreatePayPalOrderFromCartAction
                 'sylius/paypal-plugin',
                 '1.6',
                 'Not passing an $orderPaymentsRemover to %s constructor is deprecated and will be prohibited in 2.0',
-                self::class
+                self::class,
             );
         }
         if (null === $this->orderProcessor) {
@@ -84,7 +84,7 @@ final class CreatePayPalOrderFromCartAction
                 'sylius/paypal-plugin',
                 '1.6',
                 'Not passing an $orderProcessor to %s constructor is deprecated and will be prohibited in 2.0',
-                self::class
+                self::class,
             );
         }
     }
