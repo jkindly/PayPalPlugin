@@ -114,6 +114,7 @@
             <argument type="service" id="Sylius\PayPalPlugin\Api\CacheAuthorizeClientApiInterface" />
             <argument type="service" id="Sylius\PayPalPlugin\Api\OrderDetailsApiInterface" />
             <argument type="service" id="Sylius\PayPalPlugin\Provider\OrderProviderInterface" />
+            <argument type="service" id="sylius_paypal.verifier.payment_amount" />
         </service>
 
         <service id="Sylius\PayPalPlugin\Controller\UpdatePayPalOrderAction">
@@ -131,6 +132,8 @@
             <argument type="service" id="Sylius\PayPalPlugin\Provider\OrderProviderInterface" />
             <argument type="service" id="sylius_abstraction.state_machine" />
             <argument type="service" id="sylius.manager.order" />
+            <argument type="service" id="sylius_paypal.verifier.payment_amount" />
+            <argument type="service" id="sylius.order_processing.order_processor" />
         </service>
 
         <service id="Sylius\PayPalPlugin\Controller\PayPalPaymentOnErrorAction">
