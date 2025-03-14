@@ -19,6 +19,7 @@ use Payum\Core\Payum;
 use SM\Factory\FactoryInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
+use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Core\Payment\Remover\OrderPaymentsRemoverInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Sylius\Component\Order\Processor\OrderProcessorInterface;
@@ -75,7 +76,7 @@ final class CreatePayPalOrderFromCartAction
             trigger_deprecation(
                 'sylius/paypal-plugin',
                 '1.6',
-                'Not passing an $orderPaymentsRemover to %s constructor is deprecated and will be prohibited in 2.0',
+                'Not passing an $orderPaymentsRemover to %s constructor is deprecated and will be prohibited in 3.0',
                 self::class,
             );
         }
@@ -83,7 +84,7 @@ final class CreatePayPalOrderFromCartAction
             trigger_deprecation(
                 'sylius/paypal-plugin',
                 '1.6',
-                'Not passing an $orderProcessor to %s constructor is deprecated and will be prohibited in 2.0',
+                'Not passing an $orderProcessor to %s constructor is deprecated and will be prohibited in 3.0',
                 self::class,
             );
         }
@@ -118,19 +119,21 @@ final class CreatePayPalOrderFromCartAction
     {
         /** @var PaymentInterface $payment */
         $payment = $order->getLastPayment(PaymentInterface::STATE_CART);
-        $factoryName = $payment->getMethod()?->getGatewayConfig()?->getFactoryName();
+        /** @var PaymentMethodInterface|null $paymentMethod */
+        $paymentMethod = $payment->getMethod();
+        $factoryName = $paymentMethod?->getGatewayConfig()?->getFactoryName();
 
-        if ($factoryName !== 'sylius.pay_pal') {
-            if ($this->orderPaymentsRemover === null || $this->orderProcessor === null) {
-                throw new \DomainException('OrderPaymentsRemover and OrderProcessor must be provided to create a new payment.');
-            }
-
-            $this->orderPaymentsRemover->removePayments($order);
-            $this->orderProcessor->process($order);
-
-            $payment = $order->getLastPayment(PaymentInterface::STATE_CART);
+        if ($factoryName === 'sylius.pay_pal') {
+            return $payment;
         }
 
-        return $payment;
+        if ($this->orderPaymentsRemover === null || $this->orderProcessor === null) {
+            throw new \DomainException('OrderPaymentsRemover and OrderProcessor must be provided to create a new payment.');
+        }
+
+        $this->orderPaymentsRemover->removePayments($order);
+        $this->orderProcessor->process($order);
+
+        return $order->getLastPayment(PaymentInterface::STATE_CART);
     }
 }

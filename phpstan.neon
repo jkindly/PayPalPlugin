@@ -1,0 +1,27 @@
+includes:
+    - vendor/phpstan/phpstan-doctrine/extension.neon
+    - vendor/phpstan/phpstan-webmozart-assert/extension.neon
+
+parameters:
+    level: 3
+
+    reportUnmatchedIgnoredErrors: false
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
+
+    paths:
+        - 'src/'
+
+    excludePaths:
+        # Makes PHPStan crash
+        - 'src/DependencyInjection/Configuration.php'
+        - 'src/DependencyInjection/SyliusPayPalExtension.php'
+        - 'src/Command/CompletePaidPaymentsCommand.php'
+        - 'src/Migrations/**.php'
+
+        # Test dependencies
+        - 'tests/Application/app/**.php'
+        - 'tests/Application/src/**.php'
+
+    ignoreErrors:
+        - '/Call to an undefined method Sylius\\Component\\Core\\Repository\\PaymentRepositoryInterface\:\:createQueryBuilder\(\)\./'

@@ -35,7 +35,7 @@ final class CreatePayPalOrderFromCartActionTest extends JsonApiTestCase
     }
 
     /** @test */
-    public function it_creates_pay_pal_order_from_cart_and_returns_its_data_if_payment_method_is_cash_on_delivery(): void
+    public function it_creates_pay_pal_order_from_cart_and_returns_its_data_if_payment_method_is_different_then_pay_pal(): void
     {
         $order = $this->loadFixturesFromFiles(['resources/shop.yaml', 'resources/new_cart_with_cash_on_delivery_method.yaml']);
         /** @var int $orderId */

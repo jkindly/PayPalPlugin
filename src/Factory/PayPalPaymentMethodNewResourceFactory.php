@@ -16,9 +16,9 @@ namespace Sylius\PayPalPlugin\Factory;
 use Sylius\Bundle\ResourceBundle\Controller\NewResourceFactoryInterface;
 use Sylius\Bundle\ResourceBundle\Controller\RequestConfiguration;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
-use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Sylius\PayPalPlugin\Onboarding\Processor\OnboardingProcessorInterface;
+use Sylius\Resource\Factory\FactoryInterface;
 
 final class PayPalPaymentMethodNewResourceFactory implements NewResourceFactoryInterface
 {
@@ -36,6 +36,7 @@ final class PayPalPaymentMethodNewResourceFactory implements NewResourceFactoryI
 
     public function create(RequestConfiguration $requestConfiguration, FactoryInterface $factory): ResourceInterface
     {
+        /** @var ResourceInterface $resource */
         $resource = $this->newResourceFactory->create($requestConfiguration, $factory);
 
         if (!$resource instanceof PaymentMethodInterface) {
