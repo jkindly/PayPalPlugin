@@ -232,3 +232,4 @@ jobs:
                     name: Behat logs
                     path: etc/build/
                     if-no-files-found: ignore
+                    overwrite: true

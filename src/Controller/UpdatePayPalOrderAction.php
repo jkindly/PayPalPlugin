@@ -29,33 +29,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class UpdatePayPalOrderAction
 {
-    private PaymentProviderInterface $paymentProvider;
-
-    private CacheAuthorizeClientApiInterface $authorizeClientApi;
-
-    private ?OrderDetailsApiInterface $orderDetailsApi;
-
-    private UpdateOrderApiInterface $updateOrderApi;
-
-    private AddressFactoryInterface $addressFactory;
-
-    private OrderProcessorInterface $orderProcessor;
-
     public function __construct(
-        PaymentProviderInterface $paymentProvider,
-        CacheAuthorizeClientApiInterface $authorizeClientApi,
-        ?OrderDetailsApiInterface $orderDetailsApi,
-        UpdateOrderApiInterface $updateOrderApi,
-        AddressFactoryInterface $addressFactory,
-        OrderProcessorInterface $orderProcessor,
+        private readonly PaymentProviderInterface $paymentProvider,
+        private readonly CacheAuthorizeClientApiInterface $authorizeClientApi,
+        private readonly ?OrderDetailsApiInterface $orderDetailsApi,
+        private readonly UpdateOrderApiInterface $updateOrderApi,
+        private readonly AddressFactoryInterface $addressFactory,
+        private readonly OrderProcessorInterface $orderProcessor,
     ) {
-        $this->paymentProvider = $paymentProvider;
-        $this->authorizeClientApi = $authorizeClientApi;
-        $this->orderDetailsApi = $orderDetailsApi;
-        $this->updateOrderApi = $updateOrderApi;
-        $this->addressFactory = $addressFactory;
-        $this->orderProcessor = $orderProcessor;
-
         if (null !== $this->orderDetailsApi) {
             trigger_deprecation(
                 'sylius/paypal-plugin',
@@ -78,8 +59,7 @@ final class UpdatePayPalOrderAction
         $paymentMethod = $payment->getMethod();
         $token = $this->authorizeClientApi->authorize($paymentMethod);
 
-        /** @var array $shippingAddress */
-        $shippingAddress = $request->request->get('shipping_address');
+        $shippingAddress = $request->request->all('shipping_address');
 
         /** @var AddressInterface $address */
         $address = $this->addressFactory->createNew();

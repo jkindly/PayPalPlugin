@@ -167,6 +167,44 @@
       )
       ```
 
+### UPGRADE FROM 1.6.0 to 1.6.1
+
+1. The following constructor signatures have been changed:
+
+   `Sylius\PayPalPlugin\Controller\CreatePayPalOrderFromCartAction`:
+    ```diff
+    public function __construct(
+        private readonly ?Payum $payum,
+        private readonly ?OrderRepositoryInterface $orderRepository,
+        private readonly ?FactoryInterface $stateMachineFactory,
+        private readonly ObjectManager $paymentManager,
+        private readonly OrderProviderInterface $orderProvider,
+        private readonly CapturePaymentResolverInterface $capturePaymentResolver,
+    +   private readonly ?OrderPaymentsRemoverInterface $orderPaymentsRemover = null,
+    +   private readonly ?OrderProcessorInterface $orderProcessor = null,
+    )
+    ```
+
+   `Sylius\PayPalPlugin\Model\PayPalPurchaseUnit`:
+    ```diff
+    public function __construct(
+        private readonly string $referenceId,
+        private readonly string $invoiceNumber,
+        private readonly string $currencyCode,
+        private readonly int $totalAmount,
+        private readonly int $shippingValue,
+        private readonly float $itemTotalValue,
+        private readonly float $taxTotalValue,
+        private readonly int $discountValue,
+        private readonly string $merchantId,
+        private readonly array $items,
+        private readonly bool $shippingRequired,
+        private readonly ?AddressInterface $shippingAddress = null,
+        private readonly string $softDescriptor = 'Sylius PayPal Payment',
+    +   private readonly int $shippingDiscountValue = 0,
+    )
+    ```
+
 ### UPGRADE FROM 1.5.1 to 1.6.0
 
 1. Support for Sylius 1.13 has been added, it is now the recommended Sylius version to use.
@@ -181,9 +219,9 @@
      use GuzzleHttp\ClientInterface as GuzzleClientInterface;
      use Psr\Http\Message\RequestFactoryInterface;
      use Psr\Http\Message\StreamFactoryInterface;
-    
+
         public function __construct(
-    -      private readonly GuzzleClientInterface $client, 
+    -      private readonly GuzzleClientInterface $client,
     +      private readonly GuzzleClientInterface|ClientInterface $client,
             private readonly LoggerInterface $logger,
             private readonly UuidProviderInterface $uuidProvider,
@@ -202,7 +240,7 @@
      use Psr\Http\Client\ClientInterface;
      use GuzzleHttp\ClientInterface as GuzzleClientInterface;
      use Psr\Http\Message\RequestFactoryInterface;
-   
+
         public function __construct(
    -      private readonly GuzzleClientInterface $client,
    +      private readonly GuzzleClientInterface|ClientInterface $client,
@@ -216,7 +254,7 @@
      use GuzzleHttp\ClientInterface as GuzzleClientInterface;
      use Psr\Http\Message\RequestFactoryInterface;
      use Psr\Http\Message\StreamFactoryInterface;
-   
+
         public function __construct(
    -       private readonly GuzzleClientInterface $client,
    +       private readonly GuzzleClientInterface|ClientInterface $client,
@@ -231,7 +269,7 @@
       use Psr\Http\Client\ClientInterface;
       use GuzzleHttp\ClientInterface as GuzzleClientInterface;
       use Psr\Http\Message\RequestFactoryInterface;
-   
+
         public function __construct(
    -      private readonly GuzzleClientInterface $client,
    +      private readonly GuzzleClientInterface|ClientInterface $client,
@@ -240,7 +278,7 @@
    +      private readonly ?RequestFactoryInterface $requestFactory = null,
     )
      ```
-   
+
 1. Added doctrine migration for PostgreSQL. For more information, please refer to the [Sylius 1.13 UPGRADE.md](https://github.com/Sylius/Sylius/blob/1.13/UPGRADE-1.13.md)
 
 ### UPGRADE FROM 1.3.0 to 1.3.1

@@ -90,6 +90,14 @@ Sylius\Component\Core\Model\PaymentMethod:
         translations:
             - "@paypal_translation"
         channels: ["@channel_web"]
+    cash_on_delivery:
+        code: CASH_ON_DELIVERY
+        enabled: true
+        gatewayConfig: "@cash_on_delivery_config"
+        currentLocale: en_US
+        translations:
+            - "@cash_on_delivery_translation"
+        channels: ["@channel_web"]
 
 Sylius\Bundle\PayumBundle\Model\GatewayConfig:
     paypal_config:
@@ -102,6 +110,10 @@ Sylius\Bundle\PayumBundle\Model\GatewayConfig:
             sylius_merchant_id: "SYLIUS_MERCHANT_ID"
             partner_attribution_id: "PARTNER_ATTRIBUTION_ID"
             use_authorize: true
+    cash_on_delivery_config:
+        gatewayName: "offline"
+        factoryName: "sylius.offline"
+        config: []
 
 Sylius\Component\Payment\Model\PaymentMethodTranslation:
     paypal_translation:
@@ -109,3 +121,8 @@ Sylius\Component\Payment\Model\PaymentMethodTranslation:
         locale: "en_US"
         description: <paragraph(2)>
         translatable: "@paypal"
+    cash_on_delivery_translation:
+        name: "Cash on delivery"
+        locale: "en_US"
+        description: <paragraph(2)>
+        translatable: "@cash_on_delivery"
