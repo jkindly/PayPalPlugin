@@ -17,8 +17,12 @@ use Doctrine\Persistence\ObjectManager;
 use GuzzleHttp\Exception\GuzzleException;
 use Payum\Core\Payum;
 use SM\Factory\FactoryInterface;
+use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
+use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\Component\Core\Payment\Remover\OrderPaymentsRemoverInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
+use Sylius\Component\Order\Processor\OrderProcessorInterface;
 use Sylius\PayPalPlugin\Provider\OrderProviderInterface;
 use Sylius\PayPalPlugin\Resolver\CapturePaymentResolverInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -35,6 +39,8 @@ final class CreatePayPalOrderFromCartAction
         private readonly ObjectManager $paymentManager,
         private readonly OrderProviderInterface $orderProvider,
         private readonly CapturePaymentResolverInterface $capturePaymentResolver,
+        private readonly ?OrderPaymentsRemoverInterface $orderPaymentsRemover = null,
+        private readonly ?OrderProcessorInterface $orderProcessor = null,
     ) {
         if (null !== $this->payum) {
             trigger_deprecation(
@@ -66,6 +72,22 @@ final class CreatePayPalOrderFromCartAction
                 ),
             );
         }
+        if (null === $this->orderPaymentsRemover) {
+            trigger_deprecation(
+                'sylius/paypal-plugin',
+                '1.6',
+                'Not passing an $orderPaymentsRemover to %s constructor is deprecated and will be prohibited in 3.0',
+                self::class,
+            );
+        }
+        if (null === $this->orderProcessor) {
+            trigger_deprecation(
+                'sylius/paypal-plugin',
+                '1.6',
+                'Not passing an $orderProcessor to %s constructor is deprecated and will be prohibited in 3.0',
+                self::class,
+            );
+        }
     }
 
     public function __invoke(Request $request): Response
@@ -73,12 +95,10 @@ final class CreatePayPalOrderFromCartAction
         $id = $request->attributes->getInt('id');
         $order = $this->orderProvider->provideOrderById($id);
 
-        /** @var PaymentInterface $payment */
-        $payment = $order->getLastPayment(PaymentInterface::STATE_CART);
-
         try {
+            $payment = $this->getPayment($order);
             $this->capturePaymentResolver->resolve($payment);
-        } catch (GuzzleException $exception) {
+        } catch (\DomainException|GuzzleException) {
             /** @var FlashBagInterface $flashBag */
             $flashBag = $request->getSession()->getBag('flashes');
             $flashBag->add('error', 'sylius.pay_pal.something_went_wrong');
@@ -93,5 +113,27 @@ final class CreatePayPalOrderFromCartAction
             'orderID' => $payment->getDetails()['paypal_order_id'],
             'status' => $payment->getState(),
         ]);
+    }
+
+    private function getPayment(OrderInterface $order): PaymentInterface
+    {
+        /** @var PaymentInterface $payment */
+        $payment = $order->getLastPayment(PaymentInterface::STATE_CART);
+        /** @var PaymentMethodInterface|null $paymentMethod */
+        $paymentMethod = $payment->getMethod();
+        $factoryName = $paymentMethod?->getGatewayConfig()?->getFactoryName();
+
+        if ($factoryName === 'sylius.pay_pal') {
+            return $payment;
+        }
+
+        if ($this->orderPaymentsRemover === null || $this->orderProcessor === null) {
+            throw new \DomainException('OrderPaymentsRemover and OrderProcessor must be provided to create a new payment.');
+        }
+
+        $this->orderPaymentsRemover->removePayments($order);
+        $this->orderProcessor->process($order);
+
+        return $order->getLastPayment(PaymentInterface::STATE_CART);
     }
 }

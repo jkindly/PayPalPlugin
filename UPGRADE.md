@@ -1,3 +1,21 @@
+### UPGRADE FROM 1.6.1 to 1.6.2
+
+1. The following constructor signatures have been changed:
+
+    `Sylius\PayPalPlugin\Controller\CreatePayPalOrderFromCartAction`:
+    ```diff
+    public function __construct(
+        private readonly ?Payum $payum,
+        private readonly ?OrderRepositoryInterface $orderRepository,
+        private readonly ?FactoryInterface $stateMachineFactory,
+        private readonly ObjectManager $paymentManager,
+        private readonly OrderProviderInterface $orderProvider,
+        private readonly CapturePaymentResolverInterface $capturePaymentResolver,
+    +   private readonly ?OrderPaymentsRemoverInterface $orderPaymentsRemover = null,
+    +   private readonly ?OrderProcessorInterface $orderProcessor = null,
+    )
+    ```
+
 ### UPGRADE FROM 1.6.0 to 1.6.1
 
 1. The following constructor signatures have been changed:
