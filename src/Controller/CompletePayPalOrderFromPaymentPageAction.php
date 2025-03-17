@@ -97,8 +97,6 @@ final class CompletePayPalOrderFromPaymentPageAction
             ]);
         }
 
-        $this->paymentStateManager->complete($payment);
-
         $this->getStateMachine()->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SELECT_PAYMENT);
         $this->paymentStateManager->complete($payment);
         $this->getStateMachine()->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_COMPLETE);
