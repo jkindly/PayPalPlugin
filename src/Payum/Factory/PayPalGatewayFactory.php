@@ -22,8 +22,8 @@ final class PayPalGatewayFactory extends GatewayFactory
     protected function populateConfig(ArrayObject $config): void
     {
         $config->defaults([
-            'payum.factory_name' => 'pay_pal',
-            'payum.factory_title' => 'Pay Pal',
+            'payum.factory_name' => 'paypal',
+            'payum.factory_title' => 'PayPal',
             'payum.action.status' => new StatusAction(),
         ]);
     }

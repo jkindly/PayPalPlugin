@@ -19,13 +19,10 @@ use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\PayPalPlugin\Payum\Request\CompleteOrder;
 
-final class PayPalPaymentCompleteProcessor implements PaymentCompleteProcessorInterface
+final readonly class PayPalPaymentCompleteProcessor implements PaymentCompleteProcessorInterface
 {
-    private Payum $payum;
-
-    public function __construct(Payum $payum)
+    public function __construct(private Payum $payum)
     {
-        $this->payum = $payum;
     }
 
     public function completePayment(PaymentInterface $payment): void

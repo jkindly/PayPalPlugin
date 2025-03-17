@@ -15,10 +15,9 @@ namespace spec\Sylius\PayPalPlugin\Manager;
 
 use Doctrine\Persistence\ObjectManager;
 use PhpSpec\ObjectBehavior;
-use SM\Factory\FactoryInterface;
+use Sylius\Abstraction\StateMachine\StateMachineInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Payment\PaymentTransitions;
-use Sylius\Component\Resource\StateMachine\StateMachineInterface;
 use Sylius\PayPalPlugin\Manager\PaymentStateManagerInterface;
 use Sylius\PayPalPlugin\Payum\Action\StatusAction;
 use Sylius\PayPalPlugin\Processor\PaymentCompleteProcessorInterface;
@@ -26,11 +25,11 @@ use Sylius\PayPalPlugin\Processor\PaymentCompleteProcessorInterface;
 final class PaymentStateManagerSpec extends ObjectBehavior
 {
     function let(
-        FactoryInterface $stateMachineFactory,
+        StateMachineInterface $stateMachine,
         ObjectManager $paymentManager,
         PaymentCompleteProcessorInterface $paymentCompleteProcessor,
     ): void {
-        $this->beConstructedWith($stateMachineFactory, $paymentManager, $paymentCompleteProcessor);
+        $this->beConstructedWith($stateMachine, $paymentManager, $paymentCompleteProcessor);
     }
 
     function it_implements_payment_state_manager_interface(): void
@@ -39,55 +38,49 @@ final class PaymentStateManagerSpec extends ObjectBehavior
     }
 
     function it_creates_payment(
-        FactoryInterface $stateMachineFactory,
+        StateMachineInterface $stateMachine,
         ObjectManager $paymentManager,
         PaymentInterface $payment,
-        StateMachineInterface $stateMachine,
     ): void {
-        $stateMachineFactory->get($payment, PaymentTransitions::GRAPH)->willReturn($stateMachine);
-        $stateMachine->apply(PaymentTransitions::TRANSITION_CREATE)->shouldBeCalled();
+        $stateMachine->apply($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_CREATE)->shouldBeCalled();
         $paymentManager->flush()->shouldBeCalled();
 
         $this->create($payment);
     }
 
     function it_completes_payment_if_its_completed_in_paypal(
-        FactoryInterface $stateMachineFactory,
+        StateMachineInterface $stateMachine,
         ObjectManager $paymentManager,
         PaymentCompleteProcessorInterface $paymentCompleteProcessor,
         PaymentInterface $payment,
-        StateMachineInterface $stateMachine,
     ): void {
         $paymentCompleteProcessor->completePayment($payment);
         $payment->getDetails()->willReturn(['status' => StatusAction::STATUS_COMPLETED]);
 
-        $stateMachineFactory->get($payment, PaymentTransitions::GRAPH)->willReturn($stateMachine);
-        $stateMachine->apply(PaymentTransitions::TRANSITION_COMPLETE)->shouldBeCalled();
+        $stateMachine->apply($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_COMPLETE)->shouldBeCalled();
         $paymentManager->flush()->shouldBeCalled();
 
         $this->complete($payment);
     }
 
     function it_processes_payment_if_its_processing_in_paypal_and_not_processing_in_sylius_yet(
-        FactoryInterface $stateMachineFactory,
+        StateMachineInterface $stateMachine,
         ObjectManager $paymentManager,
         PaymentCompleteProcessorInterface $paymentCompleteProcessor,
         PaymentInterface $payment,
-        StateMachineInterface $stateMachine,
     ): void {
         $paymentCompleteProcessor->completePayment($payment);
         $payment->getDetails()->willReturn(['status' => StatusAction::STATUS_PROCESSING]);
         $payment->getState()->willReturn(PaymentInterface::STATE_NEW);
 
-        $stateMachineFactory->get($payment, PaymentTransitions::GRAPH)->willReturn($stateMachine);
-        $stateMachine->apply(PaymentTransitions::TRANSITION_PROCESS)->shouldBeCalled();
+        $stateMachine->apply($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_PROCESS)->shouldBeCalled();
         $paymentManager->flush()->shouldBeCalled();
 
         $this->complete($payment);
     }
 
     function it_does_nothing_if_payment_is_processing_in_paypal_but_already_processing_in_sylius(
-        FactoryInterface $stateMachineFactory,
+        StateMachineInterface $stateMachine,
         PaymentCompleteProcessorInterface $paymentCompleteProcessor,
         PaymentInterface $payment,
     ): void {
@@ -95,32 +88,29 @@ final class PaymentStateManagerSpec extends ObjectBehavior
         $payment->getDetails()->willReturn(['status' => StatusAction::STATUS_PROCESSING]);
         $payment->getState()->willReturn(PaymentInterface::STATE_PROCESSING);
 
-        $stateMachineFactory->get($payment, PaymentTransitions::GRAPH)->shouldNotBeCalled();
+        $stateMachine->apply($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_COMPLETE)->shouldNotBeCalled();
+        $stateMachine->apply($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_PROCESS)->shouldNotBeCalled();
 
         $this->complete($payment);
     }
 
     function it_processes_payment(
-        FactoryInterface $stateMachineFactory,
+        StateMachineInterface $stateMachine,
         ObjectManager $paymentManager,
         PaymentInterface $payment,
-        StateMachineInterface $stateMachine,
     ): void {
-        $stateMachineFactory->get($payment, PaymentTransitions::GRAPH)->willReturn($stateMachine);
-        $stateMachine->apply(PaymentTransitions::TRANSITION_PROCESS)->shouldBeCalled();
+        $stateMachine->apply($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_PROCESS)->shouldBeCalled();
         $paymentManager->flush()->shouldBeCalled();
 
         $this->process($payment);
     }
 
     function it_cancels_payment(
-        FactoryInterface $stateMachineFactory,
+        StateMachineInterface $stateMachine,
         ObjectManager $paymentManager,
         PaymentInterface $payment,
-        StateMachineInterface $stateMachine,
     ): void {
-        $stateMachineFactory->get($payment, PaymentTransitions::GRAPH)->willReturn($stateMachine);
-        $stateMachine->apply(PaymentTransitions::TRANSITION_CANCEL)->shouldBeCalled();
+        $stateMachine->apply($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_CANCEL)->shouldBeCalled();
         $paymentManager->flush()->shouldBeCalled();
 
         $this->cancel($payment);

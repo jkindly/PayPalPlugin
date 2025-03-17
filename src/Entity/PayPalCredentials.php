@@ -16,31 +16,25 @@ namespace Sylius\PayPalPlugin\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="sylius_paypal_plugin_pay_pal_credentials")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'sylius_paypal_plugin_pay_pal_credentials')]
 class PayPalCredentials implements PayPalCredentialsInterface
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="string")
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'string')]
     private string $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Sylius\Component\Core\Model\PaymentMethodInterface")
-     * @ORM\JoinColumn(name="payment_method_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: PaymentMethodInterface::class)]
+    #[ORM\JoinColumn(name: 'payment_method_id', referencedColumnName: 'id')]
     private PaymentMethodInterface $paymentMethod;
 
-    /** @ORM\Column(type="string", name="access_token") */
+    #[ORM\Column(name: 'access_token', type: 'string')]
     private string $accessToken;
 
-    /** @ORM\Column(type="datetime", name="creation_time") */
+    #[ORM\Column(name: 'creation_time', type: 'datetime')]
     private \DateTime $creationTime;
 
-    /** @ORM\Column(type="datetime", name="expiration_time") */
+    #[ORM\Column(name: 'expiration_time', type: 'datetime')]
     private \DateTime $expirationTime;
 
     public function __construct(

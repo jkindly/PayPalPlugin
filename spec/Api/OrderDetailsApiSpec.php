@@ -24,12 +24,12 @@ final class OrderDetailsApiSpec extends ObjectBehavior
         $this->beConstructedWith($client);
     }
 
-    function it_implements_pay_pal_order_details_provider_interface(): void
+    function it_implements_paypal_order_details_provider_interface(): void
     {
         $this->shouldImplement(OrderDetailsApiInterface::class);
     }
 
-    function it_provides_details_about_pay_pal_order(PayPalClientInterface $client): void
+    function it_provides_details_about_paypal_order(PayPalClientInterface $client): void
     {
         $client
             ->get('v2/checkout/orders/123123', 'TOKEN')

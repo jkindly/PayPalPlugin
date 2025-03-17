@@ -19,18 +19,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
-final class CancelPayPalCheckoutPaymentAction
+final readonly class CancelPayPalCheckoutPaymentAction
 {
-    private PaymentProviderInterface $paymentProvider;
-
-    private PaymentStateManagerInterface $paymentStateManager;
-
     public function __construct(
-        PaymentProviderInterface $paymentProvider,
-        PaymentStateManagerInterface $paymentStateManager,
+        private PaymentProviderInterface $paymentProvider,
+        private PaymentStateManagerInterface $paymentStateManager,
     ) {
-        $this->paymentProvider = $paymentProvider;
-        $this->paymentStateManager = $paymentStateManager;
     }
 
     public function __invoke(Request $request): Response
@@ -46,7 +40,7 @@ final class CancelPayPalCheckoutPaymentAction
 
         /** @var FlashBagInterface $flashBag */
         $flashBag = $request->getSession()->getBag('flashes');
-        $flashBag->add('error', 'sylius.pay_pal.something_went_wrong');
+        $flashBag->add('error', 'sylius_paypal.something_went_wrong');
 
         $this->paymentStateManager->cancel($payment);
 

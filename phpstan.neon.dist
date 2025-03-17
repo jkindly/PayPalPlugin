@@ -19,9 +19,3 @@ parameters:
         # Test dependencies
         - 'tests/Application/app/**.php'
         - 'tests/Application/src/**.php'
-
-        # Classes using SyliusResourceBundle classes, with namespaces changing across versions
-        - 'src/Factory/PayPalPaymentMethodNewResourceFactory.php'
-
-    ignoreErrors:
-        - '/Call to an undefined method Sylius\\Component\\Core\\Repository\\PaymentRepositoryInterface\:\:createQueryBuilder\(\)\./'

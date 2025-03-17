@@ -20,14 +20,10 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 
 class AvailableCountriesProvider implements AvailableCountriesProviderInterface
 {
-    private RepositoryInterface $countryRepository;
-
-    private ChannelContextInterface $channelContext;
-
-    public function __construct(RepositoryInterface $countryRepository, ChannelContextInterface $channelContext)
-    {
-        $this->countryRepository = $countryRepository;
-        $this->channelContext = $channelContext;
+    public function __construct(
+        private readonly RepositoryInterface $countryRepository,
+        private readonly ChannelContextInterface $channelContext,
+    ) {
     }
 
     public function provide(): array

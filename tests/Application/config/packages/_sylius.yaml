@@ -1,11 +1,8 @@
 imports:
     - { resource: "@SyliusCoreBundle/Resources/config/app/config.yml" }
-
+    - { resource: "@SyliusPayumBundle/Resources/config/app/config.yaml" }
     - { resource: "@SyliusAdminBundle/Resources/config/app/config.yml" }
-
     - { resource: "@SyliusShopBundle/Resources/config/app/config.yml" }
-
-    - { resource: "@SyliusPayPalPlugin/Resources/config/config.yaml" }
     - { resource: "@SyliusApiBundle/Resources/config/app/config.yaml" }
 
 parameters:
@@ -14,3 +11,19 @@ parameters:
 sylius_shop:
     product_grid:
         include_all_descendants: true
+
+sylius_twig_hooks:
+    hooks:
+        'sylius_admin.base#stylesheets':
+            app_styles:
+                template: 'admin/stylesheets.html.twig'
+        'sylius_admin.base#javascripts':
+            app_javascripts:
+                template: 'admin/javascripts.html.twig'
+
+        'sylius_shop.base#stylesheets':
+            app_styles:
+                template: 'shop/stylesheets.html.twig'
+        'sylius_shop.base#javascripts':
+            app_javascripts:
+                template: 'shop/javascripts.html.twig'

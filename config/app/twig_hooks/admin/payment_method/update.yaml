@@ -1,0 +1,20 @@
+sylius_twig_hooks:
+    hooks:
+        sylius_admin.payment_method.update.content.header.title_block:
+            paypal_logo:
+                template: '@SyliusPayPalPlugin/admin/payment_method/form/header/paypal_logo.html.twig'
+                priority: -100
+
+        'sylius_admin.payment_method.update.content.form.sections.gateway_configuration.sylius_paypal':
+            client_id:
+                template: '@SyliusPayPalPlugin/admin/payment_method/form/section/gateway_configuration/client_id.html.twig'
+                priority: -100
+            client_secret:
+                template: '@SyliusPayPalPlugin/admin/payment_method/form/section/gateway_configuration/client_secret.html.twig'
+                priority: -200
+            reports_sftp_username:
+                template: '@SyliusPayPalPlugin/admin/payment_method/form/section/gateway_configuration/reports_sftp_username.html.twig'
+                priority: -300
+            reports_sftp_password:
+                template: '@SyliusPayPalPlugin/admin/payment_method/form/section/gateway_configuration/reports_sftp_password.html.twig'
+                priority: -400

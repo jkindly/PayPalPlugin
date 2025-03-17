@@ -29,7 +29,7 @@ final class RefundPaymentApiSpec extends ObjectBehavior
         $this->shouldImplement(RefundPaymentApiInterface::class);
     }
 
-    function it_refunds_pay_pal_payment_with_given_id(PayPalClientInterface $client): void
+    function it_refunds_paypal_payment_with_given_id(PayPalClientInterface $client): void
     {
         $client
             ->post(

@@ -3,8 +3,7 @@
 #### BEWARE!
 
 This installation instruction assumes that you're using Symfony Flex. If you don't, take a look at the
-[legacy installation instruction](legacy_installation.md). However, we strongly encourage you to use
-Symfony Flex.
+[legacy installation instruction](legacy_installation.md). However, we strongly encourage you to use Symfony Flex.
 
 1. Require plugin with composer:
 
@@ -19,12 +18,6 @@ Symfony Flex.
    ```
    bin/console doctrine:migrations:migrate -n
    ```
-
-1. Override Sylius' templates
-
-    ```bash
-    cp -R vendor/sylius/paypal-plugin/src/Resources/views/bundles/* templates/bundles/
-    ```
 
 1. Clear cache:
 
