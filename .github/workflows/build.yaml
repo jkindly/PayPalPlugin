@@ -14,33 +14,52 @@ jobs:
     tests:
         runs-on: ubuntu-latest
 
-        name: "Sylius ${{ matrix.sylius }}, PHP ${{ matrix.php }}, Symfony ${{ matrix.symfony }}, MySQL ${{ matrix.mysql }}, State Machine Adapter ${{ matrix.state_machine_adapter }}"
+        name: "Sylius ${{ matrix.sylius }}, PHP ${{ matrix.php }}, Symfony ${{ matrix.symfony }}, ${{ matrix.database == 'mysql' && format('MySQL {0}', matrix.mysql) || matrix.database == 'postgres' && format('PostgreSQL {0}', matrix.postgres) }}, State Machine Adapter ${{ matrix.state_machine_adapter }}"
 
         strategy:
             fail-fast: false
             matrix:
-                php: ["8.1", "8.2"]
-                node: ["20.x"]
-                mysql: ["8.0"]
+                php: ["8.3"]
                 symfony: ["^5.4.21", "^6.4"]
-                sylius: ["~1.12.0", "~1.13.0"]
-                state_machine_adapter: ["winzou_state_machine", "symfony_workflow"]
+                sylius: ["~1.13.0", "~1.14.0"]
+                database: ["mysql", "postgres"]
+                mysql: ["8.4"]
+                postgres: ["15.8"]
+                node: ["20.x"]
+                state_machine_adapter: ["symfony_workflow"]
 
                 include:
-                    -   php: "8.3"
-                        node: "20.x"
-                        mysql: "8.0"
+                    -
+                        php: "8.1"
                         symfony: "^6.4"
-                        sylius: "~1.13.0"
+                        sylius: "~1.14.0"
+                        database: "mysql"
+                        mysql: "8.4"
+                        node: "20.x"
+                        wkhtmltopdf: "0.12.6-1"
                         state_machine_adapter: "symfony_workflow"
-
-                exclude:
-                    - sylius: "~1.12.0"
-                      state_machine_adapter: "symfony_workflow"
+                    -
+                        php: "8.2"
+                        symfony: "^6.4"
+                        sylius: "~1.14.0"
+                        database: "mysql"
+                        mysql: "8.4"
+                        node: "20.x"
+                        wkhtmltopdf: "0.12.6-1"
+                        state_machine_adapter: "winzou_state_machine"
+                    -
+                        php: "8.2"
+                        symfony: "^6.4"
+                        sylius: "~1.14.0"
+                        database: "mysql"
+                        mysql: "8.4"
+                        node: "20.x"
+                        wkhtmltopdf: false
+                        state_machine_adapter: "symfony_workflow"
 
         env:
             APP_ENV: test
-            DATABASE_URL: "mysql://root:root@127.0.0.1/sylius?serverVersion=${{ matrix.mysql }}"
+            DATABASE_URL: ${{ matrix.database == 'mysql' && format('mysql://root:root@127.0.0.1/sylius?serverVersion={0}', matrix.mysql) || format('pgsql://postgres:postgres@127.0.0.1/sylius?serverVersion={0}', matrix.postgres) }}
             TEST_SYLIUS_STATE_MACHINE_ADAPTER: "${{ matrix.state_machine_adapter }}"
 
         steps:
@@ -63,15 +82,26 @@ jobs:
                     node-version: "${{ matrix.node }}"
 
             -
-                name: Shutdown default MySQL
-                run: sudo service mysql stop
+                name: Shutdown default database services
+                run: |
+                    sudo service mysql stop || true
+                    sudo service postgresql stop || true
 
             -
                 name: Setup MySQL
+                if: matrix.database == 'mysql'
                 uses: mirromutth/mysql-action@v1.1
                 with:
                     mysql version: "${{ matrix.mysql }}"
                     mysql root password: "root"
+
+            -
+                name: Setup PostgreSQL
+                if: matrix.database == 'postgres'
+                uses: harmon758/postgresql-action@v1
+                with:
+                    postgresql version: "${{ matrix.postgres }}"
+                    postgresql password: "postgres"
 
             -
                 name: Run Chrome Headless
@@ -176,8 +206,11 @@ jobs:
 
             -
                 name: Run analysis
-                if: ${{ matrix.sylius != '1.13.x-dev' }}
                 run: composer analyse
+
+            -
+                name: Run PHPStan
+                run: vendor/bin/phpstan analyse -c phpstan.neon.dist src/
 
             -
                 name: Run PHPSpec

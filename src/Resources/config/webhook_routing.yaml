@@ -2,4 +2,4 @@ sylius_paypal_plugin_webhook_refund_order:
     path: /paypal-webhook/api/
     methods: [POST]
     defaults:
-        _controller: Sylius\PayPalPlugin\Controller\Webhook\RefundOrderAction
+        _controller: sylius_paypal.controller.webhook.refund_order

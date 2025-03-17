@@ -36,7 +36,7 @@ use Symfony\Component\HttpFoundation\Response;
 final class ProcessPayPalOrderAction
 {
     public function __construct(
-        private readonly OrderRepositoryInterface $orderRepository,
+        private readonly ?OrderRepositoryInterface $orderRepository,
         private readonly CustomerRepositoryInterface $customerRepository,
         private readonly FactoryInterface $customerFactory,
         private readonly AddressFactoryInterface $addressFactory,
@@ -55,6 +55,16 @@ final class ProcessPayPalOrderAction
                     'Passing an instance of "%s" as the sixth argument is deprecated and will be prohibited in 2.0. Use "%s" instead.',
                     StateMachineFactoryInterface::class,
                     StateMachineInterface::class,
+                ),
+            );
+        }
+        if (null !== $this->orderRepository) {
+            trigger_deprecation(
+                'sylius/paypal-plugin',
+                '1.7',
+                sprintf(
+                    'Passing an instance of "%s" as the first argument is deprecated and will be prohibited in 2.0',
+                    OrderRepositoryInterface::class,
                 ),
             );
         }

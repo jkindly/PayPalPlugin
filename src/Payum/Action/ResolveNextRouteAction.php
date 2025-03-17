@@ -19,6 +19,7 @@ use Sylius\Bundle\PayumBundle\Request\ResolveNextRoute;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\PayPalPlugin\DependencyInjection\SyliusPayPalExtension;
 
 final class ResolveNextRouteAction implements ActionInterface
 {
@@ -66,6 +67,6 @@ final class ResolveNextRouteAction implements ActionInterface
         /** @var GatewayConfigInterface $gatewayConfig */
         $gatewayConfig = $paymentMethod->getGatewayConfig();
 
-        return $gatewayConfig->getFactoryName() === 'sylius.pay_pal';
+        return $gatewayConfig->getFactoryName() === SyliusPayPalExtension::PAYPAL_FACTORY_NAME;
     }
 }

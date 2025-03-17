@@ -16,6 +16,7 @@ namespace Sylius\PayPalPlugin\Form\Extension;
 use Sylius\Bundle\PaymentBundle\Form\Type\PaymentMethodType;
 use Sylius\Bundle\PayumBundle\Model\GatewayConfigInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\PayPalPlugin\DependencyInjection\SyliusPayPalExtension;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -33,7 +34,7 @@ final class PaymentMethodTypeExtension extends AbstractTypeExtension
 
             /** @var GatewayConfigInterface $gatewayConfig */
             $gatewayConfig = $data->getGatewayConfig();
-            if ($gatewayConfig->getFactoryName() === 'sylius.pay_pal') {
+            if ($gatewayConfig->getFactoryName() === SyliusPayPalExtension::PAYPAL_FACTORY_NAME) {
                 $form->add('enabled', HiddenType::class, [
                     'required' => false,
                     'label' => 'sylius.form.payment_method.enabled',

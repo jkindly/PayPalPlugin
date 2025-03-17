@@ -1,5 +1,5 @@
 {% for name, gateway in gatewayFactories %}
-    <a href="{{ url('sylius_admin_payment_method_create', { 'factory': name }) }}" id="{{ name }}" class="item" {% if name == 'sylius.pay_pal' %}data-confirm-pay-pal-consent{% endif %}>
+    <a href="{{ url('sylius_admin_payment_method_create', { 'factory': name }) }}" id="{{ name }}" class="item" {% if name == constant('Sylius\\PayPalPlugin\\DependencyInjection\\SyliusPayPalExtension::PAYPAL_FACTORY_NAME') %}data-confirm-pay-pal-consent{% endif %}>
         {{ gateway|trans }}
     </a>
 {% endfor %}

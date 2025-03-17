@@ -20,6 +20,14 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 
+trigger_deprecation(
+    'sylius/paypal-plugin',
+    '1.7',
+    'The "%s" class is deprecated and will be removed in Sylius/PayPalPlugin 2.0.',
+    ChangePaymentMethodType::class,
+);
+
+/** @deprecated since Sylius/PayPalPlugin 1.7 and will be removed in Sylius/PayPalPlugin 2.0. */
 final class ChangePaymentMethodType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void

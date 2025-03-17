@@ -56,9 +56,8 @@ final class CompletePayPalOrderFromPaymentPageAction
         /** @var PaymentInterface $payment */
         $payment = $order->getLastPayment(PaymentInterface::STATE_PROCESSING);
 
-        $this->paymentStateManager->complete($payment);
-
         $this->getStateMachine()->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SELECT_PAYMENT);
+        $this->paymentStateManager->complete($payment);
         $this->getStateMachine()->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_COMPLETE);
 
         $this->orderManager->flush();

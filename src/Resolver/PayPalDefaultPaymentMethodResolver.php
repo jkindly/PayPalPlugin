@@ -23,6 +23,7 @@ use Sylius\Component\Payment\Exception\UnresolvedDefaultPaymentMethodException;
 use Sylius\Component\Payment\Model\PaymentInterface as BasePaymentInterface;
 use Sylius\Component\Payment\Model\PaymentMethodInterface;
 use Sylius\Component\Payment\Resolver\DefaultPaymentMethodResolverInterface;
+use Sylius\PayPalPlugin\DependencyInjection\SyliusPayPalExtension;
 use Webmozart\Assert\Assert;
 
 final class PayPalDefaultPaymentMethodResolver implements DefaultPaymentMethodResolverInterface
@@ -39,7 +40,7 @@ final class PayPalDefaultPaymentMethodResolver implements DefaultPaymentMethodRe
         $this->paymentMethodRepository = $paymentMethodRepository;
     }
 
-    public function getDefaultPaymentMethod(BasePaymentInterface $payment, string $prioritisedPayment = 'sylius.pay_pal'): PaymentMethodInterface
+    public function getDefaultPaymentMethod(BasePaymentInterface $payment, string $prioritisedPayment = SyliusPayPalExtension::PAYPAL_FACTORY_NAME): PaymentMethodInterface
     {
         /** @var PaymentInterface $payment */
         Assert::isInstanceOf($payment, PaymentInterface::class);

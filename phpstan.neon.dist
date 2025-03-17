@@ -6,8 +6,6 @@ parameters:
     level: 3
 
     reportUnmatchedIgnoredErrors: false
-    checkMissingIterableValueType: false
-    checkGenericClassInNonGenericObjectType: false
 
     paths:
         - 'src/'
@@ -17,11 +15,13 @@ parameters:
         - 'src/DependencyInjection/Configuration.php'
         - 'src/DependencyInjection/SyliusPayPalExtension.php'
         - 'src/Command/CompletePaidPaymentsCommand.php'
-        - 'src/Migrations/**.php'
 
         # Test dependencies
         - 'tests/Application/app/**.php'
         - 'tests/Application/src/**.php'
+
+        # Classes using SyliusResourceBundle classes, with namespaces changing across versions
+        - 'src/Factory/PayPalPaymentMethodNewResourceFactory.php'
 
     ignoreErrors:
         - '/Call to an undefined method Sylius\\Component\\Core\\Repository\\PaymentRepositoryInterface\:\:createQueryBuilder\(\)\./'
