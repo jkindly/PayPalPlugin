@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Sylius\PayPalPlugin\Api;
 
 use Sylius\Bundle\PayumBundle\Model\GatewayConfigInterface;
+use Sylius\Component\Core\Model\AdjustmentInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
@@ -53,12 +54,16 @@ final readonly class CreateOrderApi implements CreateOrderApiInterface
         Assert::keyExists($config, 'merchant_id');
         Assert::keyExists($config, 'sylius_merchant_id');
 
+        $shippingDiscount = $order->getAdjustmentsTotalRecursively(
+            AdjustmentInterface::ORDER_SHIPPING_PROMOTION_ADJUSTMENT,
+        );
+
         $payPalPurchaseUnit = new PayPalPurchaseUnit(
             $referenceId,
             $this->paymentReferenceNumberProvider->provide($payment),
             (string) $order->getCurrencyCode(),
             (int) $payment->getAmount(),
-            $order->getShippingTotal(),
+            $order->getShippingTotal() - $shippingDiscount,
             (float) $payPalItemData['total_item_value'],
             (float) $payPalItemData['total_tax'],
             $order->getOrderPromotionTotal(),
@@ -66,6 +71,7 @@ final readonly class CreateOrderApi implements CreateOrderApiInterface
             (array) $payPalItemData['items'],
             $order->isShippingRequired(),
             $order->getShippingAddress(),
+            shippingDiscountValue: $shippingDiscount,
         );
 
         $payPalOrder = new PayPalOrder($order, $payPalPurchaseUnit, self::PAYPAL_INTENT_CAPTURE);

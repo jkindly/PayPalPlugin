@@ -30,6 +30,7 @@ final readonly class PayPalPaymentMethodNewResourceFactory implements NewResourc
 
     public function create(RequestConfiguration $requestConfiguration, FactoryInterface $factory): ResourceInterface
     {
+        /** @var ResourceInterface $resource */
         $resource = $this->newResourceFactory->create($requestConfiguration, $factory);
 
         if (!$resource instanceof PaymentMethodInterface) {

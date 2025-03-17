@@ -32,7 +32,7 @@ final readonly class RefundPaymentApi implements RefundPaymentApiInterface
         return $this->client->post(
             sprintf('v2/payments/captures/%s/refund', $paymentId),
             $token,
-            ['amount' => ['value' => $amount, 'currency_code' => $currencyCode], 'invoice_number' => $invoiceNumber],
+            ['amount' => ['value' => $amount, 'currency_code' => $currencyCode], 'invoice_id' => $invoiceNumber],
             ['PayPal-Auth-Assertion' => $payPalAuthAssertion],
         );
     }
