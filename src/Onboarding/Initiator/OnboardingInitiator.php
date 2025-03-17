@@ -17,21 +17,18 @@ use Sylius\Component\Core\Model\AdminUserInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\PayPalPlugin\DependencyInjection\SyliusPayPalExtension;
 use Sylius\PayPalPlugin\UrlUtils;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Security;
 
 final class OnboardingInitiator implements OnboardingInitiatorInterface
 {
-    private UrlGeneratorInterface $urlGenerator;
-
     private string $createPartnerReferralsUrl;
 
-    private Security $security;
-
-    public function __construct(UrlGeneratorInterface $urlGenerator, Security $security, string $facilitatorUrl)
-    {
-        $this->urlGenerator = $urlGenerator;
-        $this->security = $security;
+    public function __construct(
+        private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly Security $security,
+        string $facilitatorUrl,
+    ) {
         $this->createPartnerReferralsUrl = $facilitatorUrl . '/partner-referrals/create';
     }
 

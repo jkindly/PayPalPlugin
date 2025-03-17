@@ -31,7 +31,7 @@ final class CompleteOrderApiSpec extends ObjectBehavior
         $this->shouldImplement(CompleteOrderApiInterface::class);
     }
 
-    function it_completes_pay_pal_order_with_given_id(
+    function it_completes_paypal_order_with_given_id(
         PayPalClientInterface $client,
         PaymentInterface $payment,
         OrderInterface $order,

@@ -18,37 +18,31 @@
 
     ```yaml
     imports:
-        - { resource: "@SyliusPayPalPlugin/Resources/config/config.yaml" }
+        - { resource: '@SyliusPayPalPlugin/config/config.yaml' }
     ```
 
 1. Import routes:
 
     ```yaml
-    # config/routes/sylius_shop.yaml
-
-    sylius_paypal_shop:
-        resource: "@SyliusPayPalPlugin/Resources/config/shop_routing.yaml"
-        prefix: /{_locale}
-        requirements:
-            _locale: ^[A-Za-z]{2,4}(_([A-Za-z]{4}|[0-9]{3}))?(_([A-Za-z]{2}|[0-9]{3}))?$
-
-    # config/routes/sylius_admin.yaml
-
-    sylius_paypal_admin:
-        resource: "@SyliusPayPalPlugin/Resources/config/admin_routing.yml"
-        prefix: /admin
-
-    # config/routes.yaml
-
-    sylius_paypal_webhook:
-        resource: "@SyliusPayPalPlugin/Resources/config/webhook_routing.yaml"
+    sylius_refund:
+        resource: "@SyliusPayPalPlugin/config/routes.yaml"
     ```
 
-1. Override Sylius' templates
+1. Add `FOS\RestBundle` configuration to your `config/packages/fos_rest.yaml` file
 
-    ```bash
-    cp -R vendor/sylius/paypal-plugin/src/Resources/views/bundles/* templates/bundles/
-    ```
+    ```yaml
+     fos_rest:
+        exception: true
+        view:
+            formats:
+                json: true
+                xml:  true
+            empty_content: 204
+        format_listener:
+            rules:
+                - { path: '^/api/.*', priorities: ['json', 'xml'], fallback_format: json, prefer_extension: true }
+                - { path: '^/', stop: true }
+   ```
 
 1. Apply migrations to your database:
 

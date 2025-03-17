@@ -20,13 +20,10 @@ use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\PayPalPlugin\DependencyInjection\SyliusPayPalExtension;
 use Sylius\PayPalPlugin\Manager\PaymentStateManagerInterface;
 
-final class PayPalOrderCompleteProcessor
+final readonly class PayPalOrderCompleteProcessor
 {
-    private PaymentStateManagerInterface $paymentStateManager;
-
-    public function __construct(PaymentStateManagerInterface $paymentStateManager)
+    public function __construct(private PaymentStateManagerInterface $paymentStateManager)
     {
-        $this->paymentStateManager = $paymentStateManager;
     }
 
     public function completePayPalOrder(OrderInterface $order): void

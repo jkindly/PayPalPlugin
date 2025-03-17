@@ -39,7 +39,7 @@ final class UpdateOrderApiSpec extends ObjectBehavior
         $this->shouldImplement(UpdateOrderApiInterface::class);
     }
 
-    function it_updates_pay_pal_order_with_given_new_total(
+    function it_updates_paypal_order_with_given_new_total(
         PayPalClientInterface $client,
         PaymentReferenceNumberProviderInterface $paymentReferenceNumberProvider,
         PayPalItemDataProviderInterface $payPalItemsDataProvider,

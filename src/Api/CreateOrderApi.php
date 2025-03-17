@@ -25,24 +25,15 @@ use Sylius\PayPalPlugin\Provider\PaymentReferenceNumberProviderInterface;
 use Sylius\PayPalPlugin\Provider\PayPalItemDataProviderInterface;
 use Webmozart\Assert\Assert;
 
-final class CreateOrderApi implements CreateOrderApiInterface
+final readonly class CreateOrderApi implements CreateOrderApiInterface
 {
     public const PAYPAL_INTENT_CAPTURE = 'CAPTURE';
 
-    private PayPalClientInterface $client;
-
-    private PaymentReferenceNumberProviderInterface $paymentReferenceNumberProvider;
-
-    private PayPalItemDataProviderInterface $payPalItemDataProvider;
-
     public function __construct(
-        PayPalClientInterface $client,
-        PaymentReferenceNumberProviderInterface $paymentReferenceNumberProvider,
-        PayPalItemDataProviderInterface $payPalItemDataProvider,
+        private PayPalClientInterface $client,
+        private PaymentReferenceNumberProviderInterface $paymentReferenceNumberProvider,
+        private PayPalItemDataProviderInterface $payPalItemDataProvider,
     ) {
-        $this->client = $client;
-        $this->paymentReferenceNumberProvider = $paymentReferenceNumberProvider;
-        $this->payPalItemDataProvider = $payPalItemDataProvider;
     }
 
     public function create(string $token, PaymentInterface $payment, string $referenceId): array

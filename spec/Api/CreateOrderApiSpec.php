@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace spec\Sylius\PayPalPlugin\Api;
 
-use Payum\Core\Model\GatewayConfigInterface;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Sylius\Component\Core\Model\AddressInterface;
@@ -21,6 +20,7 @@ use Sylius\Component\Core\Model\AdjustmentInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\Component\Payment\Model\GatewayConfigInterface;
 use Sylius\PayPalPlugin\Api\CreateOrderApiInterface;
 use Sylius\PayPalPlugin\Client\PayPalClientInterface;
 use Sylius\PayPalPlugin\Provider\PaymentReferenceNumberProviderInterface;
@@ -41,7 +41,7 @@ final class CreateOrderApiSpec extends ObjectBehavior
         $this->shouldImplement(CreateOrderApiInterface::class);
     }
 
-    function it_creates_pay_pal_order_based_on_given_payment(
+    function it_creates_paypal_order_based_on_given_payment(
         PayPalClientInterface $client,
         PaymentReferenceNumberProviderInterface $paymentReferenceNumberProvider,
         PaymentInterface $payment,
@@ -110,7 +110,7 @@ final class CreateOrderApiSpec extends ObjectBehavior
         $this->create('TOKEN', $payment, 'REFERENCE_ID')->shouldReturn(['status' => 'CREATED', 'id' => 123]);
     }
 
-    function it_creates_pay_pal_order_with_shipping_address_based_on_given_payment(
+    function it_creates_paypal_order_with_shipping_address_based_on_given_payment(
         PayPalClientInterface $client,
         PaymentReferenceNumberProviderInterface $paymentReferenceNumberProvider,
         PaymentInterface $payment,
@@ -189,7 +189,7 @@ final class CreateOrderApiSpec extends ObjectBehavior
         $this->create('TOKEN', $payment, 'REFERENCE_ID')->shouldReturn(['status' => 'CREATED', 'id' => 123]);
     }
 
-    function it_creates_pay_pal_order_with_more_than_one_product(
+    function it_creates_paypal_order_with_more_than_one_product(
         PayPalClientInterface $client,
         PaymentInterface $payment,
         OrderInterface $order,
@@ -283,7 +283,7 @@ final class CreateOrderApiSpec extends ObjectBehavior
         $this->create('TOKEN', $payment, 'REFERENCE_ID')->shouldReturn(['status' => 'CREATED', 'id' => 123]);
     }
 
-    function it_creates_pay_pal_order_with_non_neutral_tax_and_changed_quantity(
+    function it_creates_paypal_order_with_non_neutral_tax_and_changed_quantity(
         PayPalClientInterface $client,
         PaymentInterface $payment,
         OrderInterface $order,
@@ -381,7 +381,7 @@ final class CreateOrderApiSpec extends ObjectBehavior
         $this->create('TOKEN', $payment, 'REFERENCE_ID')->shouldReturn(['status' => 'CREATED', 'id' => 123]);
     }
 
-    function it_creates_pay_pal_order_with_more_than_one_product_with_different_tax_rates(
+    function it_creates_paypal_order_with_more_than_one_product_with_different_tax_rates(
         PayPalClientInterface $client,
         PaymentInterface $payment,
         OrderInterface $order,
@@ -563,7 +563,7 @@ final class CreateOrderApiSpec extends ObjectBehavior
         $this->create('TOKEN', $payment, 'REFERENCE_ID')->shouldReturn(['status' => 'CREATED', 'id' => 123]);
     }
 
-    function it_creates_pay_pal_order_with_promotion(
+    function it_creates_paypal_order_with_promotion(
         PayPalClientInterface $client,
         PaymentReferenceNumberProviderInterface $paymentReferenceNumberProvider,
         PaymentInterface $payment,

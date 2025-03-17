@@ -24,7 +24,7 @@ final class PayPalExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('sylius_is_pay_pal_enabled', [$this, 'isPayPalEnabled']),
+            new TwigFunction('sylius_is_paypal_enabled', [$this, 'isPayPalEnabled']),
         ];
     }
 

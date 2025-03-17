@@ -17,13 +17,10 @@ use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Resource\Exception\UpdateHandlingException;
 use Sylius\PayPalPlugin\Exception\PayPalOrderRefundException;
 
-final class UiPayPalPaymentRefundProcessor implements PaymentRefundProcessorInterface
+final readonly class UiPayPalPaymentRefundProcessor implements PaymentRefundProcessorInterface
 {
-    private PaymentRefundProcessorInterface $paymentRefundProcessor;
-
-    public function __construct(PaymentRefundProcessorInterface $paymentRefundProcessor)
+    public function __construct(private PaymentRefundProcessorInterface $paymentRefundProcessor)
     {
-        $this->paymentRefundProcessor = $paymentRefundProcessor;
     }
 
     public function refund(PaymentInterface $payment): void

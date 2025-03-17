@@ -14,7 +14,7 @@
         />
 
         <service id="Tests\Sylius\PayPalPlugin\Behat\Context\Admin\ManagingOrdersContext">
-            <argument type="service" id="sm.factory" />
+            <argument type="service" id="sylius_abstraction.state_machine" />
             <argument type="service" id="sylius.manager.order" />
             <argument type="service" id="test.client" />
             <argument type="service" id="sylius.behat.page.admin.order.show" />
@@ -22,7 +22,7 @@
 
         <service id="Tests\Sylius\PayPalPlugin\Behat\Context\Admin\ManagingPaymentMethodsContext">
             <argument type="service" id="Tests\Sylius\PayPalPlugin\Behat\Element\DownloadPayPalReportElement" />
-            <argument type="service" id="sylius.behat.notification_checker" />
+            <argument type="service" id="sylius.behat.notification_checker.admin" />
             <argument type="service" id="sylius.behat.page.admin.payment_method.create" />
         </service>
 
@@ -31,11 +31,10 @@
             <argument type="service" id="sylius.behat.page.admin.payment_method.index" />
             <argument type="service" id="sylius.behat.page.admin.payment_method.update" />
             <argument type="service" id="sylius.behat.current_page_resolver" />
-            <argument type="service" id="sylius.behat.notification_checker" />
             <argument type="collection">
                 <argument key="offline">Offline</argument>
                 <argument key="paypal_express_checkout">Paypal Express Checkout</argument>
-                <argument key="sylius.pay_pal">PayPal</argument>
+                <argument key="sylius_paypal">PayPal</argument>
                 <argument key="stripe_checkout">Stripe Checkout</argument>
             </argument>
         </service>

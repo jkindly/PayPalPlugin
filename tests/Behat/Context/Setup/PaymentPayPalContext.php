@@ -24,36 +24,15 @@ use Webmozart\Assert\Assert;
 
 final class PaymentPayPalContext implements Context
 {
-    private SharedStorageInterface $sharedStorage;
-
-    private PaymentMethodRepositoryInterface $paymentMethodRepository;
-
-    private ExampleFactoryInterface $paymentMethodExampleFactory;
-
-    private array $gatewayFactories;
-
-    private TranslatorInterface $translator;
-
-    private PayPalSelectPaymentPageInterface $selectPaymentPage;
-
-    private string $clientId;
-
     public function __construct(
-        SharedStorageInterface $sharedStorage,
-        PaymentMethodRepositoryInterface $paymentMethodRepository,
-        ExampleFactoryInterface $paymentMethodExampleFactory,
-        array $gatewayFactories,
-        TranslatorInterface $translator,
-        PayPalSelectPaymentPageInterface $selectPaymentPage,
-        string $clientId,
+        private readonly SharedStorageInterface $sharedStorage,
+        private readonly PaymentMethodRepositoryInterface $paymentMethodRepository,
+        private readonly ExampleFactoryInterface $paymentMethodExampleFactory,
+        private readonly array $gatewayFactories,
+        private readonly TranslatorInterface $translator,
+        private readonly PayPalSelectPaymentPageInterface $selectPaymentPage,
+        private readonly string $clientId,
     ) {
-        $this->sharedStorage = $sharedStorage;
-        $this->paymentMethodRepository = $paymentMethodRepository;
-        $this->paymentMethodExampleFactory = $paymentMethodExampleFactory;
-        $this->gatewayFactories = $gatewayFactories;
-        $this->translator = $translator;
-        $this->selectPaymentPage = $selectPaymentPage;
-        $this->clientId = $clientId;
     }
 
     /**

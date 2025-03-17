@@ -31,7 +31,7 @@ final class PaymentProviderSpec extends ObjectBehavior
         $this->shouldImplement(PaymentProviderInterface::class);
     }
 
-    function it_returns_payment_for_given_pay_pal_order_id(
+    function it_returns_payment_for_given_paypal_order_id(
         PaymentRepositoryInterface $paymentRepository,
         PaymentInterface $firstPayment,
         PaymentInterface $secondPayment,

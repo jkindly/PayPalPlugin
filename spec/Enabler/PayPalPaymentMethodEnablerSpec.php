@@ -14,8 +14,6 @@ declare(strict_types=1);
 namespace spec\Sylius\PayPalPlugin\Enabler;
 
 use Doctrine\Persistence\ObjectManager;
-use GuzzleHttp\ClientInterface as GuzzleClientInterface;
-use Payum\Core\Model\GatewayConfigInterface;
 use PhpSpec\ObjectBehavior;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -23,6 +21,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\Component\Payment\Model\GatewayConfigInterface;
 use Sylius\PayPalPlugin\Enabler\PaymentMethodEnablerInterface;
 use Sylius\PayPalPlugin\Exception\PaymentMethodCouldNotBeEnabledException;
 use Sylius\PayPalPlugin\Registrar\SellerWebhookRegistrarInterface;
@@ -78,37 +77,6 @@ final class PayPalPaymentMethodEnablerSpec extends ObjectBehavior
         $this->enable($paymentMethod);
     }
 
-    function it_enables_payment_method_if_it_has_proper_credentials_and_webhook_are_set_using_guzzle_client(
-        GuzzleClientInterface $client,
-        ObjectManager $paymentMethodManager,
-        SellerWebhookRegistrarInterface $sellerWebhookRegistrar,
-        PaymentMethodInterface $paymentMethod,
-        GatewayConfigInterface $gatewayConfig,
-        ResponseInterface $response,
-        StreamInterface $body,
-    ): void {
-        $this->beConstructedWith(
-            $client,
-            'http://base-url.com',
-            $paymentMethodManager,
-            $sellerWebhookRegistrar,
-        );
-
-        $paymentMethod->getGatewayConfig()->willReturn($gatewayConfig);
-        $gatewayConfig->getConfig()->willReturn(['merchant_id' => '123123', 'client_id' => 'CLIENT-ID', 'client_secret' => 'SECRET']);
-
-        $client->request('GET', 'http://base-url.com/seller-permissions/check/123123')->willReturn($response);
-        $response->getBody()->willReturn($body);
-        $body->getContents()->willReturn('{ "permissionsGranted": true }');
-
-        $sellerWebhookRegistrar->register($paymentMethod)->shouldBeCalled();
-
-        $paymentMethod->setEnabled(true)->shouldBeCalled();
-        $paymentMethodManager->flush()->shouldBeCalled();
-
-        $this->enable($paymentMethod);
-    }
-
     function it_throws_exception_if_payment_method_credentials_are_not_granted(
         ClientInterface $client,
         RequestFactoryInterface $requestFactory,
@@ -127,41 +95,6 @@ final class PayPalPaymentMethodEnablerSpec extends ObjectBehavior
             ->createRequest('GET', 'http://base-url.com/seller-permissions/check/123123')
             ->willReturn($request);
         $client->sendRequest($request)->willReturn($response);
-        $response->getBody()->willReturn($body);
-        $body->getContents()->willReturn('{ "permissionsGranted": false }');
-
-        $sellerWebhookRegistrar->register($paymentMethod)->shouldNotBeCalled();
-        $paymentMethod->setEnabled(true)->shouldNotBeCalled();
-        $paymentMethodManager->flush()->shouldNotBeCalled();
-
-        $this
-            ->shouldThrow(PaymentMethodCouldNotBeEnabledException::class)
-            ->during('enable', [$paymentMethod])
-        ;
-    }
-
-    function it_throws_exception_if_payment_method_credentials_are_not_granted_using_guzzle_client(
-        GuzzleClientInterface $client,
-        RequestFactoryInterface $requestFactory,
-        RequestInterface $request,
-        ObjectManager $paymentMethodManager,
-        SellerWebhookRegistrarInterface $sellerWebhookRegistrar,
-        PaymentMethodInterface $paymentMethod,
-        GatewayConfigInterface $gatewayConfig,
-        ResponseInterface $response,
-        StreamInterface $body,
-    ): void {
-        $this->beConstructedWith(
-            $client,
-            'http://base-url.com',
-            $paymentMethodManager,
-            $sellerWebhookRegistrar,
-        );
-
-        $paymentMethod->getGatewayConfig()->willReturn($gatewayConfig);
-        $gatewayConfig->getConfig()->willReturn(['merchant_id' => '123123', 'client_id' => 'CLIENT-ID', 'client_secret' => 'SECRET']);
-
-        $client->request('GET', 'http://base-url.com/seller-permissions/check/123123')->willReturn($response);
         $response->getBody()->willReturn($body);
         $body->getContents()->willReturn('{ "permissionsGranted": false }');
 

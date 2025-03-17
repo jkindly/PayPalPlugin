@@ -17,13 +17,10 @@ use Doctrine\Persistence\ObjectManager;
 use Sylius\Component\Core\Model\OrderInterface;
 use Webmozart\Assert\Assert;
 
-final class PayPalAddressProcessor implements PayPalAddressProcessorInterface
+final readonly class PayPalAddressProcessor implements PayPalAddressProcessorInterface
 {
-    private ObjectManager $objectManager;
-
-    public function __construct(ObjectManager $objectManager)
+    public function __construct(private ObjectManager $objectManager)
     {
-        $this->objectManager = $objectManager;
     }
 
     /**
