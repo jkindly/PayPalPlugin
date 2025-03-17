@@ -135,7 +135,7 @@ public function __construct(
    The old service IDs have been removed, and all references must be updated accordingly:
 
    | Old ID                                                                    | New ID                                                                  |
-      |---------------------------------------------------------------------------|-------------------------------------------------------------------------|
+   |---------------------------------------------------------------------------|-------------------------------------------------------------------------|
    | `Sylius\PayPalPlugin\ApiPlatform\PayPalPayment`                           | `sylius_paypal.api_platform.paypal_payment`                             |
    | `Sylius\PayPalPlugin\Command\CompletePaidPaymentsCommand`                 | `sylius_paypal.console.command.complete_paid_payments`                  |
    | `Sylius\PayPalPlugin\Controller\CancelLastPayPalPaymentAction`            | `sylius_paypal.controller.cancel_last_paypal_payment`                   |
@@ -182,7 +182,7 @@ public function __construct(
    the primary service IDs, and the old service IDs remain as aliases:
 
    | Current ID                                                              | New Alias                                           |
-      |-------------------------------------------------------------------------|-----------------------------------------------------|
+   |-------------------------------------------------------------------------|-----------------------------------------------------|
    | `Sylius\PayPalPlugin\Api\AuthorizeClientApiInterface`                   | `sylius_paypal.api.authorize_client`                |
    | `Sylius\PayPalPlugin\Api\CacheAuthorizeClientApiInterface`              | `sylius_paypal.api.cache_authorize_client`          |
    | `Sylius\PayPalPlugin\Api\CompleteOrderApiInterface`                     | `sylius_paypal.api.complete_order`                  |
@@ -221,7 +221,7 @@ public function __construct(
 1. The following parameters have been renamed:
 
    | Old parameter                            | New parameter                            | 
-      |------------------------------------------|------------------------------------------|
+   |------------------------------------------|------------------------------------------|
    | `sylius.paypal.prioritized_factory_name` | `sylius_paypal.prioritized_factory_name` |
    | `sylius.pay_pal.request_trials_limit`    | `sylius_paypal.request_trials_limit`     |
    | `sylius.paypal.logging.increased`        | `sylius_paypal.logging.increased`        |
