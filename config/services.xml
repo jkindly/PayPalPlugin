@@ -286,5 +286,8 @@
         <service id="sylius_paypal.twig.extension.order_address" class="Sylius\PayPalPlugin\Twig\OrderAddressExtension">
             <tag name="twig.extension" />
         </service>
+
+        <service id="sylius_paypal.verifier.payment_amount" class="Sylius\PayPalPlugin\Verifier\PaymentAmountVerifier" />
+        <service id="Sylius\PayPalPlugin\Verifier\PaymentAmountVerifierInterface" alias="sylius_paypal.verifier.payment_amount" />
     </services>
 </container>

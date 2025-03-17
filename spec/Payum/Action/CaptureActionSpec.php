@@ -66,6 +66,7 @@ final class CaptureActionSpec extends ObjectBehavior
             'status' => StatusAction::STATUS_CAPTURED,
             'paypal_order_id' => '123123',
             'reference_id' => 'UUID',
+            'payment_amount' => 1000,
         ])->shouldBeCalled();
 
         $this->execute($request);

@@ -1,3 +1,37 @@
+### UPGRADE FROM 2.0.0 to 2.0.1
+
+1. The following constructor signatures have been changed:
+
+`Sylius\PayPalPlugin\Controller\ProcessPayPalOrderAction`:
+```diff
+public function __construct(
+    private readonly OrderRepositoryInterface $orderRepository,
+    private readonly CustomerRepositoryInterface $customerRepository,
+    private readonly FactoryInterface $customerFactory,
+    private readonly AddressFactoryInterface $addressFactory,
+    private readonly ObjectManager $orderManager,
+    private readonly StateMachineFactoryInterface|StateMachineInterface $stateMachineFactory,
+    private readonly PaymentStateManagerInterface $paymentStateManager,
+    private readonly CacheAuthorizeClientApiInterface $authorizeClientApi,
+    private readonly OrderDetailsApiInterface $orderDetailsApi,
+    private readonly OrderProviderInterface $orderProvider,
++   private readonly ?PaymentAmountVerifierInterface $paymentAmountVerifier = null,
+)
+```
+
+`Sylius\PayPalPlugin\Controller\CompletePayPalOrderFromPaymentPageAction`:
+```diff
+public function __construct(
+    private readonly PaymentStateManagerInterface $paymentStateManager,
+    private readonly UrlGeneratorInterface $router,
+    private readonly OrderProviderInterface $orderProvider,
+    private readonly FactoryInterface|StateMachineInterface $stateMachine,
+    private readonly ObjectManager $orderManager,
++   private readonly ?PaymentAmountVerifierInterface $paymentAmountVerifier = null,
++   private readonly ?OrderProcessorInterface $orderProcessor = null,
+)
+```
+
 # UPGRADE FROM 1.x to 2.0
 
 1. Support for Sylius 2.0 has been added, it is now the recommended Sylius version to use with PayPalPlugin.
@@ -101,7 +135,7 @@
    The old service IDs have been removed, and all references must be updated accordingly:
 
    | Old ID                                                                    | New ID                                                                  |
-   |---------------------------------------------------------------------------|-------------------------------------------------------------------------|
+      |---------------------------------------------------------------------------|-------------------------------------------------------------------------|
    | `Sylius\PayPalPlugin\ApiPlatform\PayPalPayment`                           | `sylius_paypal.api_platform.paypal_payment`                             |
    | `Sylius\PayPalPlugin\Command\CompletePaidPaymentsCommand`                 | `sylius_paypal.console.command.complete_paid_payments`                  |
    | `Sylius\PayPalPlugin\Controller\CancelLastPayPalPaymentAction`            | `sylius_paypal.controller.cancel_last_paypal_payment`                   |
@@ -148,7 +182,7 @@
    the primary service IDs, and the old service IDs remain as aliases:
 
    | Current ID                                                              | New Alias                                           |
-   |-------------------------------------------------------------------------|-----------------------------------------------------|
+      |-------------------------------------------------------------------------|-----------------------------------------------------|
    | `Sylius\PayPalPlugin\Api\AuthorizeClientApiInterface`                   | `sylius_paypal.api.authorize_client`                |
    | `Sylius\PayPalPlugin\Api\CacheAuthorizeClientApiInterface`              | `sylius_paypal.api.cache_authorize_client`          |
    | `Sylius\PayPalPlugin\Api\CompleteOrderApiInterface`                     | `sylius_paypal.api.complete_order`                  |
@@ -187,7 +221,7 @@
 1. The following parameters have been renamed:
 
    | Old parameter                            | New parameter                            | 
-   |------------------------------------------|------------------------------------------|
+      |------------------------------------------|------------------------------------------|
    | `sylius.paypal.prioritized_factory_name` | `sylius_paypal.prioritized_factory_name` |
    | `sylius.pay_pal.request_trials_limit`    | `sylius_paypal.request_trials_limit`     |
    | `sylius.paypal.logging.increased`        | `sylius_paypal.logging.increased`        |
