@@ -20,6 +20,7 @@ use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Order\Processor\OrderProcessorInterface;
 use Sylius\PayPalPlugin\Api\CacheAuthorizeClientApiInterface;
+use Sylius\PayPalPlugin\Api\OrderDetailsApiInterface;
 use Sylius\PayPalPlugin\Api\UpdateOrderApiInterface;
 use Sylius\PayPalPlugin\Provider\PaymentProviderInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -31,6 +32,7 @@ final class UpdatePayPalOrderAction
     public function __construct(
         private readonly PaymentProviderInterface $paymentProvider,
         private readonly CacheAuthorizeClientApiInterface $authorizeClientApi,
+        private readonly OrderDetailsApiInterface $orderDetailsApi,
         private readonly UpdateOrderApiInterface $updateOrderApi,
         private readonly AddressFactoryInterface $addressFactory,
         private readonly OrderProcessorInterface $orderProcessor,
