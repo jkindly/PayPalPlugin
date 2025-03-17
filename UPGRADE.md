@@ -1,8 +1,8 @@
-### UPGRADE FROM 1.6.1 to 1.6.2
+### UPGRADE FROM 1.6.0 to 1.6.1
 
 1. The following constructor signatures have been changed:
 
-    `Sylius\PayPalPlugin\Controller\CreatePayPalOrderFromCartAction`:
+   `Sylius\PayPalPlugin\Controller\CreatePayPalOrderFromCartAction`:
     ```diff
     public function __construct(
         private readonly ?Payum $payum,
@@ -16,23 +16,7 @@
     )
     ```
 
-### UPGRADE FROM 1.6.0 to 1.6.1
-
-1. The following constructor signatures have been changed:
-
-    `Sylius\PayPalPlugin\Controller\UpdatePayPalOrderAction`:
-    ```diff
-    public function __construct(
-        private readonly PaymentProviderInterface $paymentProvider,
-        private readonly CacheAuthorizeClientApiInterface $authorizeClientApi,
-    -   private readonly OrderDetailsApiInterface $orderDetailsApi,
-        private readonly UpdateOrderApiInterface $updateOrderApi,
-        private readonly AddressFactoryInterface $addressFactory,
-        private readonly OrderProcessorInterface $orderProcessor,
-    )
-    ```
-
-    `Sylius\PayPalPlugin\Model\PayPalPurchaseUnit`:
+   `Sylius\PayPalPlugin\Model\PayPalPurchaseUnit`:
     ```diff
     public function __construct(
         private readonly string $referenceId,
@@ -51,22 +35,6 @@
     +   private readonly int $shippingDiscountValue = 0,
     )
     ```
-
-   `Sylius\PayPalPlugin\Controller\ProcessPayPalOrderAction`:
-   ```diff
-   public function __construct(
-   -   private readonly OrderRepositoryInterface $orderRepository,
-       private readonly CustomerRepositoryInterface $customerRepository,
-       private readonly FactoryInterface $customerFactory,
-       private readonly AddressFactoryInterface $addressFactory,
-       private readonly ObjectManager $orderManager,
-       private readonly StateMachineFactoryInterface|StateMachineInterface $stateMachineFactory,
-       private readonly PaymentStateManagerInterface $paymentStateManager,
-       private readonly CacheAuthorizeClientApiInterface $authorizeClientApi,
-       private readonly OrderDetailsApiInterface $orderDetailsApi,
-       private readonly OrderProviderInterface $orderProvider,
-    )
-     ```
 
 ### UPGRADE FROM 1.5.1 to 1.6.0
 
