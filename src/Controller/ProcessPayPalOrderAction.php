@@ -61,16 +61,6 @@ final class ProcessPayPalOrderAction
                 ),
             );
         }
-        if (null !== $this->orderRepository) {
-            trigger_deprecation(
-                'sylius/paypal-plugin',
-                '1.7',
-                sprintf(
-                    'Passing an instance of "%s" as the first argument is deprecated and will be prohibited in 2.0',
-                    OrderRepositoryInterface::class,
-                ),
-            );
-        }
         if (null === $this->paymentAmountVerifier) {
             trigger_deprecation(
                 'sylius/paypal-plugin',
@@ -78,6 +68,16 @@ final class ProcessPayPalOrderAction
                 message: sprintf(
                     'Not passing $paymentAmountVerifier to "%s" constructor is deprecated and will be prohibited in 3.0',
                     self::class,
+                ),
+            );
+        }
+        if (null !== $this->orderRepository) {
+            trigger_deprecation(
+                'sylius/paypal-plugin',
+                '1.7',
+                sprintf(
+                    'Passing an instance of "%s" as the first argument is deprecated and will be prohibited in 2.0',
+                    OrderRepositoryInterface::class,
                 ),
             );
         }
