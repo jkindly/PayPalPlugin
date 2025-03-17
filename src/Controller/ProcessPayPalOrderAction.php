@@ -27,8 +27,10 @@ use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\PayPalPlugin\Api\CacheAuthorizeClientApiInterface;
 use Sylius\PayPalPlugin\Api\OrderDetailsApiInterface;
+use Sylius\PayPalPlugin\Exception\PaymentAmountMismatchException;
 use Sylius\PayPalPlugin\Manager\PaymentStateManagerInterface;
 use Sylius\PayPalPlugin\Provider\OrderProviderInterface;
+use Sylius\PayPalPlugin\Verifier\PaymentAmountVerifierInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,6 +48,7 @@ final class ProcessPayPalOrderAction
         private readonly CacheAuthorizeClientApiInterface $authorizeClientApi,
         private readonly OrderDetailsApiInterface $orderDetailsApi,
         private readonly OrderProviderInterface $orderProvider,
+        private readonly ?PaymentAmountVerifierInterface $paymentAmountVerifier = null,
     ) {
         if ($this->stateMachineFactory instanceof StateMachineFactoryInterface) {
             trigger_deprecation(
@@ -65,6 +68,16 @@ final class ProcessPayPalOrderAction
                 sprintf(
                     'Passing an instance of "%s" as the first argument is deprecated and will be prohibited in 2.0',
                     OrderRepositoryInterface::class,
+                ),
+            );
+        }
+        if (null === $this->paymentAmountVerifier) {
+            trigger_deprecation(
+                'sylius/paypal-plugin',
+                '1.6',
+                message: sprintf(
+                    'Not passing $paymentAmountVerifier to "%s" constructor is deprecated and will be prohibited in 3.0',
+                    self::class,
                 ),
             );
         }
@@ -122,6 +135,18 @@ final class ProcessPayPalOrderAction
 
         $this->orderManager->flush();
 
+        try {
+            if ($this->paymentAmountVerifier !== null) {
+                $this->paymentAmountVerifier->verify($payment, $data);
+            } else {
+                $this->verify($payment, $data);
+            }
+        } catch (PaymentAmountMismatchException) {
+            $this->paymentStateManager->cancel($payment);
+
+            return new JsonResponse(['orderID' => $order->getId()]);
+        }
+
         $this->paymentStateManager->create($payment);
         $this->paymentStateManager->process($payment);
 
@@ -161,5 +186,31 @@ final class ProcessPayPalOrderAction
         }
 
         return $this->stateMachineFactory;
+    }
+
+    private function verify(PaymentInterface $payment, array $paypalOrderDetails): void
+    {
+        $totalAmount = $this->getTotalPaymentAmountFromPaypal($paypalOrderDetails);
+
+        if ($payment->getAmount() !== $totalAmount) {
+            throw new PaymentAmountMismatchException();
+        }
+    }
+
+    private function getTotalPaymentAmountFromPaypal(array $paypalOrderDetails): int
+    {
+        if (!isset($paypalOrderDetails['purchase_units']) || !is_array($paypalOrderDetails['purchase_units'])) {
+            return 0;
+        }
+
+        $totalAmount = 0;
+
+        foreach ($paypalOrderDetails['purchase_units'] as $unit) {
+            $stringAmount = $unit['amount']['value'] ?? '0';
+
+            $totalAmount += (int) ($stringAmount * 100);
+        }
+
+        return $totalAmount;
     }
 }
