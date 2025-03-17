@@ -15,6 +15,14 @@ namespace Sylius\PayPalPlugin\Resolver;
 
 use Sylius\Component\Core\Model\PaymentInterface;
 
+trigger_deprecation(
+    'sylius/paypal-plugin',
+    '1.7',
+    'The "%s" class is deprecated and will be removed in Sylius/PayPalPlugin 2.0.',
+    CompleteOrderPaymentResolverInterface::class,
+);
+
+/** @deprecated since Sylius/PayPalPlugin 1.7 and will be removed in Sylius/PayPalPlugin 2.0. */
 interface CompleteOrderPaymentResolverInterface
 {
     public function resolve(PaymentInterface $payment, string $payPalOrderId): void;

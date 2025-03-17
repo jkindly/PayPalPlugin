@@ -2,7 +2,7 @@
 
 {% set path = options.link.url|default(path(options.link.route, options.link.parameters|default({}))) %}
 
-{% if data.gatewayConfig.factoryName == 'sylius.pay_pal'
+{% if data.gatewayConfig.factoryName == constant('Sylius\\PayPalPlugin\\DependencyInjection\\SyliusPayPalExtension::PAYPAL_FACTORY_NAME')
     and data.gatewayConfig.config.reports_sftp_username
     and data.gatewayConfig.config.reports_sftp_password
 %}

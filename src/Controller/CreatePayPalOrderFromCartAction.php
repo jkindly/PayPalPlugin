@@ -23,6 +23,7 @@ use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Core\Payment\Remover\OrderPaymentsRemoverInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Sylius\Component\Order\Processor\OrderProcessorInterface;
+use Sylius\PayPalPlugin\DependencyInjection\SyliusPayPalExtension;
 use Sylius\PayPalPlugin\Provider\OrderProviderInterface;
 use Sylius\PayPalPlugin\Resolver\CapturePaymentResolverInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -123,7 +124,7 @@ final class CreatePayPalOrderFromCartAction
         $paymentMethod = $payment->getMethod();
         $factoryName = $paymentMethod?->getGatewayConfig()?->getFactoryName();
 
-        if ($factoryName === 'sylius.pay_pal') {
+        if ($factoryName === SyliusPayPalExtension::PAYPAL_FACTORY_NAME) {
             return $payment;
         }
 

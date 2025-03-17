@@ -1,42 +1,62 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 
-<container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+<!--
+
+ This file is part of the Sylius package.
+
+ (c) Sylius Sp. z o.o.
+
+ For the full copyright and license information, please view the LICENSE
+ file that was distributed with this source code.
+
+-->
+
+<container
+    xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
     <imports>
-        <import resource="services/*.xml"/>
-        <import resource="integrations/services.php"/>
+        <import resource="services/**/*.xml" />
     </imports>
 
     <parameters>
         <parameter key="sylius.paypal.prioritized_factory_name">sylius.pay_pal</parameter>
+        <parameter key="sylius_paypal.prioritized_factory_name">%sylius.paypal.prioritized_factory_name%</parameter>
     </parameters>
 
     <services>
         <service id="Sylius\PayPalPlugin\Form\Extension\PaymentMethodTypeExtension">
             <tag name="form.type_extension" extended-type="Sylius\Bundle\PaymentBundle\Form\Type\PaymentMethodType" />
         </service>
+        <service id="sylius_paypal.form.extension.payment_method" alias="Sylius\PayPalPlugin\Form\Extension\PaymentMethodTypeExtension" />
 
         <service id="Sylius\PayPalPlugin\Form\Type\PayPalConfigurationType">
             <tag name="sylius.gateway_configuration_type" type="sylius.pay_pal" label="sylius.pay_pal.label" />
         </service>
+        <service id="sylius_paypal.form.type.paypal_configuration" alias="Sylius\PayPalPlugin\Form\Type\PayPalConfigurationType" />
 
         <service
             id="Sylius\PayPalPlugin\Generator\PayPalAuthAssertionGeneratorInterface"
             class="Sylius\PayPalPlugin\Generator\PayPalAuthAssertionGenerator"
         />
+        <service id="sylius_paypal.generator.paypal_auth_assertion" alias="Sylius\PayPalPlugin\Generator\PayPalAuthAssertionGeneratorInterface" />
 
         <service id="Sylius\PayPalPlugin\ApiPlatform\PayPalPayment">
             <argument type="service" id="router" />
-            <argument type="service" id="Sylius\PayPalPlugin\Provider\AvailableCountriesProviderInterface" />
+            <argument type="service" id="sylius_paypal.provider.available_countries" />
             <tag name="sylius.api.payment_method_handler" />
         </service>
+        <service id="sylius_paypal.api_platform.paypal_payment" alias="Sylius\PayPalPlugin\ApiPlatform\PayPalPayment" />
 
         <service id="Sylius\PayPalPlugin\Listener\PayPalPaymentMethodListener">
-            <argument type="service" id="Sylius\PayPalPlugin\Onboarding\Initiator\OnboardingInitiatorInterface" />
+            <argument type="service" id="sylius_paypal.onboarding.initiator" />
             <argument type="service" id="router" />
             <argument type="service" id="request_stack" />
-            <argument type="service" id="Sylius\PayPalPlugin\Provider\PayPalPaymentMethodProviderInterface" />
+            <argument type="service" id="sylius_paypal.provider.paypal_payment_method" />
             <tag name="kernel.event_listener" event="sylius.payment_method.initialize_create" method="initializeCreate" />
         </service>
+        <service id="sylius_paypal.listener.paypal_payment_method" alias="Sylius\PayPalPlugin\Listener\PayPalPaymentMethodListener" />
 
         <service
             id="Sylius\PayPalPlugin\Manager\PaymentStateManagerInterface"
@@ -44,17 +64,20 @@
         >
             <argument type="service" id="sylius_abstraction.state_machine" />
             <argument type="service" id="sylius.manager.payment" />
-            <argument type="service" id="Sylius\PayPalPlugin\Processor\PaymentCompleteProcessorInterface" />
+            <argument type="service" id="sylius_paypal.processor.payment_complete" />
         </service>
+        <service id="sylius_paypal.manager.payment_state" alias="Sylius\PayPalPlugin\Manager\PaymentStateManagerInterface" />
 
         <service id="Sylius\PayPalPlugin\Factory\PayPalPaymentMethodNewResourceFactory" decorates="sylius.resource_controller.new_resource_factory">
-            <argument type="service" id="Sylius\PayPalPlugin\Factory\PayPalPaymentMethodNewResourceFactory.inner" />
-            <argument type="service" id="Sylius\PayPalPlugin\Onboarding\Processor\OnboardingProcessorInterface" />
+            <argument type="service" id=".inner" />
+            <argument type="service" id="sylius_paypal.onboarding.processor.basic" />
         </service>
+        <service id="sylius_paypal.factory.paypal_payment_method_new_resource" alias="Sylius\PayPalPlugin\Factory\PayPalPaymentMethodNewResourceFactory" />
 
         <service id="Sylius\PayPalPlugin\Provider\OrderProviderInterface" class="Sylius\PayPalPlugin\Provider\OrderProvider">
             <argument type="service" id="sylius.repository.order" />
         </service>
+        <service id="sylius_paypal.provider.order" alias="Sylius\PayPalPlugin\Provider\OrderProviderInterface" />
 
         <service
             id="Sylius\PayPalPlugin\Provider\PaymentProviderInterface"
@@ -63,18 +86,21 @@
             <argument type="service" id="sylius.repository.payment" />
             <argument type="service" id="sylius.repository.order" />
         </service>
+        <service id="sylius_paypal.provider.payment" alias="Sylius\PayPalPlugin\Provider\PaymentProviderInterface" />
 
         <service
             id="Sylius\PayPalPlugin\Provider\OrderItemNonNeutralTaxProviderInterface"
             class="Sylius\PayPalPlugin\Provider\OrderItemNonNeutralTaxesProvider"
         />
+        <service id="sylius_paypal.provider.order_item_non_neutral_tax" alias="Sylius\PayPalPlugin\Provider\OrderItemNonNeutralTaxProviderInterface" />
 
         <service
             id="Sylius\PayPalPlugin\Provider\PayPalItemDataProviderInterface"
             class="Sylius\PayPalPlugin\Provider\PayPalItemDataProvider"
         >
-            <argument type="service" id="Sylius\PayPalPlugin\Provider\OrderItemNonNeutralTaxProviderInterface" />
+            <argument type="service" id="sylius_paypal.provider.order_item_non_neutral_tax" />
         </service>
+        <service id="sylius_paypal.provider.paypal_item_data" alias="Sylius\PayPalPlugin\Provider\PayPalItemDataProviderInterface" />
 
         <service
             id="Sylius\PayPalPlugin\Provider\PayPalPaymentMethodProviderInterface"
@@ -82,15 +108,17 @@
         >
             <argument type="service" id="sylius.repository.payment_method" />
         </service>
+        <service id="sylius_paypal.provider.paypal_payment_method" alias="Sylius\PayPalPlugin\Provider\PayPalPaymentMethodProviderInterface" />
 
         <service
             id="Sylius\PayPalPlugin\Provider\PayPalRefundDataProviderInterface"
             class="Sylius\PayPalPlugin\Provider\PayPalRefundDataProvider"
         >
-            <argument type="service" id="Sylius\PayPalPlugin\Api\CacheAuthorizeClientApiInterface" />
-            <argument type="service" id="Sylius\PayPalPlugin\Api\GenericApiInterface" />
-            <argument type="service" id="Sylius\PayPalPlugin\Provider\PayPalPaymentMethodProviderInterface" />
+            <argument type="service" id="sylius_paypal.api.cache_authorize_client" />
+            <argument type="service" id="sylius_paypal.api.generic" />
+            <argument type="service" id="sylius_paypal.provider.paypal_payment_method" />
         </service>
+        <service id="sylius_paypal.provider.paypal_refund_data" alias="Sylius\PayPalPlugin\Provider\PayPalRefundDataProviderInterface" />
 
         <service
             id="Sylius\PayPalPlugin\Provider\AvailableCountriesProviderInterface"
@@ -99,40 +127,39 @@
             <argument type="service" id="sylius.repository.country" />
             <argument type="service" id="sylius.context.channel" />
         </service>
-
-        <service
-            id="Sylius\PayPalPlugin\Provider\PayPalOrderProviderInterface"
-            class="Sylius\PayPalPlugin\Provider\PayPalOrderProvider"
-        >
-            <argument type="service" id="Sylius\PayPalPlugin\Provider\PaymentProviderInterface" />
-        </service>
+        <service id="sylius_paypal.provider.available_countries" alias="Sylius\PayPalPlugin\Provider\AvailableCountriesProviderInterface" />
 
         <service id="Sylius\PayPalPlugin\Resolver\CapturePaymentResolverInterface" class="Sylius\PayPalPlugin\Resolver\CapturePaymentResolver">
             <argument type="service" id="payum" />
         </service>
+        <service id="sylius_paypal.resolver.capture_payment" alias="Sylius\PayPalPlugin\Resolver\CapturePaymentResolverInterface" />
 
         <service id="Sylius\PayPalPlugin\Resolver\CompleteOrderPaymentResolverInterface" class="Sylius\PayPalPlugin\Resolver\CompleteOrderPaymentResolver">
             <argument type="service" id="payum" />
+            <deprecated package="sylius/paypal-plugin" version="1.7">The "%service_id%" service is deprecated since 1.7 and will be removed in 2.0.</deprecated>
         </service>
 
         <service
             id="Sylius\PayPalPlugin\Processor\AfterCheckoutOrderPaymentProcessor"
             decorates="sylius.order_processing.order_payment_processor.after_checkout"
         >
-            <argument type="service" id="Sylius\PayPalPlugin\Processor\AfterCheckoutOrderPaymentProcessor.inner" />
+            <argument type="service" id=".inner" />
         </service>
+        <service id="sylius_paypal.order_processing.order_payment_processor.after_checkout" alias="Sylius\PayPalPlugin\Processor\AfterCheckoutOrderPaymentProcessor" />
 
         <service
             id="Sylius\PayPalPlugin\Processor\OrderPaymentProcessor"
             decorates="sylius.order_processing.order_payment_processor.checkout"
         >
-            <argument type="service" id="Sylius\PayPalPlugin\Processor\OrderPaymentProcessor.inner" />
+            <argument type="service" id=".inner" />
             <argument type="service" id="sylius_abstraction.state_machine" />
         </service>
+        <service id="sylius_paypal.order_processing.order_payment_processor.checkout" alias="Sylius\PayPalPlugin\Processor\OrderPaymentProcessor" />
 
         <service id="Sylius\PayPalPlugin\Processor\PayPalOrderCompleteProcessor" public="true">
-            <argument type="service" id="Sylius\PayPalPlugin\Manager\PaymentStateManagerInterface" />
+            <argument type="service" id="sylius_paypal.manager.payment_state" />
         </service>
+        <service id="sylius_paypal.processor.paypal_order_complete" alias="Sylius\PayPalPlugin\Processor\PayPalOrderCompleteProcessor" />
 
         <service
             id="Sylius\PayPalPlugin\Processor\PaymentCompleteProcessorInterface"
@@ -140,46 +167,52 @@
         >
             <argument type="service" id="payum" />
         </service>
+        <service id="sylius_paypal.processor.payment_complete" alias="Sylius\PayPalPlugin\Processor\PaymentCompleteProcessorInterface" />
 
         <service
             id="Sylius\PayPalPlugin\Processor\LocaleProcessorInterface"
             class="Sylius\PayPalPlugin\Processor\LocaleProcessor"
         />
+        <service id="sylius_paypal.processor.locale" alias="Sylius\PayPalPlugin\Processor\LocaleProcessorInterface" />
 
         <service
             id="Sylius\PayPalPlugin\Processor\PaymentRefundProcessorInterface"
             class="Sylius\PayPalPlugin\Processor\PayPalPaymentRefundProcessor"
             public="true"
         >
-            <argument type="service" id="Sylius\PayPalPlugin\Api\CacheAuthorizeClientApiInterface" />
-            <argument type="service" id="Sylius\PayPalPlugin\Api\OrderDetailsApiInterface" />
-            <argument type="service" id="Sylius\PayPalPlugin\Api\RefundPaymentApiInterface" />
-            <argument type="service" id="Sylius\PayPalPlugin\Generator\PayPalAuthAssertionGeneratorInterface" />
-            <argument type="service" id="Sylius\PayPalPlugin\Provider\RefundReferenceNumberProviderInterface" />
+            <argument type="service" id="sylius_paypal.api.cache_authorize_client" />
+            <argument type="service" id="sylius_paypal.api.order_details" />
+            <argument type="service" id="sylius_paypal.api.refund_payment" />
+            <argument type="service" id="sylius_paypal.generator.paypal_auth_assertion" />
+            <argument type="service" id="sylius_paypal.provider.refund_reference_number" />
         </service>
+        <service id="sylius_paypal.processor.payment_refund" alias="Sylius\PayPalPlugin\Processor\PaymentRefundProcessorInterface" />
 
         <service
             id="Sylius\PayPalPlugin\Processor\UiPayPalPaymentRefundProcessor"
             decorates="Sylius\PayPalPlugin\Processor\PaymentRefundProcessorInterface"
         >
-            <argument type="service" id="Sylius\PayPalPlugin\Processor\UiPayPalPaymentRefundProcessor.inner" />
+            <argument type="service" id=".inner" />
         </service>
+        <service id="sylius_paypal.processor.ui_paypal_payment_refund" alias="Sylius\PayPalPlugin\Processor\UiPayPalPaymentRefundProcessor" />
 
         <service
             id="Sylius\PayPalPlugin\Resolver\PayPalDefaultPaymentMethodResolver"
             decorates="sylius.payment_method_resolver.default"
         >
-            <argument type="service" id="Sylius\PayPalPlugin\Resolver\PayPalDefaultPaymentMethodResolver.inner" />
+            <argument type="service" id=".inner" />
             <argument type="service" id="sylius.repository.payment_method" />
         </service>
+        <service id="sylius_paypal.resolver.payment_method.paypal" alias="Sylius\PayPalPlugin\Resolver\PayPalDefaultPaymentMethodResolver" />
 
         <service
             id="Sylius\PayPalPlugin\Resolver\PayPalPrioritisingPaymentMethodsResolver"
             decorates="sylius.payment_methods_resolver"
         >
-            <argument type="service" id="Sylius\PayPalPlugin\Resolver\PayPalPrioritisingPaymentMethodsResolver.inner" />
-            <argument>%sylius.paypal.prioritized_factory_name%</argument>
+            <argument type="service" id=".inner" />
+            <argument>%sylius_paypal.prioritized_factory_name%</argument>
         </service>
+        <service id="sylius_paypal.resolver.payment_method.paypal_prioritising" alias="Sylius\PayPalPlugin\Resolver\PayPalPrioritisingPaymentMethodsResolver" />
 
         <service
             id="Sylius\PayPalPlugin\Provider\PayPalConfigurationProviderInterface"
@@ -187,22 +220,26 @@
         >
             <argument type="service" id="sylius.repository.payment_method" />
         </service>
+        <service id="sylius_paypal.provider.paypal_configuration" alias="Sylius\PayPalPlugin\Provider\PayPalConfigurationProviderInterface" />
 
         <service
             id="Sylius\PayPalPlugin\Provider\UuidProviderInterface"
             class="Sylius\PayPalPlugin\Provider\UuidProvider"
         />
+        <service id="sylius_paypal.provider.uuid" alias="Sylius\PayPalPlugin\Provider\UuidProviderInterface" />
 
         <service id="sylius.paypal.client.sftp" class="phpseclib\Net\SFTP">
-            <argument>%sylius.pay_pal.reports_sftp_host%</argument>
+            <argument>%sylius_paypal.reports_sftp_host%</argument>
         </service>
+        <service id="sylius_paypal.client.sftp" alias="sylius.paypal.client.sftp" />
 
         <service
             id="Sylius\PayPalPlugin\Downloader\ReportDownloaderInterface"
             class="Sylius\PayPalPlugin\Downloader\SftpPayoutsReportDownloader"
         >
-            <argument type="service" id="sylius.paypal.client.sftp" />
+            <argument type="service" id="sylius_paypal.client.sftp" />
         </service>
+        <service id="sylius_paypal.downloader.report" alias="Sylius\PayPalPlugin\Downloader\ReportDownloaderInterface" />
 
         <service
             id="sylius.form.type.checkout_select_payment"
@@ -211,11 +248,13 @@
             <argument>%sylius.model.order.class%</argument>
             <argument>%sylius.form.type.checkout_select_payment.validation_groups%</argument>
             <tag name="form.type" />
+            <deprecated package="sylius/paypal-plugin" version="1.7">The "%service_id%" service is deprecated since 1.7 and will be removed in 2.0.</deprecated>
         </service>
 
         <service id="Sylius\PayPalPlugin\Processor\PayPalAddressProcessor">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
+        <service id="sylius_paypal.processor.paypal_address" alias="Sylius\PayPalPlugin\Processor\PayPalAddressProcessor" />
 
         <service
             id="Sylius\PayPalPlugin\Updater\PaymentUpdaterInterface"
@@ -223,54 +262,62 @@
         >
             <argument type="service" id="sylius.manager.payment" />
         </service>
+        <service id="sylius_paypal.updater.payment" alias="Sylius\PayPalPlugin\Updater\PaymentUpdaterInterface" />
 
         <service
             id="Sylius\PayPalPlugin\Enabler\PaymentMethodEnablerInterface"
             class="Sylius\PayPalPlugin\Enabler\PayPalPaymentMethodEnabler"
         >
-            <argument type="service" id="Http\Discovery\Psr18Client" />
-            <argument>%sylius.pay_pal.facilitator_url%</argument>
+            <argument type="service" id="sylius.http_client" />
+            <argument>%sylius_paypal.facilitator_url%</argument>
             <argument type="service" id="sylius.manager.payment_method" />
-            <argument type="service" id="Sylius\PayPalPlugin\Registrar\SellerWebhookRegistrarInterface" />
+            <argument type="service" id="sylius_paypal.registrar.seller_webhook" />
             <argument type="service" id="Psr\Http\Message\RequestFactoryInterface" />
         </service>
+        <service id="sylius_paypal.enabler.payment_method" alias="Sylius\PayPalPlugin\Enabler\PaymentMethodEnablerInterface" />
 
         <service
             id="Sylius\PayPalPlugin\Provider\PaymentReferenceNumberProviderInterface"
             class="Sylius\PayPalPlugin\Provider\PaymentReferenceNumberProvider"
         />
+        <service id="sylius_paypal.provider.payment_reference_number" alias="Sylius\PayPalPlugin\Provider\PaymentReferenceNumberProviderInterface" />
 
         <service id="Sylius\PayPalPlugin\Command\CompletePaidPaymentsCommand">
             <argument type="service" id="sylius.repository.payment" />
             <argument type="service" id="sylius.manager.payment" />
-            <argument type="service" id="Sylius\PayPalPlugin\Api\CacheAuthorizeClientApiInterface" />
-            <argument type="service" id="Sylius\PayPalPlugin\Api\OrderDetailsApiInterface" />
+            <argument type="service" id="sylius_paypal.api.cache_authorize_client" />
+            <argument type="service" id="sylius_paypal.api.order_details" />
             <argument type="service" id="sylius_abstraction.state_machine" />
             <tag name="console.command" command="sylius:pay-pal-plugin:complete-payments" />
         </service>
+        <service id="sylius_paypal.console.command.complete_paid_payments" alias="Sylius\PayPalPlugin\Command\CompletePaidPaymentsCommand" />
 
         <service
             id="Sylius\PayPalPlugin\Provider\RefundReferenceNumberProviderInterface"
             class="Sylius\PayPalPlugin\Provider\RefundReferenceNumberProvider"
         />
+        <service id="sylius_paypal.provider.refund_reference_number" alias="Sylius\PayPalPlugin\Provider\RefundReferenceNumberProviderInterface" />
 
         <service
             id="Sylius\PayPalPlugin\Registrar\SellerWebhookRegistrarInterface"
             class="Sylius\PayPalPlugin\Registrar\SellerWebhookRegistrar"
         >
-            <argument type="service" id="Sylius\PayPalPlugin\Api\AuthorizeClientApiInterface" />
+            <argument type="service" id="sylius_paypal.api.authorize_client" />
             <argument type="service" id="router" />
-            <argument type="service" id="Sylius\PayPalPlugin\Api\WebhookApiInterface" />
+            <argument type="service" id="sylius_paypal.api.webhook" />
         </service>
+        <service id="sylius_paypal.registrar.seller_webhook" alias="Sylius\PayPalPlugin\Registrar\SellerWebhookRegistrarInterface" />
 
         <service id="Sylius\PayPalPlugin\Twig\PayPalExtension">
             <tag name="twig.extension" />
         </service>
+        <service id="sylius_paypal.twig.extension.paypal" alias="Sylius\PayPalPlugin\Twig\PayPalExtension" />
 
         <service id="Sylius\PayPalPlugin\Twig\OrderAddressExtension">
             <tag name="twig.extension" />
         </service>
-        
+        <service id="sylius_paypal.twig.extension.order_address" alias="Sylius\PayPalPlugin\Twig\OrderAddressExtension" />
+
         <service id="sylius_paypal.verifier.payment_amount" class="Sylius\PayPalPlugin\Verifier\PaymentAmountVerifier" />
         <service id="Sylius\PayPalPlugin\Verifier\PaymentAmountVerifierInterface" alias="sylius_paypal.verifier.payment_amount" />
     </services>

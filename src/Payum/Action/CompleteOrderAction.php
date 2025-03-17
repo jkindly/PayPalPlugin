@@ -45,7 +45,7 @@ final class CompleteOrderAction implements ActionInterface
 
     private StateResolverInterface $orderPaymentStateResolver;
 
-    private PayPalItemDataProviderInterface $payPalItemsDataProvider;
+    private ?PayPalItemDataProviderInterface $payPalItemsDataProvider;
 
     public function __construct(
         CacheAuthorizeClientApiInterface $authorizeClientApi,
@@ -55,7 +55,7 @@ final class CompleteOrderAction implements ActionInterface
         PayPalAddressProcessorInterface $payPalAddressProcessor,
         PaymentUpdaterInterface $payPalPaymentUpdater,
         StateResolverInterface $orderPaymentStateResolver,
-        PayPalItemDataProviderInterface $payPalItemsDataProvider,
+        ?PayPalItemDataProviderInterface $payPalItemsDataProvider,
     ) {
         $this->authorizeClientApi = $authorizeClientApi;
         $this->updateOrderApi = $updateOrderApi;
@@ -65,6 +65,17 @@ final class CompleteOrderAction implements ActionInterface
         $this->payPalPaymentUpdater = $payPalPaymentUpdater;
         $this->orderPaymentStateResolver = $orderPaymentStateResolver;
         $this->payPalItemsDataProvider = $payPalItemsDataProvider;
+
+        if (null !== $this->payPalItemsDataProvider) {
+            trigger_deprecation(
+                'sylius/paypal-plugin',
+                '1.7',
+                sprintf(
+                    'Passing an instance of "%s" as the first argument is deprecated and will be prohibited in 2.0',
+                    PayPalItemDataProviderInterface::class,
+                ),
+            );
+        }
     }
 
     /** @param CompleteOrder $request */

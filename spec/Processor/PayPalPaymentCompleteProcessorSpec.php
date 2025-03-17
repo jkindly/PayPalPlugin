@@ -22,7 +22,6 @@ use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\PayPalPlugin\Payum\Request\CompleteOrder;
 use Sylius\PayPalPlugin\Processor\PaymentCompleteProcessorInterface;
-use Sylius\PayPalPlugin\Resolver\CompleteOrderPaymentResolverInterface;
 
 final class PayPalPaymentCompleteProcessorSpec extends ObjectBehavior
 {
@@ -42,7 +41,6 @@ final class PayPalPaymentCompleteProcessorSpec extends ObjectBehavior
         PaymentMethodInterface $paymentMethod,
         GatewayConfigInterface $gatewayConfig,
         GatewayInterface $gateway,
-        CompleteOrderPaymentResolverInterface $completeOrderPaymentResolver,
     ): void {
         $payment->getDetails()->willReturn(['paypal_order_id' => '123123']);
 
