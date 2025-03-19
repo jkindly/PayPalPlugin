@@ -1,0 +1,10 @@
+imports:
+    - { resource: "@SyliusPayPalPlugin/config/config.yaml" }
+
+fos_rest:
+    exception: true
+    view:
+        formats:
+            json: true
+            xml:  true
+        empty_content: 204

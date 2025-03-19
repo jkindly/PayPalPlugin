@@ -14,13 +14,13 @@ declare(strict_types=1);
 namespace spec\Sylius\PayPalPlugin\Resolver;
 
 use Payum\Core\GatewayInterface;
-use Payum\Core\Model\GatewayConfigInterface;
 use Payum\Core\Payum;
 use Payum\Core\Request\Capture;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\Component\Payment\Model\GatewayConfigInterface;
 use Sylius\PayPalPlugin\Resolver\CapturePaymentResolverInterface;
 
 final class CapturePaymentResolverSpec extends ObjectBehavior

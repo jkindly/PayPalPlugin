@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace spec\Sylius\PayPalPlugin\Registrar;
 
-use Payum\Core\Model\GatewayConfigInterface;
 use PhpSpec\ObjectBehavior;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\Component\Payment\Model\GatewayConfigInterface;
 use Sylius\PayPalPlugin\Api\AuthorizeClientApiInterface;
 use Sylius\PayPalPlugin\Api\WebhookApiInterface;
 use Sylius\PayPalPlugin\Exception\PayPalWebhookUrlNotValidException;
@@ -49,7 +49,7 @@ final class SellerWebhookRegistrarSpec extends ObjectBehavior
 
         $authorizeClientApi->authorize('CLIENT_ID', 'CLIENT_SECRET')->willReturn('TOKEN');
         $urlGenerator
-            ->generate('sylius_paypal_plugin_webhook_refund_order', [], UrlGeneratorInterface::ABSOLUTE_URL)
+            ->generate('sylius_paypal_webhook_refund_order', [], UrlGeneratorInterface::ABSOLUTE_URL)
             ->willReturn('https://webhook-url.com')
         ;
 
@@ -70,7 +70,7 @@ final class SellerWebhookRegistrarSpec extends ObjectBehavior
 
         $authorizeClientApi->authorize('CLIENT_ID', 'CLIENT_SECRET')->willReturn('TOKEN');
         $urlGenerator
-            ->generate('sylius_paypal_plugin_webhook_refund_order', [], UrlGeneratorInterface::ABSOLUTE_URL)
+            ->generate('sylius_paypal_webhook_refund_order', [], UrlGeneratorInterface::ABSOLUTE_URL)
             ->willReturn('https://webhook-url.com')
         ;
 

@@ -15,13 +15,10 @@ namespace Sylius\PayPalPlugin\Api;
 
 use Sylius\PayPalPlugin\Client\PayPalClientInterface;
 
-final class AuthorizeClientApi implements AuthorizeClientApiInterface
+final readonly class AuthorizeClientApi implements AuthorizeClientApiInterface
 {
-    private PayPalClientInterface $payPalClient;
-
-    public function __construct(PayPalClientInterface $payPalClient)
+    public function __construct(private PayPalClientInterface $payPalClient)
     {
-        $this->payPalClient = $payPalClient;
     }
 
     public function authorize(string $clientId, string $clientSecret): string

@@ -17,22 +17,13 @@ use Sylius\PayPalPlugin\Api\CacheAuthorizeClientApiInterface;
 use Sylius\PayPalPlugin\Api\GenericApiInterface;
 use Sylius\PayPalPlugin\Exception\PayPalWrongDataException;
 
-final class PayPalRefundDataProvider implements PayPalRefundDataProviderInterface
+final readonly class PayPalRefundDataProvider implements PayPalRefundDataProviderInterface
 {
-    private CacheAuthorizeClientApiInterface $authorizeClientApi;
-
-    private PayPalPaymentMethodProviderInterface $payPalPaymentMethodProvider;
-
-    private GenericApiInterface $genericApi;
-
     public function __construct(
-        CacheAuthorizeClientApiInterface $authorizeClientApi,
-        GenericApiInterface $genericApi,
-        PayPalPaymentMethodProviderInterface $payPalPaymentMethodProvider,
+        private CacheAuthorizeClientApiInterface $authorizeClientApi,
+        private GenericApiInterface $genericApi,
+        private PayPalPaymentMethodProviderInterface $payPalPaymentMethodProvider,
     ) {
-        $this->authorizeClientApi = $authorizeClientApi;
-        $this->genericApi = $genericApi;
-        $this->payPalPaymentMethodProvider = $payPalPaymentMethodProvider;
     }
 
     public function provide(string $refundRefundUrl): array

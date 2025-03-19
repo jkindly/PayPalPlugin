@@ -19,13 +19,10 @@ use Sylius\Bundle\PayumBundle\Model\GatewayConfigInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 
-final class CapturePaymentResolver implements CapturePaymentResolverInterface
+final readonly class CapturePaymentResolver implements CapturePaymentResolverInterface
 {
-    private Payum $payum;
-
-    public function __construct(Payum $payum)
+    public function __construct(private Payum $payum)
     {
-        $this->payum = $payum;
     }
 
     public function resolve(PaymentInterface $payment): void

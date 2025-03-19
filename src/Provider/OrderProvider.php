@@ -17,13 +17,10 @@ use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Sylius\PayPalPlugin\Exception\OrderNotFoundException;
 
-final class OrderProvider implements OrderProviderInterface
+final readonly class OrderProvider implements OrderProviderInterface
 {
-    private OrderRepositoryInterface $orderRepository;
-
-    public function __construct(OrderRepositoryInterface $orderRepository)
+    public function __construct(private OrderRepositoryInterface $orderRepository)
     {
-        $this->orderRepository = $orderRepository;
     }
 
     public function provideOrderById(int $id): OrderInterface

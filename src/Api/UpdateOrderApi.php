@@ -21,22 +21,13 @@ use Sylius\PayPalPlugin\Model\PayPalPurchaseUnit;
 use Sylius\PayPalPlugin\Provider\PaymentReferenceNumberProviderInterface;
 use Sylius\PayPalPlugin\Provider\PayPalItemDataProviderInterface;
 
-final class UpdateOrderApi implements UpdateOrderApiInterface
+final readonly class UpdateOrderApi implements UpdateOrderApiInterface
 {
-    private PayPalClientInterface $client;
-
-    private PaymentReferenceNumberProviderInterface $paymentReferenceNumberProvider;
-
-    private PayPalItemDataProviderInterface $payPalItemsDataProvider;
-
     public function __construct(
-        PayPalClientInterface $client,
-        PaymentReferenceNumberProviderInterface $paymentReferenceNumberProvider,
-        PayPalItemDataProviderInterface $payPalItemsDataProvider,
+        private PayPalClientInterface $client,
+        private PaymentReferenceNumberProviderInterface $paymentReferenceNumberProvider,
+        private PayPalItemDataProviderInterface $payPalItemsDataProvider,
     ) {
-        $this->client = $client;
-        $this->paymentReferenceNumberProvider = $paymentReferenceNumberProvider;
-        $this->payPalItemsDataProvider = $payPalItemsDataProvider;
     }
 
     public function update(

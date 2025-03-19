@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace spec\Sylius\PayPalPlugin\Downloader;
 
-use Payum\Core\Model\GatewayConfigInterface;
-use phpseclib\Net\SFTP;
+use phpseclib3\Net\SFTP;
 use PhpSpec\ObjectBehavior;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\Component\Payment\Model\GatewayConfigInterface;
 use Sylius\PayPalPlugin\Downloader\PayoutsReportDownloaderInterface;
 use Sylius\PayPalPlugin\Exception\PayPalReportDownloadException;
 use Sylius\PayPalPlugin\Model\Report;
@@ -33,7 +33,7 @@ final class SftpPayoutsReportDownloaderSpec extends ObjectBehavior
         $this->shouldImplement(PayoutsReportDownloaderInterface::class);
     }
 
-    function it_returns_content_of_the_latest_pyt_report_from_pay_pal_sftp_server(
+    function it_returns_content_of_the_latest_pyt_report_from_paypal_sftp_server(
         SFTP $sftp,
         PaymentMethodInterface $paymentMethod,
         GatewayConfigInterface $gatewayConfig,

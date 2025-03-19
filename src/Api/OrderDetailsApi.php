@@ -15,13 +15,10 @@ namespace Sylius\PayPalPlugin\Api;
 
 use Sylius\PayPalPlugin\Client\PayPalClientInterface;
 
-final class OrderDetailsApi implements OrderDetailsApiInterface
+final readonly class OrderDetailsApi implements OrderDetailsApiInterface
 {
-    private PayPalClientInterface $client;
-
-    public function __construct(PayPalClientInterface $client)
+    public function __construct(private PayPalClientInterface $client)
     {
-        $this->client = $client;
     }
 
     public function get(string $token, string $orderId): array

@@ -13,14 +13,14 @@ declare(strict_types=1);
 
 namespace spec\Sylius\PayPalPlugin\Generator;
 
-use Payum\Core\Model\GatewayConfigInterface;
 use PhpSpec\ObjectBehavior;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\Component\Payment\Model\GatewayConfigInterface;
 use Sylius\PayPalPlugin\Generator\PayPalAuthAssertionGeneratorInterface;
 
 final class PayPalAuthAssertionGeneratorSpec extends ObjectBehavior
 {
-    function it_implements_pay_pal_auth_assertion_generator_interface(): void
+    function it_implements_paypal_auth_assertion_generator_interface(): void
     {
         $this->shouldImplement(PayPalAuthAssertionGeneratorInterface::class);
     }

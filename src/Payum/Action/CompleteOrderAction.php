@@ -26,56 +26,19 @@ use Sylius\PayPalPlugin\Api\OrderDetailsApiInterface;
 use Sylius\PayPalPlugin\Api\UpdateOrderApiInterface;
 use Sylius\PayPalPlugin\Payum\Request\CompleteOrder;
 use Sylius\PayPalPlugin\Processor\PayPalAddressProcessorInterface;
-use Sylius\PayPalPlugin\Provider\PayPalItemDataProviderInterface;
 use Sylius\PayPalPlugin\Updater\PaymentUpdaterInterface;
 
-final class CompleteOrderAction implements ActionInterface
+final readonly class CompleteOrderAction implements ActionInterface
 {
-    private CacheAuthorizeClientApiInterface $authorizeClientApi;
-
-    private UpdateOrderApiInterface $updateOrderApi;
-
-    private CompleteOrderApiInterface $completeOrderApi;
-
-    private OrderDetailsApiInterface $orderDetailsApi;
-
-    private PayPalAddressProcessorInterface $payPalAddressProcessor;
-
-    private PaymentUpdaterInterface $payPalPaymentUpdater;
-
-    private StateResolverInterface $orderPaymentStateResolver;
-
-    private ?PayPalItemDataProviderInterface $payPalItemsDataProvider;
-
     public function __construct(
-        CacheAuthorizeClientApiInterface $authorizeClientApi,
-        UpdateOrderApiInterface $updateOrderApi,
-        CompleteOrderApiInterface $completeOrderApi,
-        OrderDetailsApiInterface $orderDetailsApi,
-        PayPalAddressProcessorInterface $payPalAddressProcessor,
-        PaymentUpdaterInterface $payPalPaymentUpdater,
-        StateResolverInterface $orderPaymentStateResolver,
-        ?PayPalItemDataProviderInterface $payPalItemsDataProvider,
+        private CacheAuthorizeClientApiInterface $authorizeClientApi,
+        private UpdateOrderApiInterface $updateOrderApi,
+        private CompleteOrderApiInterface $completeOrderApi,
+        private OrderDetailsApiInterface $orderDetailsApi,
+        private PayPalAddressProcessorInterface $payPalAddressProcessor,
+        private PaymentUpdaterInterface $payPalPaymentUpdater,
+        private StateResolverInterface $orderPaymentStateResolver,
     ) {
-        $this->authorizeClientApi = $authorizeClientApi;
-        $this->updateOrderApi = $updateOrderApi;
-        $this->completeOrderApi = $completeOrderApi;
-        $this->orderDetailsApi = $orderDetailsApi;
-        $this->payPalAddressProcessor = $payPalAddressProcessor;
-        $this->payPalPaymentUpdater = $payPalPaymentUpdater;
-        $this->orderPaymentStateResolver = $orderPaymentStateResolver;
-        $this->payPalItemsDataProvider = $payPalItemsDataProvider;
-
-        if (null !== $this->payPalItemsDataProvider) {
-            trigger_deprecation(
-                'sylius/paypal-plugin',
-                '1.7',
-                sprintf(
-                    'Passing an instance of "%s" as the first argument is deprecated and will be prohibited in 2.0',
-                    PayPalItemDataProviderInterface::class,
-                ),
-            );
-        }
     }
 
     /** @param CompleteOrder $request */

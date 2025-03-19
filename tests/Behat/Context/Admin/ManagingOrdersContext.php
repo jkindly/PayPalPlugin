@@ -15,38 +15,25 @@ namespace Tests\Sylius\PayPalPlugin\Behat\Context\Admin;
 
 use Behat\Behat\Context\Context;
 use Doctrine\Persistence\ObjectManager;
-use SM\Factory\FactoryInterface;
+use Sylius\Abstraction\StateMachine\StateMachineInterface;
 use Sylius\Behat\Page\Admin\Order\ShowPageInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Payment\PaymentTransitions;
-use Sylius\Component\Resource\StateMachine\StateMachineInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\HttpFoundation\Response;
 use Webmozart\Assert\Assert;
 
 final class ManagingOrdersContext implements Context
 {
-    private FactoryInterface $stateMachineFactory;
-
-    private ObjectManager $objectManager;
-
-    private KernelBrowser $client;
-
-    private ShowPageInterface $showPage;
-
     private ?int $refundAmount = null;
 
     public function __construct(
-        FactoryInterface $stateMachineFactory,
-        ObjectManager $objectManager,
-        KernelBrowser $client,
-        ShowPageInterface $showPage,
+        private readonly StateMachineInterface $stateMachine,
+        private readonly ObjectManager $objectManager,
+        private readonly KernelBrowser $client,
+        private readonly ShowPageInterface $showPage,
     ) {
-        $this->stateMachineFactory = $stateMachineFactory;
-        $this->objectManager = $objectManager;
-        $this->client = $client;
-        $this->showPage = $showPage;
     }
 
     /**
@@ -67,9 +54,7 @@ final class ManagingOrdersContext implements Context
         }
         $payment->setDetails($details);
 
-        /** @var StateMachineInterface $stateMachine */
-        $stateMachine = $this->stateMachineFactory->get($payment, PaymentTransitions::GRAPH);
-        $stateMachine->apply(PaymentTransitions::TRANSITION_COMPLETE);
+        $this->stateMachine->apply($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_COMPLETE);
 
         $this->refundAmount = $order->getTotal();
 

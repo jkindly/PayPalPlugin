@@ -14,12 +14,12 @@ declare(strict_types=1);
 namespace spec\Sylius\PayPalPlugin\Processor;
 
 use Payum\Core\GatewayInterface;
-use Payum\Core\Model\GatewayConfigInterface;
 use Payum\Core\Payum;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\Component\Payment\Model\GatewayConfigInterface;
 use Sylius\PayPalPlugin\Payum\Request\CompleteOrder;
 use Sylius\PayPalPlugin\Processor\PaymentCompleteProcessorInterface;
 
@@ -35,7 +35,7 @@ final class PayPalPaymentCompleteProcessorSpec extends ObjectBehavior
         $this->shouldImplement(PaymentCompleteProcessorInterface::class);
     }
 
-    function it_completes_payment_in_pay_pal(
+    function it_completes_payment_in_paypal(
         Payum $payum,
         PaymentInterface $payment,
         PaymentMethodInterface $paymentMethod,
@@ -56,7 +56,7 @@ final class PayPalPaymentCompleteProcessorSpec extends ObjectBehavior
         $this->completePayment($payment);
     }
 
-    function it_does_nothing_if_payment_has_no_pay_pal_order_id_set(
+    function it_does_nothing_if_payment_has_no_paypal_order_id_set(
         Payum $payum,
         PaymentInterface $payment,
         GatewayInterface $gateway,
