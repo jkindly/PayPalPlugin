@@ -66,19 +66,19 @@ final class PayPalClient implements PayPalClientInterface
         return $this->request('GET', $url, $token);
     }
 
-    public function post(string $url, string $token, array $data = null, array $extraHeaders = []): array
+    public function post(string $url, string $token, ?array $data = null, array $extraHeaders = []): array
     {
         $headers = array_merge($extraHeaders, ['PayPal-Request-Id' => $this->uuidProvider->provide()]);
 
         return $this->request('POST', $url, $token, $data, $headers);
     }
 
-    public function patch(string $url, string $token, array $data = null): array
+    public function patch(string $url, string $token, ?array $data = null): array
     {
         return $this->request('PATCH', $url, $token, $data);
     }
 
-    private function request(string $method, string $url, string $token, array $data = null, array $extraHeaders = []): array
+    private function request(string $method, string $url, string $token, ?array $data = null, array $extraHeaders = []): array
     {
         /** @var ChannelInterface $channel */
         $channel = $this->channelContext->getChannel();
