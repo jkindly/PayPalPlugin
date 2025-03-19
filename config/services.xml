@@ -143,6 +143,7 @@
 
         <service id="sylius_paypal.processor.paypal_order_complete" class="Sylius\PayPalPlugin\Processor\PayPalOrderCompleteProcessor" public="true">
             <argument type="service" id="sylius_paypal.manager.payment_state" />
+            <argument type="service" id="sylius_paypal.verifier.payment_amount" />
         </service>
 
         <service
