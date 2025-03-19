@@ -15,6 +15,7 @@ namespace Sylius\PayPalPlugin\Twig;
 
 use Payum\Core\Model\GatewayConfigInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\PayPalPlugin\DependencyInjection\SyliusPayPalExtension;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -33,7 +34,7 @@ final class PayPalExtension extends AbstractExtension
         foreach ($paymentMethods as $paymentMethod) {
             /** @var GatewayConfigInterface $gatewayConfig */
             $gatewayConfig = $paymentMethod->getGatewayConfig();
-            if ($gatewayConfig->getFactoryName() === 'sylius.pay_pal') {
+            if ($gatewayConfig->getFactoryName() === SyliusPayPalExtension::PAYPAL_FACTORY_NAME) {
                 return true;
             }
         }

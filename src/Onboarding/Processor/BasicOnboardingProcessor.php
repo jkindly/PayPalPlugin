@@ -17,6 +17,7 @@ use GuzzleHttp\ClientInterface as GuzzleClientInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\PayPalPlugin\DependencyInjection\SyliusPayPalExtension;
 use Sylius\PayPalPlugin\Exception\PayPalPluginException;
 use Sylius\PayPalPlugin\Exception\PayPalWebhookAlreadyRegisteredException;
 use Sylius\PayPalPlugin\Exception\PayPalWebhookUrlNotValidException;
@@ -124,7 +125,7 @@ final class BasicOnboardingProcessor implements OnboardingProcessorInterface
             return false;
         }
 
-        if ($gatewayConfig->getFactoryName() !== 'sylius.pay_pal') {
+        if ($gatewayConfig->getFactoryName() !== SyliusPayPalExtension::PAYPAL_FACTORY_NAME) {
             return false;
         }
 

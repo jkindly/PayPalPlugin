@@ -19,6 +19,14 @@ use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\PayPalPlugin\Payum\Request\CompleteOrder;
 
+trigger_deprecation(
+    'sylius/paypal-plugin',
+    '1.7',
+    'The "%s" class is deprecated and will be removed in Sylius/PayPalPlugin 2.0.',
+    CompleteOrderPaymentResolver::class,
+);
+
+/** @deprecated since Sylius/PayPalPlugin 1.7 and will be removed in Sylius/PayPalPlugin 2.0. */
 final class CompleteOrderPaymentResolver implements CompleteOrderPaymentResolverInterface
 {
     private Payum $payum;

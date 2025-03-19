@@ -17,6 +17,14 @@ use Sylius\Bundle\CoreBundle\Form\Type\Checkout\PaymentType;
 use Sylius\Bundle\ResourceBundle\Form\Type\AbstractResourceType;
 use Symfony\Component\Form\FormBuilderInterface;
 
+trigger_deprecation(
+    'sylius/paypal-plugin',
+    '1.7',
+    'The "%s" class is deprecated and will be removed in Sylius/PayPalPlugin 2.0.',
+    SelectPaymentType::class,
+);
+
+/** @deprecated since Sylius/PayPalPlugin 1.7 and will be removed in Sylius/PayPalPlugin 2.0. */
 final class SelectPaymentType extends AbstractResourceType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void

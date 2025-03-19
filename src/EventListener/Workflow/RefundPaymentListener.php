@@ -15,7 +15,7 @@ namespace Sylius\PayPalPlugin\EventListener\Workflow;
 
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\PayPalPlugin\Processor\PaymentRefundProcessorInterface;
-use Symfony\Component\Workflow\Event\EnterEvent;
+use Symfony\Component\Workflow\Event\TransitionEvent;
 use Webmozart\Assert\Assert;
 
 final class RefundPaymentListener
@@ -24,7 +24,7 @@ final class RefundPaymentListener
     {
     }
 
-    public function __invoke(EnterEvent $event): void
+    public function __invoke(TransitionEvent $event): void
     {
         /** @var PaymentInterface $payment */
         $payment = $event->getSubject();

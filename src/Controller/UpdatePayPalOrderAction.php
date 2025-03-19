@@ -32,11 +32,21 @@ final class UpdatePayPalOrderAction
     public function __construct(
         private readonly PaymentProviderInterface $paymentProvider,
         private readonly CacheAuthorizeClientApiInterface $authorizeClientApi,
-        private readonly OrderDetailsApiInterface $orderDetailsApi,
+        private readonly ?OrderDetailsApiInterface $orderDetailsApi,
         private readonly UpdateOrderApiInterface $updateOrderApi,
         private readonly AddressFactoryInterface $addressFactory,
         private readonly OrderProcessorInterface $orderProcessor,
     ) {
+        if (null !== $this->orderDetailsApi) {
+            trigger_deprecation(
+                'sylius/paypal-plugin',
+                '1.7',
+                sprintf(
+                    'Passing an instance of "%s" as the first argument is deprecated and will be prohibited in 2.0',
+                    OrderDetailsApiInterface::class,
+                ),
+            );
+        }
     }
 
     public function __invoke(Request $request): Response
