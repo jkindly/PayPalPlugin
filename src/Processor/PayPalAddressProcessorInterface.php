@@ -15,6 +15,14 @@ namespace Sylius\PayPalPlugin\Processor;
 
 use Sylius\Component\Core\Model\OrderInterface;
 
+trigger_deprecation(
+    'sylius/paypal-plugin',
+    '1.7',
+    'The "%s" class is deprecated and will be removed in Sylius/PayPalPlugin 3.0.',
+    PayPalAddressProcessorInterface::class,
+);
+
+/** @deprecated since Sylius/PayPalPlugin 1.7 and will be removed in Sylius/PayPalPlugin 3.0. */
 interface PayPalAddressProcessorInterface
 {
     /**
