@@ -227,6 +227,7 @@
 
         <service id="sylius_paypal.processor.paypal_address" class="Sylius\PayPalPlugin\Processor\PayPalAddressProcessor">
             <argument type="service" id="doctrine.orm.entity_manager" />
+            <deprecated package="sylius/paypal-plugin" version="1.7">The "%service_id%" service is deprecated since 1.7 and will be removed in 3.0.</deprecated>
         </service>
 
         <service

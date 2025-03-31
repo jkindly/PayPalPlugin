@@ -1,3 +1,34 @@
+### UPGRADE FROM 2.0.1 to 2.0.2
+
+1. #### Removed overwriting of shipping address in `CompleteOrderAction` and introduced shipping address update to PayPal.
+   Previously, the `Sylius\PayPalPlugin\Payum\Action\CompleteOrderAction` class retrieved the shipping address from PayPal after order completion and overwrote
+   the existing shipping address in Sylius. This behavior was incorrect because if a customer changed their address after completing the PayPal checkout,
+   the system would revert it back to the PayPal-provided address.
+
+   This mechanism has been removed. Instead, a new mechanism has been introduced: if shipping is required, the order completion process now updates
+   the PayPal shipping address with the one stored in Sylius. This ensures that the shipping address remains consistent with the one confirmed in the store.
+
+1. The following classes have been deprecated and will be removed in Sylius/PayPalPlugin 3.0:
+   - `Sylius\PayPalPlugin\Processor\PayPalAddressProcessor`
+   - `Sylius\PayPalPlugin\Processor\PayPalAddressProcessorInterface`
+
+1. The following constructor signatures have been changed:
+
+`Sylius\PayPalPlugin\Payum\Action\CompleteOrderAction`:
+```diff
+public function __construct(
+    private CacheAuthorizeClientApiInterface $authorizeClientApi,
+    private UpdateOrderApiInterface $updateOrderApi,
+    private CompleteOrderApiInterface $completeOrderApi,
+    private OrderDetailsApiInterface $orderDetailsApi,
+-   private PayPalAddressProcessorInterface $payPalAddressProcessor,
++   private ?PayPalAddressProcessorInterface $payPalAddressProcessor,
+    private PaymentUpdaterInterface $payPalPaymentUpdater,
+    private StateResolverInterface $orderPaymentStateResolver,
++   private ?UpdateOrderAddressApiInterface $updateOrderAddressApi = null,
+)
+```
+
 ### UPGRADE FROM 2.0.0 to 2.0.1
 
 1. The following constructor signatures have been changed:
