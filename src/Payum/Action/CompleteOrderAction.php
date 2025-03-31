@@ -23,6 +23,7 @@ use Sylius\Component\Order\StateResolver\StateResolverInterface;
 use Sylius\PayPalPlugin\Api\CacheAuthorizeClientApiInterface;
 use Sylius\PayPalPlugin\Api\CompleteOrderApiInterface;
 use Sylius\PayPalPlugin\Api\OrderDetailsApiInterface;
+use Sylius\PayPalPlugin\Api\UpdateOrderAddressApiInterface;
 use Sylius\PayPalPlugin\Api\UpdateOrderApiInterface;
 use Sylius\PayPalPlugin\Payum\Request\CompleteOrder;
 use Sylius\PayPalPlugin\Processor\PayPalAddressProcessorInterface;
@@ -35,10 +36,31 @@ final readonly class CompleteOrderAction implements ActionInterface
         private UpdateOrderApiInterface $updateOrderApi,
         private CompleteOrderApiInterface $completeOrderApi,
         private OrderDetailsApiInterface $orderDetailsApi,
-        private PayPalAddressProcessorInterface $payPalAddressProcessor,
+        private ?PayPalAddressProcessorInterface $payPalAddressProcessor,
         private PaymentUpdaterInterface $payPalPaymentUpdater,
         private StateResolverInterface $orderPaymentStateResolver,
+        private ?UpdateOrderAddressApiInterface $updateOrderAddressApi = null,
     ) {
+        if (null !== $this->payPalAddressProcessor) {
+            trigger_deprecation(
+                'sylius/paypal-plugin',
+                '1.7',
+                sprintf(
+                    'Passing an instance of "%s" as the fifth argument is deprecated and will be prohibited in 3.0',
+                    PayPalAddressProcessorInterface::class,
+                ),
+            );
+        }
+        if (null === $this->updateOrderAddressApi) {
+            trigger_deprecation(
+                'sylius/paypal-plugin',
+                '1.7',
+                sprintf(
+                    'Not passing $updateOrderAddressApi to "%s" constructor is deprecated and will be prohibited in 3.0',
+                    self::class,
+                ),
+            );
+        }
     }
 
     /** @param CompleteOrder $request */
@@ -73,6 +95,14 @@ final readonly class CompleteOrderAction implements ActionInterface
             $this->orderPaymentStateResolver->resolve($order);
         }
 
+        if (null !== $this->updateOrderAddressApi && $order->isShippingRequired()) {
+            $this->updateOrderAddressApi->update(
+                $token,
+                (string) $details['paypal_order_id'],
+                (string) $details['reference_id'],
+                $order->getShippingAddress(),
+            );
+        }
         $this->completeOrderApi->complete($token, $request->getOrderId());
         $orderDetails = $this->orderDetailsApi->get($token, $request->getOrderId());
 
@@ -89,10 +119,6 @@ final readonly class CompleteOrderAction implements ActionInterface
         }
 
         $payment->setDetails($details);
-
-        if ($order->isShippingRequired()) {
-            $this->payPalAddressProcessor->process($orderDetails['purchase_units'][0]['shipping']['address'], $order);
-        }
     }
 
     public function supports($request): bool

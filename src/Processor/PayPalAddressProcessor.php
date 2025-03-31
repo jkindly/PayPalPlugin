@@ -17,6 +17,14 @@ use Doctrine\Persistence\ObjectManager;
 use Sylius\Component\Core\Model\OrderInterface;
 use Webmozart\Assert\Assert;
 
+trigger_deprecation(
+    'sylius/paypal-plugin',
+    '1.7',
+    'The "%s" class is deprecated and will be removed in Sylius/PayPalPlugin 3.0.',
+    PayPalAddressProcessor::class,
+);
+
+/** @deprecated since Sylius/PayPalPlugin 1.7 and will be removed in Sylius/PayPalPlugin 3.0. */
 final readonly class PayPalAddressProcessor implements PayPalAddressProcessorInterface
 {
     public function __construct(private ObjectManager $objectManager)
