@@ -42,7 +42,7 @@ final class UpdatePayPalOrderAction
                 'sylius/paypal-plugin',
                 '1.7',
                 sprintf(
-                    'Passing an instance of "%s" as the first argument is deprecated and will be prohibited in 2.0',
+                    'Passing an instance of "%s" as the third argument is deprecated and will be prohibited in 2.0',
                     OrderDetailsApiInterface::class,
                 ),
             );

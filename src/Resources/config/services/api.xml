@@ -136,6 +136,13 @@
         <service id="sylius_paypal.api.update_order" alias="Sylius\PayPalPlugin\Api\UpdateOrderApiInterface" />
 
         <service
+            id="sylius_paypal.api.update_order_address"
+            class="Sylius\PayPalPlugin\Api\UpdateOrderAddressApi"
+        >
+            <argument type="service" id="sylius_paypal.client.paypal" />
+        </service>
+
+        <service
             id="Sylius\PayPalPlugin\Api\RefundPaymentApiInterface"
             class="Sylius\PayPalPlugin\Api\RefundPaymentApi"
         >
