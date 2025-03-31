@@ -1,4 +1,4 @@
-### UPGRADE FROM 2.0.1 to 2.0.2
+### UPGRADE FROM 2.0.2 to 2.0.3
 
 1. #### Removed overwriting of shipping address in `CompleteOrderAction` and introduced shipping address update to PayPal.
    Previously, the `Sylius\PayPalPlugin\Payum\Action\CompleteOrderAction` class retrieved the shipping address from PayPal after order completion and overwrote
