@@ -164,7 +164,6 @@ final class CompleteOrderActionSpec extends ObjectBehavior
             null,
             $payPalPaymentUpdater,
             $orderPaymentStateResolver,
-            null,
             $updateOrderAddressApi,
         );
 
