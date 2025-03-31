@@ -24,7 +24,7 @@ final class PayPalCredentialsSpec extends ObjectBehavior
         $this->beConstructedWith('123ASD123', $paymentMethod, 'TOKEN', new \DateTime('2020-01-01 10:00:00'), 3600);
     }
 
-    function it_implements_pay_pal_credentials_interface(): void
+    function it_implements_paypal_credentials_interface(): void
     {
         $this->shouldImplement(PayPalCredentialsInterface::class);
     }

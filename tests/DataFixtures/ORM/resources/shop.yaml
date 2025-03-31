@@ -42,7 +42,6 @@ Sylius\Component\Product\Model\ProductVariantTranslation:
     lotr_mug_translation:
         locale: "en_US"
         name: "Lotr mug"
-        translatable: "@mug_lotr"
 
 Sylius\Component\Core\Model\Channel:
     channel_web:
@@ -102,7 +101,7 @@ Sylius\Component\Core\Model\PaymentMethod:
 Sylius\Bundle\PayumBundle\Model\GatewayConfig:
     paypal_config:
         gatewayName: "paypal"
-        factoryName: "sylius.pay_pal"
+        factoryName: "sylius_paypal"
         config:
             client_id: "CLIENT_ID"
             client_secret: "CLIENT_SECRET"
@@ -125,4 +124,3 @@ Sylius\Component\Payment\Model\PaymentMethodTranslation:
         name: "Cash on delivery"
         locale: "en_US"
         description: <paragraph(2)>
-        translatable: "@cash_on_delivery"

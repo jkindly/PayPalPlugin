@@ -22,7 +22,7 @@ use Sylius\PayPalPlugin\Exception\PaymentAmountMismatchException;
 use Sylius\PayPalPlugin\Manager\PaymentStateManagerInterface;
 use Sylius\PayPalPlugin\Verifier\PaymentAmountVerifierInterface;
 
-final class PayPalOrderCompleteProcessor
+final readonly class PayPalOrderCompleteProcessor
 {
     public function __construct(
         private PaymentStateManagerInterface $paymentStateManager,

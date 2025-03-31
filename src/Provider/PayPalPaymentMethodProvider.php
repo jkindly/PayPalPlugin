@@ -19,13 +19,10 @@ use Sylius\Component\Core\Repository\PaymentMethodRepositoryInterface;
 use Sylius\PayPalPlugin\DependencyInjection\SyliusPayPalExtension;
 use Sylius\PayPalPlugin\Exception\PayPalPaymentMethodNotFoundException;
 
-final class PayPalPaymentMethodProvider implements PayPalPaymentMethodProviderInterface
+final readonly class PayPalPaymentMethodProvider implements PayPalPaymentMethodProviderInterface
 {
-    private PaymentMethodRepositoryInterface $paymentMethodRepository;
-
-    public function __construct(PaymentMethodRepositoryInterface $paymentMethodRepository)
+    public function __construct(private PaymentMethodRepositoryInterface $paymentMethodRepository)
     {
-        $this->paymentMethodRepository = $paymentMethodRepository;
     }
 
     public function provide(): PaymentMethodInterface

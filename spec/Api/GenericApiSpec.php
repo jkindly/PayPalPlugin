@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace spec\Sylius\PayPalPlugin\Api;
 
-use GuzzleHttp\ClientInterface as GuzzleClientInterface;
 use PhpSpec\ObjectBehavior;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -48,26 +47,6 @@ final class GenericApiSpec extends ObjectBehavior
         $request->withHeader('Accept', 'application/json')->willReturn($request);
 
         $client->sendRequest($request)->willReturn($response);
-        $response->getBody()->willReturn($body);
-        $body->getContents()->willReturn('{ "parameter": "VALUE" }');
-
-        $this->get('TOKEN', 'http://url.com/')->shouldReturn(['parameter' => 'VALUE']);
-    }
-
-    function it_calls_api_by_url_using_guzzle_client(
-        GuzzleClientInterface $client,
-        ResponseInterface $response,
-        StreamInterface $body,
-    ): void {
-        $this->beConstructedWith($client);
-
-        $client->request('GET', 'http://url.com/', [
-            'headers' => [
-                'Authorization' => 'Bearer TOKEN',
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-            ],
-        ])->willReturn($response);
         $response->getBody()->willReturn($body);
         $body->getContents()->willReturn('{ "parameter": "VALUE" }');
 

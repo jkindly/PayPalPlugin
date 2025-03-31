@@ -4,11 +4,11 @@ By default, plugin operates in the sandbox mode. I means all the transactions wo
 To change it, you need to configure the plugin properly:
 
 ```yaml
-sylius_pay_pal:
+sylius_paypal:
     sandbox: false
 ```
 
-You can, for example, configure it only for the production environment (e.g. in `config/packages/prod/sylius_pay_pal_plugin.yaml`).
+You can, for example, configure it only for the production environment (e.g. in `config/packages/prod/sylius_paypal.yaml`).
 
 ---
 

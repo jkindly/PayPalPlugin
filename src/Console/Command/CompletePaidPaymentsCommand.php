@@ -15,9 +15,7 @@ namespace Sylius\PayPalPlugin\Console\Command;
 
 use Doctrine\Persistence\ObjectManager;
 use Payum\Core\Model\GatewayConfigInterface;
-use SM\Factory\FactoryInterface;
 use Sylius\Abstraction\StateMachine\StateMachineInterface;
-use Sylius\Abstraction\StateMachine\WinzouStateMachineAdapter;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Core\Repository\PaymentRepositoryInterface;
@@ -26,10 +24,15 @@ use Sylius\PayPalPlugin\Api\CacheAuthorizeClientApiInterface;
 use Sylius\PayPalPlugin\Api\OrderDetailsApiInterface;
 use Sylius\PayPalPlugin\DependencyInjection\SyliusPayPalExtension;
 use Sylius\PayPalPlugin\Payum\Action\StatusAction;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(
+    name: 'sylius-paypal:complete-payments',
+    description: 'Completes payments for completed PayPal orders',
+)]
 final class CompletePaidPaymentsCommand extends Command
 {
     public function __construct(
@@ -37,36 +40,9 @@ final class CompletePaidPaymentsCommand extends Command
         private readonly ObjectManager $paymentManager,
         private readonly CacheAuthorizeClientApiInterface $authorizeClientApi,
         private readonly OrderDetailsApiInterface $orderDetailsApi,
-        private readonly FactoryInterface|StateMachineInterface $stateMachineFactory,
+        private readonly StateMachineInterface $stateMachine,
     ) {
         parent::__construct();
-
-        if ($this->stateMachineFactory instanceof FactoryInterface) {
-            trigger_deprecation(
-                'sylius/paypal-plugin',
-                '1.6',
-                sprintf(
-                    'Passing an instance of "%s" as the fifth argument is deprecated and will be prohibited in 2.0. Use "%s" instead.',
-                    FactoryInterface::class,
-                    StateMachineInterface::class,
-                ),
-            );
-        }
-
-        trigger_deprecation(
-            'sylius/paypal-plugin',
-            '1.7',
-            'The fifth argument of the constructor in class "%s" is deprecated and will be renamed to "stateMachine" in 2.0.',
-            self::class,
-        );
-    }
-
-    protected function configure(): void
-    {
-        $this
-            ->setName('sylius:pay-pal-plugin:complete-payments')
-            ->setDescription('Completes payments for completed PayPal orders')
-        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -89,7 +65,7 @@ final class CompletePaidPaymentsCommand extends Command
             $details = $this->orderDetailsApi->get($token, $payPalOrderId);
 
             if ($details['status'] === 'COMPLETED') {
-                $this->getStateMachine()->apply($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_COMPLETE);
+                $this->stateMachine->apply($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_COMPLETE);
 
                 $paymentDetails = $payment->getDetails();
                 $paymentDetails['status'] = StatusAction::STATUS_COMPLETED;
@@ -102,15 +78,4 @@ final class CompletePaidPaymentsCommand extends Command
 
         return Command::SUCCESS;
     }
-
-    private function getStateMachine(): StateMachineInterface
-    {
-        if ($this->stateMachineFactory instanceof FactoryInterface) {
-            return new WinzouStateMachineAdapter($this->stateMachineFactory);
-        }
-
-        return $this->stateMachineFactory;
-    }
 }
-
-class_alias(CompletePaidPaymentsCommand::class, '\Sylius\PayPalPlugin\Command\CompletePaidPaymentsCommand');
