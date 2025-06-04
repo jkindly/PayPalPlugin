@@ -30,7 +30,7 @@ jobs:
 
                 include:
                     -   php: "8.3"
-                        symfony: "^7.1"
+                        symfony: "7.2.*"
                         database: "mysql"
                         sylius: "~2.0.1"
                         mysql: "8.4"
@@ -186,6 +186,10 @@ jobs:
             -
                 name: Run security check
                 run: symfony security:check
+
+            -
+                name: Generate JWT keys
+                run: (cd tests/Application && bin/console lexik:jwt:generate-keypair)
 
             -
                 name: Run ECS
