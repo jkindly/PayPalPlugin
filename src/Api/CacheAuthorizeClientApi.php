@@ -15,7 +15,6 @@ namespace Sylius\PayPalPlugin\Api;
 
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
-use Payum\Core\Model\GatewayConfigInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\PayPalPlugin\Entity\PayPalCredentials;
 use Sylius\PayPalPlugin\Entity\PayPalCredentialsInterface;
@@ -44,7 +43,6 @@ final readonly class CacheAuthorizeClientApi implements CacheAuthorizeClientApiI
             $this->payPalCredentialsManager->flush();
         }
 
-        /** @var GatewayConfigInterface $gatewayConfig */
         $gatewayConfig = $paymentMethod->getGatewayConfig();
         $config = $gatewayConfig->getConfig();
 

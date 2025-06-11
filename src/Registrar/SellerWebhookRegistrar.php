@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Sylius\PayPalPlugin\Registrar;
 
 use GuzzleHttp\Exception\ClientException;
-use Payum\Core\Model\GatewayConfigInterface;
 use Psr\Http\Message\ResponseInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\PayPalPlugin\Api\AuthorizeClientApiInterface;
@@ -34,7 +33,6 @@ final readonly class SellerWebhookRegistrar implements SellerWebhookRegistrarInt
 
     public function register(PaymentMethodInterface $paymentMethod): void
     {
-        /** @var GatewayConfigInterface $gatewayConfig */
         $gatewayConfig = $paymentMethod->getGatewayConfig();
         $config = $gatewayConfig->getConfig();
 

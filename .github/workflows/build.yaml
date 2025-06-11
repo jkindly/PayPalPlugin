@@ -20,8 +20,8 @@ jobs:
             fail-fast: false
             matrix:
                 php: ["8.2", "8.3"]
-                symfony: ["^6.4", "7.2.*"]
-                sylius: ["^2.0.1"]
+                symfony: ["^6.4", "~7.3.0"]
+                sylius: ["~2.0.1", "~2.1.0"]
                 database: ["mysql", "postgres"]
                 mysql: ["8.4"]
                 postgres: ["15.8"]
@@ -30,12 +30,21 @@ jobs:
 
                 include:
                     -   php: "8.3"
-                        symfony: "7.2.*"
+                        symfony: "~7.2.0"
+                        sylius: "~2.1.0"
+                        node: "24.x"
                         database: "mysql"
-                        sylius: "~2.0.1"
                         mysql: "8.4"
-                        node: "20.x"
                         state_machine_adapter: "winzou_state_machine"
+
+                    -
+                        php: "8.3"
+                        symfony: "~7.3.0"
+                        sylius: "~2.1.0"
+                        node: "24.x"
+                        database: "postgres"
+                        postgres: "15.8"
+                        state_machine_adapter: "symfony_workflow"
 
         env:
             APP_ENV: test
