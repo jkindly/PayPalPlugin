@@ -8,6 +8,7 @@
         "php": "^8.2",
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "friendsofsymfony/rest-bundle": "^3.7",
+        "gedmo/doctrine-extensions": "^3.19",
         "php-http/discovery": "^1.20",
         "phpseclib/phpseclib": "^3.0",
         "psr/http-client": "^1.0",
@@ -37,6 +38,7 @@
         "polishsymfonycommunity/symfony-mocker-container": "^1.0",
         "sylius-labs/coding-standard": "^4.4",
         "sylius/sylius-rector": "^1.0",
+        "sylius/test-application": "^2.0.0@alpha",
         "symfony/browser-kit": "^6.4 || ^7.1",
         "symfony/debug-bundle": "^6.4 || ^7.1",
         "symfony/dotenv": "^6.4 || ^7.1",
@@ -52,16 +54,19 @@
         }
     },
     "autoload-dev": {
-        "classmap": ["tests/Application/Kernel.php"]
+        "psr-4": {
+            "Sylius\\PayPalPlugin\\TestApplication\\": "tests/TestApplication/src/"
+        }
     },
     "config": {
         "sort-packages": true,
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": false,
             "ocramius/package-versions": false,
+            "php-http/discovery": true,
             "symfony/flex": true,
-            "symfony/thanks": false,
-            "php-http/discovery": true
+            "symfony/runtime": true,
+            "symfony/thanks": false
         }
     },
     "extra": {
@@ -81,5 +86,6 @@
             "vendor/bin/ecs check src/ spec/ --fix"
         ]
     },
+    "minimum-stability": "dev",
     "prefer-stable": true
 }

@@ -6,8 +6,13 @@
 !/etc/build/.gitignore
 
 /tests/Application/yarn.lock
-
+/tests/Application/.env.local
 /.phpunit.result.cache
 /behat.yml
 /phpspec.yml
 /phpunit.xml
+
+/tests/TestApplication/.env.local
+/tests/TestApplication/.env.*.local
+/tests/TestApplication/node_modules
+/tests/TestApplication/yarn.lock
