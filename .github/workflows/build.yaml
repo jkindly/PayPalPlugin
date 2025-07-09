@@ -12,11 +12,15 @@ on:
             cron: "0 1 * * 6" # Run at 1am every Saturday
     workflow_dispatch: ~
 
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
 jobs:
     tests:
         runs-on: ubuntu-latest
 
-        name: "Sylius ${{ matrix.sylius }}, PHP ${{ matrix.php }}, Symfony ${{ matrix.symfony }},  ${{ matrix.database == 'mysql' && format('MySQL {0}', matrix.mysql) || matrix.database == 'postgres' && format('PostgreSQL {0}', matrix.postgres) }}"
+        name: "Sylius ${{ matrix.sylius }}, PHP ${{ matrix.php }}, Symfony ${{ matrix.symfony }}, ${{ matrix.database == 'mysql' && format('MySQL {0}', matrix.mysql) || matrix.database == 'postgres' && format('PostgreSQL {0}', matrix.postgres) }}, State Machine Adapter ${{ matrix.state_machine_adapter }}"
 
         strategy:
             fail-fast: false
@@ -130,6 +134,13 @@ jobs:
                 run: composer require "sylius/sylius:${{ matrix.sylius }}" --no-update --no-scripts --no-interaction
 
             -
+                name: Require Winzou State Machine
+                if: "${{ matrix.state_machine_adapter == 'winzou_state_machine' }}"
+                run: |
+                    composer require winzou/state-machine:^0.4 --no-update   
+                    composer require winzou/state-machine-bundle:^0.6 --no-update 
+
+            -
                 name: Install PHP dependencies
                 run: composer install --no-interaction
 
@@ -163,6 +174,13 @@ jobs:
                 name: Install JS dependencies
                 run: (cd vendor/sylius/test-application && yarn install)
 
+            -   name: Check out database schema update
+                run: |
+                    vendor/bin/console doctrine:database:create
+                    vendor/bin/console doctrine:schema:update --force
+                    vendor/bin/console doctrine:schema:validate
+                    vendor/bin/console doctrine:database:drop --force
+
             -
                 name: Prepare test application database
                 run: |
@@ -186,6 +204,10 @@ jobs:
             -
                 name: Load fixtures in test application
                 run: vendor/bin/console sylius:fixtures:load -n
+
+            -   name: Run security check
+                run: symfony security:check
+
             -
                 name: Validate composer.json
                 run: composer validate --ansi --strict
