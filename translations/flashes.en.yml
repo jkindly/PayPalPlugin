@@ -1,4 +1,5 @@
 sylius_paypal:
+    could_not_create_paypal_payment_method: 'Could not create PayPal payment method. Please, try again later.'
     more_than_one_seller_not_allowed: 'You cannot onboard more than one PayPal seller!'
     order_cancelled: 'PayPal order has been cancelled'
     payment_cancelled: 'PayPal payment has been cancelled'
