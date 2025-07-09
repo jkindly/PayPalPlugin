@@ -28,6 +28,10 @@ use Symfony\Component\Routing\RouterInterface;
 
 final readonly class CreateSandboxPaymentMethodAction
 {
+    private const INDEX_ROUTE = 'sylius_admin_payment_method_index';
+
+    private const UPDATE_ROUTE = 'sylius_admin_payment_method_update';
+
     public function __construct(
         private FormFactoryInterface $formFactory,
         private PayPalSandboxPaymentMethodCreatorInterface $sandboxPaymentMethodCreator,
@@ -57,8 +61,6 @@ final readonly class CreateSandboxPaymentMethodAction
         $clientSecret = $credentials->getClientSecret();
         $merchantId = $credentials->getMerchantId();
 
-        $url = $this->router->generate('sylius_admin_payment_method_index');
-
         try {
             $paymentMethod = $this->sandboxPaymentMethodCreator->create($clientId, $clientSecret, $merchantId);
         } catch (\Throwable $exception) {
@@ -66,14 +68,16 @@ final readonly class CreateSandboxPaymentMethodAction
 
             FlashBagProvider::getFlashBag($this->flashBagOrRequestStack)->add('error', 'sylius_paypal.could_not_create_paypal_payment_method');
 
-            return new RedirectResponse($url);
+            return new RedirectResponse(
+                $this->router->generate(self::INDEX_ROUTE),
+            );
         }
 
-        $url = $this->router->generate(
-            'sylius_admin_payment_method_update',
-            ['id' => $paymentMethod->getId()],
+        return new RedirectResponse(
+            $this->router->generate(
+                self::UPDATE_ROUTE,
+                ['id' => $paymentMethod->getId()],
+            ),
         );
-
-        return new RedirectResponse($url);
     }
 }
