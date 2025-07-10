@@ -1,14 +1,20 @@
 name: Build
 
 on:
-    push: ~
+    push:
+        branches-ignore:
+            - 'dependabot/**'
     pull_request: ~
     release:
-        types: [created]
+        types: [ created ]
     schedule:
         -
             cron: "0 1 * * 6" # Run at 1am every Saturday
     workflow_dispatch: ~
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
     tests:
@@ -61,7 +67,7 @@ jobs:
                 with:
                     php-version: "${{ matrix.php }}"
                     extensions: intl
-                    tools: symfony
+                    tools: flex, symfony
                     coverage: none
 
             -
@@ -93,16 +99,12 @@ jobs:
                     postgresql password: "postgres"
 
             -
-                name: Run Chrome Headless
-                run: google-chrome-stable --enable-automation --disable-background-networking --no-default-browser-check --no-first-run --disable-popup-blocking --disable-default-apps --allow-insecure-localhost --disable-translate --disable-extensions --no-sandbox --enable-features=Metal --headless --remote-debugging-port=9222 --window-size=2880,1800 --proxy-server='direct://' --proxy-bypass-list='*' http://127.0.0.1 > /dev/null 2>&1 &
+                name: Output PHP version for Symfony CLI
+                run: php -v | head -n 1 | awk '{ print $2 }' > .php-version
 
             -
                 name: Install certificates
-                run: (cd tests/Application && symfony server:ca:install)
-
-            -
-                name: Run webserver
-                run: (cd tests/Application && symfony server:start --port=8080 --dir=public --daemon)
+                run: symfony server:ca:install
 
             -
                 name: Get Composer cache directory
@@ -124,7 +126,6 @@ jobs:
                 run: |
                     composer global config --no-plugins allow-plugins.symfony/flex true
                     composer global require --no-progress --no-scripts --no-plugins "symfony/flex:^2.4"
-                    composer config --no-plugins allow-plugins.symfony/thanks true
                     composer config extra.symfony.require "${{ matrix.symfony }}"
 
             -
@@ -137,11 +138,27 @@ jobs:
                 if: "${{ matrix.state_machine_adapter == 'winzou_state_machine' }}"
                 run: |
                     composer require winzou/state-machine:^0.4 --no-update   
-                    composer require winzou/state-machine-bundle:^0.6 --no-update   
+                    composer require winzou/state-machine-bundle:^0.6 --no-update 
 
             -
                 name: Install PHP dependencies
                 run: composer install --no-interaction
+
+            -
+                name: Run PHPStan
+                run: vendor/bin/phpstan analyse -c phpstan.neon.dist
+
+            -
+                name: Run PHPSpec
+                run: vendor/bin/phpspec run --ansi -f progress --no-interaction
+
+            -
+                name: Run ECS
+                run: vendor/bin/ecs check
+
+            -
+                name: Run unit tests
+                run: vendor/bin/phpunit --colors=always --testsuite=unit
 
             -
                 name: Get Yarn cache directory
@@ -159,70 +176,61 @@ jobs:
 
             -
                 name: Install JS dependencies
-                run: (cd tests/Application && yarn install)
+                run: (cd vendor/sylius/test-application && yarn install)
+
+            -   name: Check out database schema update
+                run: |
+                    vendor/bin/console doctrine:database:create
+                    vendor/bin/console doctrine:schema:update --force
+                    vendor/bin/console doctrine:schema:validate
+                    vendor/bin/console doctrine:database:drop --force
 
             -
                 name: Prepare test application database
                 run: |
-                    (cd tests/Application && bin/console doctrine:database:create -vvv)
-                    (cd tests/Application && bin/console doctrine:migrations:migrate -n -vvv -q)
+                    vendor/bin/console doctrine:database:create -vvv
+                    vendor/bin/console doctrine:migrations:migrate -n -vvv -q
 
             -
-                name: Test migrations generation directory
-                run: |
-                    cp etc/travis/Order.php src/Entity
-                    cp etc/travis/resources.yaml tests/Application/config/packages/
-                    (cd tests/Application && bin/console doctrine:migrations:diff -q)
-                    COUNT=$(ls tests/Application/src/Migrations/ | wc -l)
-                    if [ $COUNT == 0 ]; then exit 1; fi
-                    rm src/Entity/Order.php
-                    rm tests/Application/config/packages/resources.yaml
+                name: Validate database schema
+                run: vendor/bin/console doctrine:schema:validate
 
             -
                 name: Prepare test application assets
                 run: |
-                    (cd tests/Application && bin/console assets:install public -vvv)
-                    (cd tests/Application && yarn build:prod)
+                    vendor/bin/console assets:install -vvv
+                    (cd vendor/sylius/test-application && yarn build)
 
             -
                 name: Prepare test application cache
-                run: (cd tests/Application && bin/console cache:warmup -vvv)
+                run: vendor/bin/console cache:warmup -vvv
 
             -
                 name: Load fixtures in test application
-                run: (cd tests/Application && bin/console sylius:fixtures:load -n)
+                run: vendor/bin/console sylius:fixtures:load -n
 
-            -
-                name: Run security check
+            -   name: Run security check
                 run: symfony security:check
-
-            -
-                name: Generate JWT keys
-                run: (cd tests/Application && bin/console lexik:jwt:generate-keypair)
-
-            -
-                name: Run ECS
-                run: vendor/bin/ecs check
 
             -
                 name: Validate composer.json
                 run: composer validate --ansi --strict
 
             -
-                name: Run analysis
-                run: composer analyse
+                name: Validate container
+                run: vendor/bin/console lint:container
 
             -
-                name: Run PHPStan
-                run: vendor/bin/phpstan analyse -c phpstan.neon.dist src/
+                name: Run Non-unit PHPUnit tests
+                run: vendor/bin/phpunit --colors=always --testsuite=non-unit
 
             -
-                name: Run PHPSpec
-                run: vendor/bin/phpspec run --ansi -f progress --no-interaction
+                name: Run Chrome Headless
+                run: google-chrome-stable --enable-automation --disable-background-networking --no-default-browser-check --no-first-run --disable-popup-blocking --disable-default-apps --allow-insecure-localhost --disable-translate --disable-extensions --no-sandbox --enable-features=Metal --headless --remote-debugging-port=9222 --window-size=2880,1800 --proxy-server='direct://' --proxy-bypass-list='*' http://127.0.0.1 > /dev/null 2>&1 &
 
             -
-                name: Run PHPUnit
-                run: vendor/bin/phpunit --colors=always
+                name: Run webserver
+                run: symfony server:start --port=8080 --daemon
 
             -
                 name: Run Behat
