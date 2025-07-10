@@ -9,3 +9,6 @@
 /behat.yml
 /phpspec.yml
 /phpunit.xml
+
+/tests/TestApplication/.env.local
+/tests/TestApplication/.env.*.local
