@@ -50,7 +50,7 @@ final class PayPalSandboxPaymentMethodCreatorTest extends TestCase
             ->with('sylius_paypal');
         $gatewayConfig->expects(self::once())
             ->method('setGatewayName')
-            ->with('paypal_sandbox');
+            ->with('sylius_paypal_sandbox');
         $gatewayConfig->expects(self::once())
             ->method('setConfig')
             ->with(self::callback(function ($config) use ($clientId, $clientSecret, $merchantId) {

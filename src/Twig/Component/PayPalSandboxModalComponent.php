@@ -11,50 +11,54 @@
 
 declare(strict_types=1);
 
-namespace Sylius\PayPalPlugin\Controller;
+namespace Sylius\PayPalPlugin\Twig\Component;
 
 use Psr\Log\LoggerInterface;
 use Sylius\PayPalPlugin\Creator\PayPalSandboxPaymentMethodCreatorInterface;
 use Sylius\PayPalPlugin\Form\Type\PayPalSandboxCredentialsType;
-use Sylius\PayPalPlugin\Model\PayPalSandboxCredentials;
 use Sylius\PayPalPlugin\Provider\FlashBagProvider;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
+use Symfony\UX\LiveComponent\Attribute\LiveAction;
+use Symfony\UX\LiveComponent\Attribute\LiveProp;
+use Symfony\UX\LiveComponent\ComponentWithFormTrait;
+use Symfony\UX\LiveComponent\DefaultActionTrait;
 
-final readonly class CreateSandboxPaymentMethodAction
+#[AsLiveComponent('sylius_paypal_sandbox_modal', template: '@SyliusPayPalPlugin/admin/shared/paypal_sandbox_modal.html.twig')]
+final class PayPalSandboxModalComponent
 {
     private const INDEX_ROUTE = 'sylius_admin_payment_method_index';
 
     private const UPDATE_ROUTE = 'sylius_admin_payment_method_update';
 
+    use DefaultActionTrait;
+    use ComponentWithFormTrait;
+
+    #[LiveProp]
+    public ?PayPalSandboxCredentialsType $paypalSandboxCredentials = null;
+
     public function __construct(
-        private FormFactoryInterface $formFactory,
-        private PayPalSandboxPaymentMethodCreatorInterface $sandboxPaymentMethodCreator,
-        private RouterInterface $router,
-        private RequestStack $flashBagOrRequestStack,
-        private LoggerInterface $logger,
+        private readonly FormFactoryInterface $formFactory,
+        private readonly PayPalSandboxPaymentMethodCreatorInterface $sandboxPaymentMethodCreator,
+        private readonly RequestStack $flashBagOrRequestStack,
+        private readonly LoggerInterface $logger,
+        private readonly RouterInterface $router,
     ) {
     }
 
-    public function __invoke(Request $request): Response
+    #[LiveAction]
+    public function submit(): ?RedirectResponse
     {
-        $credentials = new PayPalSandboxCredentials();
-        $form = $this->formFactory
-            ->create(PayPalSandboxCredentialsType::class, $credentials)
-            ->handleRequest($request)
-        ;
-
-        if (!$form->isSubmitted() || !$form->isValid()) {
-            FlashBagProvider::getFlashBag($this->flashBagOrRequestStack)->add('error', 'sylius_paypal.invalid_paypal_sandbox_credentials');
-            return new RedirectResponse(
-                $this->router->generate(self::INDEX_ROUTE),
-            );
+        $this->submitForm();
+        if (!$this->form->isSubmitted() && !$this->form->isValid()) {
+            return null;
         }
+
+        $credentials = $this->form->getData();
 
         $clientId = $credentials->getClientId();
         $clientSecret = $credentials->getClientSecret();
@@ -78,5 +82,10 @@ final readonly class CreateSandboxPaymentMethodAction
                 ['id' => $paymentMethod->getId()],
             ),
         );
+    }
+
+    protected function instantiateForm(): FormInterface
+    {
+        return $this->formFactory->create(PayPalSandboxCredentialsType::class);
     }
 }

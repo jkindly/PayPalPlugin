@@ -67,14 +67,6 @@
             <argument type="service" id="sylius_paypal.resolver.capture_payment" />
         </service>
 
-        <service id="sylius_paypal.controller.create_sandbox_account" class="Sylius\PayPalPlugin\Controller\CreateSandboxPaymentMethodAction">
-            <argument type="service" id="form.factory" />
-            <argument type="service" id="sylius_paypal.creator.sandbox_payment_method" />
-            <argument type="service" id="router" />
-            <argument type="service" id="request_stack" />
-            <argument type="service" id="monolog.logger.paypal" />
-        </service>
-
         <service id="sylius_paypal.controller.download_payouts_report" class="Sylius\PayPalPlugin\Controller\DownloadPayoutsReportAction">
             <argument type="service" id="sylius_paypal.downloader.report" />
             <argument type="service" id="sylius.repository.payment_method" />

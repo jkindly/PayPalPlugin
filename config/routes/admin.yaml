@@ -1,9 +1,3 @@
-sylius_paypal_admin_create_sandbox_account:
-    path: /create-sandbox-account/
-    methods: [POST]
-    defaults:
-        _controller: sylius_paypal.controller.create_sandbox_account
-
 sylius_paypal_admin_download_payouts_report:
     path: /download/payouts-report/{id}
     methods: [GET]

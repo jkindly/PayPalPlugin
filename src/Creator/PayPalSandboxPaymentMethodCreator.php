@@ -67,7 +67,7 @@ final readonly class PayPalSandboxPaymentMethodCreator implements PayPalSandboxP
         $paymentMethod->setGatewayConfig($gatewayConfig);
         $paymentMethod->setCode(self::PAYMENT_METHOD_CODE);
         $paymentMethod->setName(self::PAYMENT_METHOD_NAME);
-        $paymentMethod->setDescription(self::PAYMENT_METHOD_DESCRIPTION);;
+        $paymentMethod->setDescription(self::PAYMENT_METHOD_DESCRIPTION);
 
         return $paymentMethod;
     }

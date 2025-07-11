@@ -304,6 +304,23 @@
             <tag name="twig.extension" />
         </service>
 
+        <service
+                id="sylius_paypal.twig.component.paypal_sandbox_modal"
+                class="Sylius\PayPalPlugin\Twig\Component\PayPalSandboxModalComponent"
+        >
+            <argument type="service" id="form.factory" />
+            <argument type="service" id="sylius_paypal.creator.sandbox_payment_method" />
+            <argument type="service" id="request_stack" />
+            <argument type="service" id="logger" />
+            <argument type="service" id="router" />
+
+            <tag
+                    name="sylius.live_component.admin"
+                    key="sylius_paypal:create_sandbox_modal"
+                    template="@SyliusPayPalPlugin/admin/shared/components/paypal_sandbox_modal.html.twig"
+            />
+        </service>
+
         <service id="sylius_paypal.verifier.payment_amount" class="Sylius\PayPalPlugin\Verifier\PaymentAmountVerifier" />
         <service id="Sylius\PayPalPlugin\Verifier\PaymentAmountVerifierInterface" alias="sylius_paypal.verifier.payment_amount" />
     </services>
