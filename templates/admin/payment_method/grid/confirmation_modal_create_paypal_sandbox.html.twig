@@ -1,13 +1,14 @@
 {% component 'sylius_admin:confirmation_modal' with {
-    modal_id: 'confirmation-modal-create-pay-pal-sandbox',
-    type: 'create-pay-pal-sandbox'
+    modal_id: 'confirmation-modal-create-paypal-sandbox',
+    type: 'create-paypal-sandbox'
 } %}
     {% block header %}
         <h1 class="modal-title py-5">{{ 'sylius_paypal.share_data_consent_confirmation'|trans }}</h1>
     {% endblock %}
 
     {% block footer %}
-        {% set form = paypal_sandbox_form() %}
+        {% set form = sylius_paypal_sandbox_form() %}
+        {% form_theme form '@SyliusAdmin/shared/form_theme.html.twig' %}
 
         {{ form_start(form, {
             action: path('sylius_paypal_admin_create_sandbox_account'),

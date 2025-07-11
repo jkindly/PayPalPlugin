@@ -28,7 +28,7 @@ final class PayPalSandboxCredentialsFormExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('paypal_sandbox_form', [$this, 'createSandboxFormView']),
+            new TwigFunction('sylius_paypal_sandbox_form', [$this, 'createSandboxFormView']),
         ];
     }
 

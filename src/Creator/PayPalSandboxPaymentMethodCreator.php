@@ -17,6 +17,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Sylius\Bundle\PayumBundle\Model\GatewayConfigInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
+use Sylius\PayPalPlugin\DependencyInjection\SyliusPayPalExtension;
 
 final readonly class PayPalSandboxPaymentMethodCreator implements PayPalSandboxPaymentMethodCreatorInterface
 {
@@ -42,8 +43,8 @@ final readonly class PayPalSandboxPaymentMethodCreator implements PayPalSandboxP
     {
         /** @var GatewayConfigInterface $gatewayConfig */
         $gatewayConfig = $this->gatewayFactory->createNew();
-        $gatewayConfig->setFactoryName('sylius_paypal');
-        $gatewayConfig->setGatewayName('paypal_sandbox');
+        $gatewayConfig->setFactoryName(SyliusPayPalExtension::PAYPAL_FACTORY_NAME);
+        $gatewayConfig->setGatewayName(self::GATEWAY_NAME);
 
         $gatewayConfig->setConfig([
             'client_id' => $clientId,
@@ -64,9 +65,9 @@ final readonly class PayPalSandboxPaymentMethodCreator implements PayPalSandboxP
         /** @var PaymentMethodInterface $paymentMethod */
         $paymentMethod = $this->paymentMethodFactory->createNew();
         $paymentMethod->setGatewayConfig($gatewayConfig);
-        $paymentMethod->setCode('PAYPAL');
-        $paymentMethod->setName('PayPal');
-        $paymentMethod->setDescription('Pay with PayPal');
+        $paymentMethod->setCode(self::PAYMENT_METHOD_CODE);
+        $paymentMethod->setName(self::PAYMENT_METHOD_NAME);
+        $paymentMethod->setDescription(self::PAYMENT_METHOD_DESCRIPTION);;
 
         return $paymentMethod;
     }

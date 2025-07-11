@@ -29,33 +29,12 @@ final class PayPalSandboxCredentialsType extends AbstractType
         $builder
             ->add('clientId', TextType::class, [
                 'label' => 'sylius_paypal.client_id',
-                'constraints' => [
-                    new NotBlank([]),
-                    new Length(['min' => 5, 'max' => 255]),
-                    new Regex([
-                        'pattern' => '/^[A-Za-z0-9\-_]+$/',
-                    ]),
-                ],
-                'attr' => ['class' => 'form-control'],
-                'row_attr' => ['class' => 'mb-3'],
             ])
             ->add('clientSecret', TextType::class, [
                 'label' => 'sylius_paypal.client_secret',
-                'constraints' => [
-                    new NotBlank(),
-                    new Length(['min' => 5, 'max' => 255]),
-                ],
-                'attr' => ['class' => 'form-control'],
-                'row_attr' => ['class' => 'mb-3'],
             ])
             ->add('merchantId', TextType::class, [
                 'label' => 'sylius_paypal.merchant_id',
-                'constraints' => [
-                    new NotBlank(),
-                    new Length(['min' => 5, 'max' => 255]),
-                ],
-                'attr' => ['class' => 'form-control'],
-                'row_attr' => ['class' => 'mb-3'],
             ]);
     }
 
@@ -64,13 +43,12 @@ final class PayPalSandboxCredentialsType extends AbstractType
         $resolver->setDefaults([
             'data_class' => PayPalSandboxCredentials::class,
             'csrf_protection' => true,
-            'csrf_field_name' => '_csrf_token',
-            'csrf_token_id' => 'paypal_sandbox_credentials',
+            'validation_groups' => 'sylius',
         ]);
     }
 
     public function getBlockPrefix(): string
     {
-        return 'paypal_sandbox_credentials';
+        return 'sylius_paypal_sandbox_credentials';
     }
 }

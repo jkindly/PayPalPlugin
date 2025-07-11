@@ -15,11 +15,11 @@ namespace Sylius\PayPalPlugin\Model;
 
 class PayPalSandboxCredentials
 {
-    private string $clientId;
+    protected string $clientId;
 
-    private string $clientSecret;
+    protected string $clientSecret;
 
-    private string $merchantId;
+    protected string $merchantId;
 
     public function getClientId(): string
     {

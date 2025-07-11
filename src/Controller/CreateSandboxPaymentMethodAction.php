@@ -49,12 +49,11 @@ final readonly class CreateSandboxPaymentMethodAction
             ->handleRequest($request)
         ;
 
-        if (!$form->isSubmitted()) {
-            throw new UnprocessableEntityHttpException('Form is not submitted.');
-        }
-
-        if (!$form->isValid()) {
-            throw new UnprocessableEntityHttpException('Form is invalid.');
+        if (!$form->isSubmitted() || !$form->isValid()) {
+            FlashBagProvider::getFlashBag($this->flashBagOrRequestStack)->add('error', 'sylius_paypal.invalid_paypal_sandbox_credentials');
+            return new RedirectResponse(
+                $this->router->generate(self::INDEX_ROUTE),
+            );
         }
 
         $clientId = $credentials->getClientId();
