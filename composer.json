@@ -68,9 +68,6 @@
             "symfony/thanks": false
         }
     },
-    "conflict": {
-        "symfony/serializer": ">=6.4.23"
-    },
     "extra": {
         "branch-alias": {
             "dev-master": "2.0-dev"
