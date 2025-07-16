@@ -17,6 +17,7 @@ use Doctrine\Persistence\ObjectManager;
 use Sylius\Abstraction\StateMachine\StateMachineInterface;
 use Sylius\Component\Core\Factory\AddressFactoryInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
+use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Core\OrderCheckoutTransitions;
@@ -62,8 +63,17 @@ final readonly class ProcessPayPalOrderAction
     {
         $orderId = $request->request->getInt('orderId');
         $order = $this->orderProvider->provideOrderById($orderId);
-        /** @var PaymentInterface $payment */
+
+        if ($order->getState() !== OrderInterface::STATE_NEW) {
+            return new JsonResponse(['orderID' => $orderId]);
+        }
+
+        /** @var PaymentInterface|null $payment */
         $payment = $order->getLastPayment(PaymentInterface::STATE_CART);
+
+        if (null === $payment) {
+            return new JsonResponse(['orderID' => $orderId]);
+        }
 
         $data = $this->getOrderDetails((string) $request->request->get('payPalOrderId'), $payment);
 
@@ -119,13 +129,13 @@ final readonly class ProcessPayPalOrderAction
         } catch (PaymentAmountMismatchException) {
             $this->paymentStateManager->cancel($payment);
 
-            return new JsonResponse(['orderID' => $order->getId()]);
+            return new JsonResponse(['orderID' => $orderId]);
         }
 
         $this->paymentStateManager->create($payment);
         $this->paymentStateManager->process($payment);
 
-        return new JsonResponse(['orderID' => $order->getId()]);
+        return new JsonResponse(['orderID' => $orderId]);
     }
 
     private function getOrderCustomer(array $customerData): CustomerInterface

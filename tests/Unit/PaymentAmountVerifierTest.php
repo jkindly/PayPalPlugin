@@ -33,11 +33,11 @@ final class PaymentAmountVerifierTest extends TestCase
         $payment = $this->createMock(PaymentInterface::class);
         $order = $this->createMock(OrderInterface::class);
         $payment->method('getOrder')->willReturn($order);
-        $order->method('getTotal')->willReturn(1500);
+        $order->method('getTotal')->willReturn(4398);
 
         $paypalOrderDetails = [
             'purchase_units' => [
-                ['amount' => ['value' => '10.00']],
+                ['amount' => ['value' => '38.98']],
                 ['amount' => ['value' => '5.00']],
             ],
         ];
@@ -52,11 +52,11 @@ final class PaymentAmountVerifierTest extends TestCase
         $payment = $this->createMock(PaymentInterface::class);
         $order = $this->createMock(OrderInterface::class);
         $payment->method('getOrder')->willReturn($order);
-        $order->method('getTotal')->willReturn(1000);
+        $order->method('getTotal')->willReturn(4500);
 
         $paypalOrderDetails = [
             'purchase_units' => [
-                ['amount' => ['value' => '10.00']],
+                ['amount' => ['value' => '38.98']],
                 ['amount' => ['value' => '5.00']],
             ],
         ];
