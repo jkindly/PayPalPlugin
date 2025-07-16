@@ -26,7 +26,7 @@ final class PayPalAddressProcessorSpec extends ObjectBehavior
         $this->beConstructedWith($objectManager);
     }
 
-    function it_implements_pay_pal_address_processor_interface(): void
+    function it_implements_paypal_address_processor_interface(): void
     {
         $this->shouldImplement(PayPalAddressProcessorInterface::class);
     }

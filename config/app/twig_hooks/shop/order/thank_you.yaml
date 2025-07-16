@@ -1,0 +1,6 @@
+sylius_twig_hooks:
+    hooks:
+        'sylius_shop.order.thank_you.content.buttons#guest':
+            change_payment_method:
+                template: '@SyliusPayPalPlugin/shop/order/thank_you/content/buttons/change_payment_method.html.twig'
+                priority: 100

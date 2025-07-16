@@ -1,0 +1,6 @@
+sylius_twig_hooks:
+    hooks:
+        'sylius_shop.checkout.complete.content.form.summary.addresses':
+            paypal_missing_billing_address:
+                template: '@SyliusPayPalPlugin/shop/checkout/complete/content/form/summary/addresses/paypal_missing_billing_address.html.twig'
+                priority: -100

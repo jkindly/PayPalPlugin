@@ -1,3 +1,0 @@
-sylius_pay_pal:
-    logging:
-        increased: true

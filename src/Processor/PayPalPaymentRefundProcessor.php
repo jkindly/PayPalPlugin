@@ -26,30 +26,15 @@ use Sylius\PayPalPlugin\Exception\PayPalOrderRefundException;
 use Sylius\PayPalPlugin\Generator\PayPalAuthAssertionGeneratorInterface;
 use Sylius\PayPalPlugin\Provider\RefundReferenceNumberProviderInterface;
 
-final class PayPalPaymentRefundProcessor implements PaymentRefundProcessorInterface
+final readonly class PayPalPaymentRefundProcessor implements PaymentRefundProcessorInterface
 {
-    private CacheAuthorizeClientApiInterface $authorizeClientApi;
-
-    private OrderDetailsApiInterface $orderDetailsApi;
-
-    private RefundPaymentApiInterface $refundOrderApi;
-
-    private PayPalAuthAssertionGeneratorInterface $payPalAuthAssertionGenerator;
-
-    private RefundReferenceNumberProviderInterface $refundReferenceNumberProvider;
-
     public function __construct(
-        CacheAuthorizeClientApiInterface $authorizeClientApi,
-        OrderDetailsApiInterface $orderDetailsApi,
-        RefundPaymentApiInterface $refundOrderApi,
-        PayPalAuthAssertionGeneratorInterface $payPalAuthAssertionGenerator,
-        RefundReferenceNumberProviderInterface $refundReferenceNumberProvider,
+        private CacheAuthorizeClientApiInterface $authorizeClientApi,
+        private OrderDetailsApiInterface $orderDetailsApi,
+        private RefundPaymentApiInterface $refundOrderApi,
+        private PayPalAuthAssertionGeneratorInterface $payPalAuthAssertionGenerator,
+        private RefundReferenceNumberProviderInterface $refundReferenceNumberProvider,
     ) {
-        $this->authorizeClientApi = $authorizeClientApi;
-        $this->orderDetailsApi = $orderDetailsApi;
-        $this->refundOrderApi = $refundOrderApi;
-        $this->payPalAuthAssertionGenerator = $payPalAuthAssertionGenerator;
-        $this->refundReferenceNumberProvider = $refundReferenceNumberProvider;
     }
 
     public function refund(PaymentInterface $payment): void

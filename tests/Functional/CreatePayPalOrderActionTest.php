@@ -18,7 +18,7 @@ use ApiTestCase\JsonApiTestCase;
 final class CreatePayPalOrderActionTest extends JsonApiTestCase
 {
     /** @test */
-    public function it_creates_pay_pal_order_and_returns_its_data(): void
+    public function it_creates_paypal_order_and_returns_its_data(): void
     {
         $this->loadFixturesFromFiles(['resources/shop.yaml', 'resources/new_order.yaml']);
 

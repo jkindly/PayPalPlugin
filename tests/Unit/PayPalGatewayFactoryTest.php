@@ -20,14 +20,14 @@ use Sylius\PayPalPlugin\Payum\Factory\PayPalGatewayFactory;
 final class PayPalGatewayFactoryTest extends TestCase
 {
     /** @test */
-    public function it_populates_pay_pal_configuration(): void
+    public function it_populates_paypal_configuration(): void
     {
         $factory = new PayPalGatewayFactory();
 
         $config = $factory->createConfig();
 
-        $this->assertEquals('Pay Pal', $config['payum.factory_title']);
-        $this->assertEquals('pay_pal', $config['payum.factory_name']);
+        $this->assertEquals('PayPal', $config['payum.factory_title']);
+        $this->assertEquals('paypal', $config['payum.factory_name']);
         $this->assertEquals(new StatusAction(), $config['payum.action.status']);
     }
 }

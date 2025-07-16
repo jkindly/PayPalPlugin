@@ -20,18 +20,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Webmozart\Assert\Assert;
 
-final class DownloadPayoutsReportAction
+final readonly class DownloadPayoutsReportAction
 {
-    private PayoutsReportDownloaderInterface $payoutsReportDownloader;
-
-    private PaymentMethodRepositoryInterface $paymentMethodRepository;
-
     public function __construct(
-        PayoutsReportDownloaderInterface $payoutsReportDownloader,
-        PaymentMethodRepositoryInterface $paymentMethodRepository,
+        private PayoutsReportDownloaderInterface $payoutsReportDownloader,
+        private PaymentMethodRepositoryInterface $paymentMethodRepository,
     ) {
-        $this->payoutsReportDownloader = $payoutsReportDownloader;
-        $this->paymentMethodRepository = $paymentMethodRepository;
     }
 
     public function __invoke(Request $request): Response

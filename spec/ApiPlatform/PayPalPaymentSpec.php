@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace spec\Sylius\PayPalPlugin\ApiPlatform;
 
-use Payum\Core\Model\GatewayConfigInterface;
 use PhpSpec\ObjectBehavior;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\Component\Payment\Model\GatewayConfigInterface;
 use Sylius\PayPalPlugin\Provider\AvailableCountriesProviderInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -35,7 +35,7 @@ final class PayPalPaymentSpec extends ObjectBehavior
     ): void {
         $paymentMethod->getGatewayConfig()->willReturn($gatewayConfig);
 
-        $gatewayConfig->getFactoryName()->willReturn('sylius.pay_pal');
+        $gatewayConfig->getFactoryName()->willReturn('sylius_paypal');
 
         $this->supports($paymentMethod)->shouldReturn(true);
     }
@@ -68,25 +68,25 @@ final class PayPalPaymentSpec extends ObjectBehavior
         $availableCountriesProvider->provide()->willReturn(['PL', 'US']);
 
         $router->generate(
-            'sylius_paypal_plugin_complete_paypal_order',
+            'sylius_paypal_shop_complete_paypal_order',
             ['token' => 'TOKEN'],
             UrlGeneratorInterface::ABSOLUTE_URL,
         )->willReturn('https://path-to-complete/TOKEN');
 
         $router->generate(
-            'sylius_paypal_plugin_create_paypal_order',
+            'sylius_paypal_shop_create_paypal_order',
             ['token' => 'TOKEN'],
             UrlGeneratorInterface::ABSOLUTE_URL,
         )->willReturn('https://path-to-create/TOKEN');
 
         $router->generate(
-            'sylius_paypal_plugin_cancel_payment',
+            'sylius_paypal_shop_cancel_payment',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL,
         )->willReturn('https://path-to-cancel');
 
         $router->generate(
-            'sylius_paypal_plugin_payment_error',
+            'sylius_paypal_shop_payment_error',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL,
         )->willReturn('https://path-to-error');

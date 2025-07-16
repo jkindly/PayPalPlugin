@@ -25,30 +25,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Twig\Environment;
 
-final class PayWithPayPalFormAction
+final readonly class PayWithPayPalFormAction
 {
-    private Environment $twig;
-
-    private PaymentRepositoryInterface $paymentRepository;
-
-    private AvailableCountriesProviderInterface $countriesProvider;
-
-    private CacheAuthorizeClientApiInterface $authorizeClientApi;
-
-    private IdentityApiInterface $identityApi;
-
     public function __construct(
-        Environment $twig,
-        PaymentRepositoryInterface $paymentRepository,
-        AvailableCountriesProviderInterface $countriesProvider,
-        CacheAuthorizeClientApiInterface $authorizeClientApi,
-        IdentityApiInterface $identityApi,
+        private Environment $twig,
+        private PaymentRepositoryInterface $paymentRepository,
+        private AvailableCountriesProviderInterface $countriesProvider,
+        private CacheAuthorizeClientApiInterface $authorizeClientApi,
+        private IdentityApiInterface $identityApi,
     ) {
-        $this->twig = $twig;
-        $this->paymentRepository = $paymentRepository;
-        $this->countriesProvider = $countriesProvider;
-        $this->authorizeClientApi = $authorizeClientApi;
-        $this->identityApi = $identityApi;
     }
 
     public function __invoke(Request $request): Response
@@ -57,7 +42,7 @@ final class PayWithPayPalFormAction
         $orderToken = (string) $request->attributes->get('orderToken');
 
         /** @var PaymentInterface $payment */
-        $payment = $this->findOneByPaymentIdOrderToken($paymentId, $orderToken);
+        $payment = $this->paymentRepository->findOneByOrderToken($paymentId, $orderToken);
         /** @var PaymentMethodInterface $paymentMethod */
         $paymentMethod = $payment->getMethod();
 
@@ -74,7 +59,7 @@ final class PayWithPayPalFormAction
         $token = $this->authorizeClientApi->authorize($paymentMethod);
         $clientToken = $this->identityApi->generateToken($token);
 
-        return new Response($this->twig->render('@SyliusPayPalPlugin/payWithPaypal.html.twig', [
+        return new Response($this->twig->render('@SyliusPayPalPlugin/pay_with_paypal.html.twig', [
             'available_countries' => $this->countriesProvider->provide(),
             'billing_address' => $order->getBillingAddress(),
             'client_id' => $clientId,
@@ -85,23 +70,5 @@ final class PayWithPayPalFormAction
             'order_token' => $order->getTokenValue(),
             'partner_attribution_id' => $partnerAttributionId,
         ]));
-    }
-
-    /**
-     * Need to be used due to support for Sylius 1.8.
-     * After dropping it, we can switch to Sylius\Component\Core\Repository\PaymentRepositoryInterface::findOneByOrderToken
-     */
-    private function findOneByPaymentIdOrderToken(string $paymentId, string $orderToken): ?PaymentInterface
-    {
-        return $this->paymentRepository
-            ->createQueryBuilder('p')
-            ->innerJoin('p.order', 'o')
-            ->andWhere('p.id = :paymentId')
-            ->andWhere('o.tokenValue = :orderToken')
-            ->setParameter('paymentId', $paymentId)
-            ->setParameter('orderToken', $orderToken)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
     }
 }

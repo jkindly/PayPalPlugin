@@ -13,12 +13,12 @@ declare(strict_types=1);
 
 namespace spec\Sylius\PayPalPlugin\Processor;
 
-use Payum\Core\Model\GatewayConfigInterface;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\Component\Payment\Model\GatewayConfigInterface;
 use Sylius\PayPalPlugin\Manager\PaymentStateManagerInterface;
 use Sylius\PayPalPlugin\Verifier\PaymentAmountVerifierInterface;
 
@@ -31,7 +31,7 @@ final class PayPalOrderCompleteProcessorSpec extends ObjectBehavior
         $this->beConstructedWith($paymentStateManager, $paymentAmountVerifier);
     }
 
-    function it_completes_pay_pal_order(
+    function it_completes_paypal_order(
         PaymentStateManagerInterface $paymentStateManager,
         OrderInterface $order,
         PaymentInterface $payment,
@@ -43,7 +43,7 @@ final class PayPalOrderCompleteProcessorSpec extends ObjectBehavior
 
         $payment->getMethod()->willReturn($paymentMethod);
         $paymentMethod->getGatewayConfig()->willReturn($gatewayConfig);
-        $gatewayConfig->getFactoryName()->willReturn('sylius.pay_pal');
+        $gatewayConfig->getFactoryName()->willReturn('sylius_paypal');
         $paymentAmountVerifier->verify($payment)->shouldBeCalled();
 
         $paymentStateManager->complete($payment)->shouldBeCalled();
@@ -51,7 +51,7 @@ final class PayPalOrderCompleteProcessorSpec extends ObjectBehavior
         $this->completePayPalOrder($order);
     }
 
-    function it_does_nothing_if_processing_payment_is_not_pay_pal(
+    function it_does_nothing_if_processing_payment_is_not_paypal(
         PaymentStateManagerInterface $paymentStateManager,
         OrderInterface $order,
         PaymentInterface $payment,

@@ -13,19 +13,16 @@ declare(strict_types=1);
 
 namespace Sylius\PayPalPlugin\Downloader;
 
-use phpseclib\Net\SFTP;
+use phpseclib3\Net\SFTP;
 use Sylius\Bundle\PayumBundle\Model\GatewayConfigInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\PayPalPlugin\Exception\PayPalReportDownloadException;
 use Sylius\PayPalPlugin\Model\Report;
 
-final class SftpPayoutsReportDownloader implements PayoutsReportDownloaderInterface
+final readonly class SftpPayoutsReportDownloader implements PayoutsReportDownloaderInterface
 {
-    private SFTP $sftp;
-
-    public function __construct(SFTP $sftp)
+    public function __construct(private SFTP $sftp)
     {
-        $this->sftp = $sftp;
     }
 
     public function downloadFor(\DateTimeInterface $day, PaymentMethodInterface $paymentMethod): Report

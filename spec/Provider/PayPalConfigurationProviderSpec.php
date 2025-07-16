@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace spec\Sylius\PayPalPlugin\Provider;
 
-use Payum\Core\Model\GatewayConfigInterface;
 use PhpSpec\ObjectBehavior;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Core\Repository\PaymentMethodRepositoryInterface;
+use Sylius\Component\Payment\Model\GatewayConfigInterface;
 use Sylius\PayPalPlugin\Provider\PayPalConfigurationProviderInterface;
 
 final class PayPalConfigurationProviderSpec extends ObjectBehavior
@@ -27,7 +27,7 @@ final class PayPalConfigurationProviderSpec extends ObjectBehavior
         $this->beConstructedWith($paymentMethodRepository);
     }
 
-    function it_implements_pay_pal_configuration_provider_interface(): void
+    function it_implements_paypal_configuration_provider_interface(): void
     {
         $this->shouldImplement(PayPalConfigurationProviderInterface::class);
     }
@@ -49,7 +49,7 @@ final class PayPalConfigurationProviderSpec extends ObjectBehavior
         $otherGatewayConfig->getFactoryName()->willReturn('other');
 
         $payPalPaymentMethod->getGatewayConfig()->willReturn($payPalGatewayConfig);
-        $payPalGatewayConfig->getFactoryName()->willReturn('sylius.pay_pal');
+        $payPalGatewayConfig->getFactoryName()->willReturn('sylius_paypal');
 
         $payPalGatewayConfig->getConfig()->willReturn(['client_id' => '123123']);
 
@@ -73,14 +73,14 @@ final class PayPalConfigurationProviderSpec extends ObjectBehavior
         $otherGatewayConfig->getFactoryName()->willReturn('other');
 
         $payPalPaymentMethod->getGatewayConfig()->willReturn($payPalGatewayConfig);
-        $payPalGatewayConfig->getFactoryName()->willReturn('sylius.pay_pal');
+        $payPalGatewayConfig->getFactoryName()->willReturn('sylius_paypal');
 
         $payPalGatewayConfig->getConfig()->willReturn(['partner_attribution_id' => '123123']);
 
         $this->getPartnerAttributionId($channel)->shouldReturn('123123');
     }
 
-    function it_throws_an_exception_if_there_is_no_pay_pal_payment_method_defined(
+    function it_throws_an_exception_if_there_is_no_paypal_payment_method_defined(
         PaymentMethodRepositoryInterface $paymentMethodRepository,
         PaymentMethodInterface $otherPaymentMethod,
         GatewayConfigInterface $otherGatewayConfig,
@@ -101,7 +101,7 @@ final class PayPalConfigurationProviderSpec extends ObjectBehavior
         ;
     }
 
-    function it_throws_an_exception_if_there_is_no_client_id_on_pay_pal_payment_method(
+    function it_throws_an_exception_if_there_is_no_client_id_on_paypal_payment_method(
         PaymentMethodRepositoryInterface $paymentMethodRepository,
         PaymentMethodInterface $payPalPaymentMethod,
         PaymentMethodInterface $otherPaymentMethod,
@@ -118,7 +118,7 @@ final class PayPalConfigurationProviderSpec extends ObjectBehavior
         $otherGatewayConfig->getFactoryName()->willReturn('other');
 
         $payPalPaymentMethod->getGatewayConfig()->willReturn($payPalGatewayConfig);
-        $payPalGatewayConfig->getFactoryName()->willReturn('sylius.pay_pal');
+        $payPalGatewayConfig->getFactoryName()->willReturn('sylius_paypal');
 
         $payPalGatewayConfig->getConfig()->willReturn([]);
 
@@ -128,7 +128,7 @@ final class PayPalConfigurationProviderSpec extends ObjectBehavior
         ;
     }
 
-    function it_throws_an_exception_if_there_is_no_partner_attribution_id_on_pay_pal_payment_method(
+    function it_throws_an_exception_if_there_is_no_partner_attribution_id_on_paypal_payment_method(
         PaymentMethodRepositoryInterface $paymentMethodRepository,
         PaymentMethodInterface $payPalPaymentMethod,
         PaymentMethodInterface $otherPaymentMethod,
@@ -145,7 +145,7 @@ final class PayPalConfigurationProviderSpec extends ObjectBehavior
         $otherGatewayConfig->getFactoryName()->willReturn('other');
 
         $payPalPaymentMethod->getGatewayConfig()->willReturn($payPalGatewayConfig);
-        $payPalGatewayConfig->getFactoryName()->willReturn('sylius.pay_pal');
+        $payPalGatewayConfig->getFactoryName()->willReturn('sylius_paypal');
 
         $payPalGatewayConfig->getConfig()->willReturn([]);
 

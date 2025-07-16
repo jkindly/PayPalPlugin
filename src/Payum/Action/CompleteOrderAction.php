@@ -27,10 +27,9 @@ use Sylius\PayPalPlugin\Api\UpdateOrderAddressApiInterface;
 use Sylius\PayPalPlugin\Api\UpdateOrderApiInterface;
 use Sylius\PayPalPlugin\Payum\Request\CompleteOrder;
 use Sylius\PayPalPlugin\Processor\PayPalAddressProcessorInterface;
-use Sylius\PayPalPlugin\Provider\PayPalItemDataProviderInterface;
 use Sylius\PayPalPlugin\Updater\PaymentUpdaterInterface;
 
-final class CompleteOrderAction implements ActionInterface
+final readonly class CompleteOrderAction implements ActionInterface
 {
     public function __construct(
         private CacheAuthorizeClientApiInterface $authorizeClientApi,
@@ -40,19 +39,8 @@ final class CompleteOrderAction implements ActionInterface
         private ?PayPalAddressProcessorInterface $payPalAddressProcessor,
         private PaymentUpdaterInterface $payPalPaymentUpdater,
         private StateResolverInterface $orderPaymentStateResolver,
-        private ?PayPalItemDataProviderInterface $payPalItemsDataProvider,
         private ?UpdateOrderAddressApiInterface $updateOrderAddressApi = null,
     ) {
-        if (null !== $this->payPalItemsDataProvider) {
-            trigger_deprecation(
-                'sylius/paypal-plugin',
-                '1.7',
-                sprintf(
-                    'Passing an instance of "%s" as the eighth argument is deprecated and will be prohibited in 2.0',
-                    PayPalItemDataProviderInterface::class,
-                ),
-            );
-        }
         if (null !== $this->payPalAddressProcessor) {
             trigger_deprecation(
                 'sylius/paypal-plugin',

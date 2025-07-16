@@ -14,12 +14,12 @@ declare(strict_types=1);
 namespace spec\Sylius\PayPalPlugin\Processor;
 
 use GuzzleHttp\Exception\ClientException;
-use Payum\Core\Model\GatewayConfigInterface;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\Component\Payment\Model\GatewayConfigInterface;
 use Sylius\PayPalPlugin\Api\CacheAuthorizeClientApiInterface;
 use Sylius\PayPalPlugin\Api\OrderDetailsApiInterface;
 use Sylius\PayPalPlugin\Api\RefundPaymentApiInterface;
@@ -51,7 +51,7 @@ final class PayPalPaymentRefundProcessorSpec extends ObjectBehavior
         $this->shouldImplement(PaymentRefundProcessorInterface::class);
     }
 
-    function it_fully_refunds_payment_in_pay_pal(
+    function it_fully_refunds_payment_in_paypal(
         CacheAuthorizeClientApiInterface $authorizeClientApi,
         OrderDetailsApiInterface $orderDetailsApi,
         RefundPaymentApiInterface $refundOrderApi,
@@ -64,7 +64,7 @@ final class PayPalPaymentRefundProcessorSpec extends ObjectBehavior
     ): void {
         $payment->getMethod()->willReturn($paymentMethod);
         $paymentMethod->getGatewayConfig()->willReturn($gatewayConfig);
-        $gatewayConfig->getFactoryName()->willReturn('sylius.pay_pal');
+        $gatewayConfig->getFactoryName()->willReturn('sylius_paypal');
         $payment->getDetails()->willReturn(['paypal_order_id' => '123123']);
 
         $authorizeClientApi->authorize($paymentMethod)->willReturn('TOKEN');
@@ -88,7 +88,7 @@ final class PayPalPaymentRefundProcessorSpec extends ObjectBehavior
         $this->refund($payment);
     }
 
-    function it_does_nothing_if_payment_is_not_pay_pal(
+    function it_does_nothing_if_payment_is_not_paypal(
         RefundPaymentApiInterface $refundOrderApi,
         PaymentInterface $payment,
         PaymentMethodInterface $paymentMethod,
@@ -104,7 +104,7 @@ final class PayPalPaymentRefundProcessorSpec extends ObjectBehavior
         $this->refund($payment);
     }
 
-    function it_does_nothing_if_payment_is_payment_has_not_pay_pal_order_id(
+    function it_does_nothing_if_payment_is_payment_has_not_paypal_order_id(
         RefundPaymentApiInterface $refundOrderApi,
         PaymentInterface $payment,
         PaymentMethodInterface $paymentMethod,
@@ -112,7 +112,7 @@ final class PayPalPaymentRefundProcessorSpec extends ObjectBehavior
     ): void {
         $payment->getMethod()->willReturn($paymentMethod);
         $paymentMethod->getGatewayConfig()->willReturn($gatewayConfig);
-        $gatewayConfig->getFactoryName()->willReturn('sylius.pay_pal');
+        $gatewayConfig->getFactoryName()->willReturn('sylius_paypal');
         $gatewayConfig->getConfig()->willReturn(['client_id' => 'CLIENT_ID', 'client_secret' => 'CLIENT_SECRET']);
         $payment->getDetails()->willReturn([]);
 
@@ -134,7 +134,7 @@ final class PayPalPaymentRefundProcessorSpec extends ObjectBehavior
     ): void {
         $payment->getMethod()->willReturn($paymentMethod);
         $paymentMethod->getGatewayConfig()->willReturn($gatewayConfig);
-        $gatewayConfig->getFactoryName()->willReturn('sylius.pay_pal');
+        $gatewayConfig->getFactoryName()->willReturn('sylius_paypal');
         $payment->getDetails()->willReturn(['paypal_order_id' => '123123']);
 
         $authorizeClientApi->authorize($paymentMethod)->willReturn('TOKEN');

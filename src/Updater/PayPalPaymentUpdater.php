@@ -16,13 +16,10 @@ namespace Sylius\PayPalPlugin\Updater;
 use Doctrine\Persistence\ObjectManager;
 use Sylius\Component\Core\Model\PaymentInterface;
 
-final class PayPalPaymentUpdater implements PaymentUpdaterInterface
+final readonly class PayPalPaymentUpdater implements PaymentUpdaterInterface
 {
-    private ObjectManager $paymentManager;
-
-    public function __construct(ObjectManager $paymentManager)
+    public function __construct(private ObjectManager $paymentManager)
     {
-        $this->paymentManager = $paymentManager;
     }
 
     public function updateAmount(PaymentInterface $payment, int $newAmount): void

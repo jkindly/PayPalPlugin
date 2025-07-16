@@ -13,13 +13,13 @@ declare(strict_types=1);
 
 namespace spec\Sylius\PayPalPlugin\Onboarding\Initiator;
 
-use Payum\Core\Model\GatewayConfigInterface;
 use PhpSpec\ObjectBehavior;
 use Sylius\Component\Core\Model\AdminUserInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\Component\Payment\Model\GatewayConfigInterface;
 use Sylius\PayPalPlugin\Onboarding\Initiator\OnboardingInitiatorInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Security;
 
 final class OnboardingInitiatorSpec extends ObjectBehavior
 {
@@ -49,7 +49,7 @@ final class OnboardingInitiatorSpec extends ObjectBehavior
         GatewayConfigInterface $gatewayConfig,
     ): void {
         $paymentMethod->getGatewayConfig()->willReturn($gatewayConfig);
-        $gatewayConfig->getFactoryName()->willReturn('sylius.pay_pal');
+        $gatewayConfig->getFactoryName()->willReturn('sylius_paypal');
         $gatewayConfig->getConfig()->willReturn(['some_parameter' => 'test']);
 
         $this->supports($paymentMethod)->shouldReturn(true);
@@ -60,7 +60,7 @@ final class OnboardingInitiatorSpec extends ObjectBehavior
         GatewayConfigInterface $gatewayConfig,
     ): void {
         $paymentMethod->getGatewayConfig()->willReturn($gatewayConfig);
-        $gatewayConfig->getFactoryName()->willReturn('sylius.pay_pal');
+        $gatewayConfig->getFactoryName()->willReturn('sylius_paypal');
         $gatewayConfig->getConfig()->willReturn(['client_id' => '123123']);
 
         $this->supports($paymentMethod)->shouldReturn(false);
@@ -93,19 +93,19 @@ final class OnboardingInitiatorSpec extends ObjectBehavior
     ): void {
         $paymentMethod->getGatewayConfig()->willReturn($gatewayConfig);
 
-        $gatewayConfig->getFactoryName()->willReturn('sylius.pay_pal');
+        $gatewayConfig->getFactoryName()->willReturn('sylius_paypal');
         $gatewayConfig->getConfig()->willReturn([]);
 
         $security->getUser()->willReturn($adminUser);
         $adminUser->getEmail()->willReturn('sylius@sylius.com');
 
         $urlGenerator
-            ->generate('sylius_admin_payment_method_create', ['factory' => 'sylius.pay_pal'], UrlGeneratorInterface::ABSOLUTE_URL)
-            ->willReturn('/admin/payment-methods/new/sylius.pay_pal')
+            ->generate('sylius_admin_payment_method_create', ['factory' => 'sylius_paypal'], UrlGeneratorInterface::ABSOLUTE_URL)
+            ->willReturn('/admin/payment-methods/new/sylius_paypal')
         ;
 
         $this->initiate($paymentMethod)->shouldReturn(
-            'https://paypal-url/partner-referrals/create?email=sylius%40sylius.com&return_url=%2Fadmin%2Fpayment-methods%2Fnew%2Fsylius.pay_pal',
+            'https://paypal-url/partner-referrals/create?email=sylius%40sylius.com&return_url=%2Fadmin%2Fpayment-methods%2Fnew%2Fsylius_paypal',
         );
     }
 }
