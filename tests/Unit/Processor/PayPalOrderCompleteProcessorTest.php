@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Processor;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
@@ -25,8 +26,8 @@ use Sylius\PayPalPlugin\Verifier\PaymentAmountVerifierInterface;
 final class PayPalOrderCompleteProcessorTest extends TestCase
 {
     private PayPalOrderCompleteProcessor $paypalOrderCompleteProcessor;
-    private PaymentStateManagerInterface $paymentStateManager;
-    private PaymentAmountVerifierInterface $paymentAmountVerifier;
+    private PaymentStateManagerInterface&MockObject $paymentStateManager;
+    private PaymentAmountVerifierInterface&MockObject $paymentAmountVerifier;
 
     protected function setUp(): void
     {

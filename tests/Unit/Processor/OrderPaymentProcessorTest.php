@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Processor;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Abstraction\StateMachine\StateMachineInterface;
 use Sylius\Bundle\PayumBundle\Model\GatewayConfigInterface;
@@ -26,8 +27,8 @@ use Sylius\PayPalPlugin\Processor\OrderPaymentProcessor;
 final class OrderPaymentProcessorTest extends TestCase
 {
     private OrderPaymentProcessor $orderPaymentProcessor;
-    private OrderProcessorInterface $baseOrderProcessor;
-    private StateMachineInterface $stateMachine;
+    private OrderProcessorInterface&MockObject $baseOrderProcessor;
+    private StateMachineInterface&MockObject $stateMachine;
 
     protected function setUp(): void
     {

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\PayPalPlugin\Unit\Processor;
 
 use GuzzleHttp\Exception\ClientException;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
@@ -31,11 +32,11 @@ use Sylius\PayPalPlugin\Provider\RefundReferenceNumberProviderInterface;
 final class PayPalPaymentRefundProcessorTest extends TestCase
 {
     private PayPalPaymentRefundProcessor $paypalPaymentRefundProcessor;
-    private CacheAuthorizeClientApiInterface $authorizeClientApi;
-    private OrderDetailsApiInterface $orderDetailsApi;
-    private RefundPaymentApiInterface $refundOrderApi;
-    private PayPalAuthAssertionGeneratorInterface $payPalAuthAssertionGenerator;
-    private RefundReferenceNumberProviderInterface $refundReferenceNumberProvider;
+    private CacheAuthorizeClientApiInterface&MockObject $authorizeClientApi;
+    private OrderDetailsApiInterface&MockObject $orderDetailsApi;
+    private RefundPaymentApiInterface&MockObject $refundOrderApi;
+    private PayPalAuthAssertionGeneratorInterface&MockObject $payPalAuthAssertionGenerator;
+    private RefundReferenceNumberProviderInterface&MockObject $refundReferenceNumberProvider;
 
     protected function setUp(): void
     {
