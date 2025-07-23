@@ -1,0 +1,54 @@
+<?php
+
+/*
+ * This file is part of the Sylius package.
+ *
+ * (c) Sylius Sp. z o.o.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
+namespace Tests\Sylius\PayPalPlugin\Unit\Api;
+
+use PHPUnit\Framework\TestCase;
+use Sylius\PayPalPlugin\Api\RefundPaymentApi;
+use Sylius\PayPalPlugin\Api\RefundPaymentApiInterface;
+use Sylius\PayPalPlugin\Client\PayPalClientInterface;
+
+final class RefundPaymentApiTest extends TestCase
+{
+    private PayPalClientInterface $client;
+    private RefundPaymentApi $refundPaymentApi;
+
+    protected function setUp(): void
+    {
+        $this->client = $this->createMock(PayPalClientInterface::class);
+        $this->refundPaymentApi = new RefundPaymentApi($this->client);
+    }
+
+    public function testItImplementsRefundOrderApiInterface(): void
+    {
+        $this->assertInstanceOf(RefundPaymentApiInterface::class, $this->refundPaymentApi);
+    }
+
+    public function testItRefundsPaypalPaymentWithGivenId(): void
+    {
+        $this->client
+            ->expects($this->once())
+            ->method('post')
+            ->with(
+                'v2/payments/captures/123123/refund',
+                'TOKEN',
+                ['amount' => ['value' => '10.99', 'currency_code' => 'USD'], 'invoice_id' => '123-11-11-2010'],
+                ['PayPal-Auth-Assertion' => 'PAY-PAL-AUTH-ASSERTION'],
+            )
+            ->willReturn(['status' => 'COMPLETED', 'id' => '123123']);
+
+        $result = $this->refundPaymentApi->refund('TOKEN', '123123', 'PAY-PAL-AUTH-ASSERTION', '123-11-11-2010', '10.99', 'USD');
+
+        $this->assertEquals(['status' => 'COMPLETED', 'id' => '123123'], $result);
+    }
+}

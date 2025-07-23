@@ -1,0 +1,137 @@
+<?php
+
+/*
+ * This file is part of the Sylius package.
+ *
+ * (c) Sylius Sp. z o.o.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
+namespace Tests\Sylius\PayPalPlugin\Unit\Api;
+
+use PHPUnit\Framework\TestCase;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Http\Message\StreamInterface;
+use Sylius\PayPalPlugin\Api\WebhookApi;
+
+final class WebhookApiTest extends TestCase
+{
+    private ClientInterface $client;
+    private RequestFactoryInterface $requestFactory;
+    private StreamFactoryInterface $streamFactory;
+    private WebhookApi $webhookApi;
+
+    protected function setUp(): void
+    {
+        $this->client = $this->createMock(ClientInterface::class);
+        $this->requestFactory = $this->createMock(RequestFactoryInterface::class);
+        $this->streamFactory = $this->createMock(StreamFactoryInterface::class);
+
+        $this->webhookApi = new WebhookApi(
+            $this->client,
+            'http://base-url.com/',
+            $this->requestFactory,
+            $this->streamFactory
+        );
+    }
+
+    public function testItRegistersWebhook(): void
+    {
+        $request = $this->createMock(RequestInterface::class);
+        $response = $this->createMock(ResponseInterface::class);
+        $body = $this->createMock(StreamInterface::class);
+        $stream = $this->createMock(StreamInterface::class);
+
+        $this->requestFactory
+            ->expects($this->once())
+            ->method('createRequest')
+            ->with('POST', 'http://base-url.com/v1/notifications/webhooks')
+            ->willReturn($request);
+
+        $request
+            ->method('withHeader')
+            ->willReturn($request);
+
+        $request
+            ->method('withBody')
+            ->willReturn($request);
+
+        $this->streamFactory
+            ->method('createStream')
+            ->willReturn($stream);
+
+        $this->client
+            ->expects($this->once())
+            ->method('sendRequest')
+            ->with($request)
+            ->willReturn($response);
+
+        $response
+            ->expects($this->once())
+            ->method('getBody')
+            ->willReturn($body);
+
+        $body
+            ->expects($this->once())
+            ->method('getContents')
+            ->willReturn('{ "status": "CREATED" }');
+
+        $result = $this->webhookApi->register('TOKEN', 'https://webhook.com');
+
+        $this->assertEquals(['status' => 'CREATED'], $result);
+    }
+
+    public function testItRegistersWebhookWithoutHttps(): void
+    {
+        $request = $this->createMock(RequestInterface::class);
+        $response = $this->createMock(ResponseInterface::class);
+        $body = $this->createMock(StreamInterface::class);
+        $stream = $this->createMock(StreamInterface::class);
+
+        $this->requestFactory
+            ->expects($this->once())
+            ->method('createRequest')
+            ->with('POST', 'http://base-url.com/v1/notifications/webhooks')
+            ->willReturn($request);
+
+        $request
+            ->method('withHeader')
+            ->willReturn($request);
+
+        $request
+            ->method('withBody')
+            ->willReturn($request);
+
+        $this->streamFactory
+            ->method('createStream')
+            ->willReturn($stream);
+
+        $this->client
+            ->expects($this->once())
+            ->method('sendRequest')
+            ->with($request)
+            ->willReturn($response);
+
+        $response
+            ->expects($this->once())
+            ->method('getBody')
+            ->willReturn($body);
+
+        $body
+            ->expects($this->once())
+            ->method('getContents')
+            ->willReturn('{ "status": "CREATED" }');
+
+        $result = $this->webhookApi->register('TOKEN', 'http://webhook.com');
+
+        $this->assertEquals(['status' => 'CREATED'], $result);
+    }
+}
