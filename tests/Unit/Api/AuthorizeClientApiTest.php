@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Api;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\PayPalPlugin\Api\AuthorizeClientApi;
 use Sylius\PayPalPlugin\Api\AuthorizeClientApiInterface;
@@ -20,18 +21,19 @@ use Sylius\PayPalPlugin\Client\PayPalClientInterface;
 
 final class AuthorizeClientApiTest extends TestCase
 {
-    private PayPalClientInterface $payPalClient;
+    private PayPalClientInterface&MockObject $payPalClient;
     private AuthorizeClientApi $authorizeClientApi;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->payPalClient = $this->createMock(PayPalClientInterface::class);
         $this->authorizeClientApi = new AuthorizeClientApi($this->payPalClient);
     }
 
     public function testItImplementsAuthorizeClientApiInterface(): void
     {
-        $this->assertInstanceOf(AuthorizeClientApiInterface::class, $this->authorizeClientApi);
+        self::assertInstanceOf(AuthorizeClientApiInterface::class, $this->authorizeClientApi);
     }
 
     public function testItReturnsAuthTokenForGivenClientData(): void
@@ -43,6 +45,6 @@ final class AuthorizeClientApiTest extends TestCase
 
         $result = $this->authorizeClientApi->authorize('CLIENT_ID', 'CLIENT_SECRET');
 
-        $this->assertEquals('TOKEN', $result);
+        self::assertEquals('TOKEN', $result);
     }
 }

@@ -26,11 +26,12 @@ use Sylius\PayPalPlugin\Resolver\CapturePaymentResolverInterface;
 
 final class CapturePaymentResolverTest extends TestCase
 {
-    private Payum|MockObject $payum;
+    private Payum&MockObject $payum;
     private CapturePaymentResolver $capturePaymentResolver;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->payum = $this->createMock(Payum::class);
 
         $this->capturePaymentResolver = new CapturePaymentResolver($this->payum);
@@ -38,7 +39,7 @@ final class CapturePaymentResolverTest extends TestCase
 
     public function testItIsAnCapturePaymentResolver(): void
     {
-        $this->assertInstanceOf(CapturePaymentResolverInterface::class, $this->capturePaymentResolver);
+        self::assertInstanceOf(CapturePaymentResolverInterface::class, $this->capturePaymentResolver);
     }
 
     public function testItExecutesCaptureActionOnPayment(): void
@@ -54,7 +55,7 @@ final class CapturePaymentResolverTest extends TestCase
 
         $this->payum->method('getGateway')->with('gateway-12')->willReturn($gateway);
 
-        $gateway->expects($this->once())
+        $gateway->expects(self::once())
             ->method('execute')
             ->with($this->callback(function (Capture $request) use ($payment): bool {
                 return $request->getModel() === $payment;

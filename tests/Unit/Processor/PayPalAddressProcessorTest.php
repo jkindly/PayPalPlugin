@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\PayPalPlugin\Unit\Processor;
 
 use Doctrine\Persistence\ObjectManager;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\AddressInterface;
 use Sylius\Component\Core\Model\OrderInterface;
@@ -23,18 +24,19 @@ use Sylius\PayPalPlugin\Processor\PayPalAddressProcessorInterface;
 final class PayPalAddressProcessorTest extends TestCase
 {
     private PayPalAddressProcessor $paypalAddressProcessor;
-    private ObjectManager $objectManager;
+    private ObjectManager&MockObject $objectManager;
 
     protected function setUp(): void
     {
+
         $this->objectManager = $this->createMock(ObjectManager::class);
-        
+
         $this->paypalAddressProcessor = new PayPalAddressProcessor($this->objectManager);
     }
 
     public function testItImplementsPaypalAddressProcessorInterface(): void
     {
-        $this->assertInstanceOf(PayPalAddressProcessorInterface::class, $this->paypalAddressProcessor);
+        self::assertInstanceOf(PayPalAddressProcessorInterface::class, $this->paypalAddressProcessor);
     }
 
     public function testItUpdatesOrderAddress(): void
@@ -44,12 +46,12 @@ final class PayPalAddressProcessorTest extends TestCase
 
         $order->method('getShippingAddress')->willReturn($orderAddress);
 
-        $orderAddress->expects($this->once())->method('setCity')->with('New York');
-        $orderAddress->expects($this->once())->method('setStreet')->with('Main St. 123');
-        $orderAddress->expects($this->once())->method('setPostcode')->with('10001');
-        $orderAddress->expects($this->once())->method('setCountryCode')->with('US');
+        $orderAddress->expects(self::once())->method('setCity')->with('New York');
+        $orderAddress->expects(self::once())->method('setStreet')->with('Main St. 123');
+        $orderAddress->expects(self::once())->method('setPostcode')->with('10001');
+        $orderAddress->expects(self::once())->method('setCountryCode')->with('US');
 
-        $this->objectManager->expects($this->once())->method('flush');
+        $this->objectManager->expects(self::once())->method('flush');
 
         $this->paypalAddressProcessor->process(
             [
@@ -69,12 +71,12 @@ final class PayPalAddressProcessorTest extends TestCase
 
         $order->method('getShippingAddress')->willReturn($orderAddress);
 
-        $orderAddress->expects($this->once())->method('setCity')->with('New York');
-        $orderAddress->expects($this->once())->method('setStreet')->with('Main St. 123');
-        $orderAddress->expects($this->once())->method('setPostcode')->with('10001');
-        $orderAddress->expects($this->once())->method('setCountryCode')->with('US');
+        $orderAddress->expects(self::once())->method('setCity')->with('New York');
+        $orderAddress->expects(self::once())->method('setStreet')->with('Main St. 123');
+        $orderAddress->expects(self::once())->method('setPostcode')->with('10001');
+        $orderAddress->expects(self::once())->method('setCountryCode')->with('US');
 
-        $this->objectManager->expects($this->once())->method('flush');
+        $this->objectManager->expects(self::once())->method('flush');
 
         $this->paypalAddressProcessor->process(
             [

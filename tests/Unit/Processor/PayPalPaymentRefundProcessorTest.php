@@ -39,12 +39,13 @@ final class PayPalPaymentRefundProcessorTest extends TestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->authorizeClientApi = $this->createMock(CacheAuthorizeClientApiInterface::class);
         $this->orderDetailsApi = $this->createMock(OrderDetailsApiInterface::class);
         $this->refundOrderApi = $this->createMock(RefundPaymentApiInterface::class);
         $this->payPalAuthAssertionGenerator = $this->createMock(PayPalAuthAssertionGeneratorInterface::class);
         $this->refundReferenceNumberProvider = $this->createMock(RefundReferenceNumberProviderInterface::class);
-        
+
         $this->paypalPaymentRefundProcessor = new PayPalPaymentRefundProcessor(
             $this->authorizeClientApi,
             $this->orderDetailsApi,
@@ -56,7 +57,7 @@ final class PayPalPaymentRefundProcessorTest extends TestCase
 
     public function testItImplementsPaymentRefundProcessorInterface(): void
     {
-        $this->assertInstanceOf(PaymentRefundProcessorInterface::class, $this->paypalPaymentRefundProcessor);
+        self::assertInstanceOf(PaymentRefundProcessorInterface::class, $this->paypalPaymentRefundProcessor);
     }
 
     public function testItFullyRefundsPaymentInPaypal(): void
@@ -85,16 +86,16 @@ final class PayPalPaymentRefundProcessorTest extends TestCase
         $this->refundReferenceNumberProvider->method('provide')->with($payment)->willReturn('REFERENCE-NUMBER');
 
         $this->refundOrderApi
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('refund')
             ->with('TOKEN', '555', 'AUTH-ASSERTION', 'REFERENCE-NUMBER', '10', 'USD')
             ->willReturn(['status' => 'COMPLETED', 'id' => '123123']);
 
         // Test that refund method executes without throwing an exception
         $this->paypalPaymentRefundProcessor->refund($payment);
-        
+
         // Assert that we get here without exceptions (test passes)
-        $this->assertTrue(true);
+        self::assertTrue(true);
     }
 
     public function testItDoesNothingIfPaymentIsNotPaypal(): void

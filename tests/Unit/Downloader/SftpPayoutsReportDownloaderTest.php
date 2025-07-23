@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\PayPalPlugin\Unit\Downloader;
 
 use phpseclib3\Net\SFTP;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Payment\Model\GatewayConfigInterface;
@@ -24,18 +25,19 @@ use Sylius\PayPalPlugin\Model\Report;
 
 final class SftpPayoutsReportDownloaderTest extends TestCase
 {
-    private SFTP $sftp;
+    private SFTP&MockObject $sftp;
     private SftpPayoutsReportDownloader $sftpPayoutsReportDownloader;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->sftp = $this->createMock(SFTP::class);
         $this->sftpPayoutsReportDownloader = new SftpPayoutsReportDownloader($this->sftp);
     }
 
     public function testItImplementsPayoutsReportDownloaderInterface(): void
     {
-        $this->assertInstanceOf(PayoutsReportDownloaderInterface::class, $this->sftpPayoutsReportDownloader);
+        self::assertInstanceOf(PayoutsReportDownloaderInterface::class, $this->sftpPayoutsReportDownloader);
     }
 
     public function testItReturnsContentOfTheLatestPytReportFromPaypalSftpServer(): void
@@ -44,12 +46,12 @@ final class SftpPayoutsReportDownloaderTest extends TestCase
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
 
         $paymentMethod
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getGatewayConfig')
             ->willReturn($gatewayConfig);
 
         $gatewayConfig
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getConfig')
             ->willReturn([
                 'partner_attribution_id' => 'PARTNER-ID',
@@ -58,14 +60,14 @@ final class SftpPayoutsReportDownloaderTest extends TestCase
             ]);
 
         $this->sftp
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('login')
             ->with('SFTP-USERNAME', 'SFTP-PASSWORD')
             ->willReturn(true);
 
         $yesterday = new \DateTime('-1 day');
         $this->sftp
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('get')
             ->with(sprintf('ppreports/outgoing/PYT.%s.PARTNER-ID.R.0.2.0.CSV', $yesterday->format('Ymd')))
             ->willReturn('REPORT-CONTENT');
@@ -73,7 +75,7 @@ final class SftpPayoutsReportDownloaderTest extends TestCase
         $result = $this->sftpPayoutsReportDownloader->downloadFor($yesterday, $paymentMethod);
         $expected = new Report('REPORT-CONTENT', sprintf('PYT%s.csv', $yesterday->format('Ymd')));
 
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     public function testItThrowsAnExceptionIfPaymentMethodHasNoPartnerAttributionId(): void
@@ -82,12 +84,12 @@ final class SftpPayoutsReportDownloaderTest extends TestCase
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
 
         $paymentMethod
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getGatewayConfig')
             ->willReturn($gatewayConfig);
 
         $gatewayConfig
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getConfig')
             ->willReturn([]);
 
@@ -102,12 +104,12 @@ final class SftpPayoutsReportDownloaderTest extends TestCase
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
 
         $paymentMethod
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getGatewayConfig')
             ->willReturn($gatewayConfig);
 
         $gatewayConfig
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getConfig')
             ->willReturn([
                 'partner_attribution_id' => 'PARTNER-ID',
@@ -116,7 +118,7 @@ final class SftpPayoutsReportDownloaderTest extends TestCase
             ]);
 
         $this->sftp
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('login')
             ->with('SFTP-USERNAME', 'SFTP-PASSWORD')
             ->willReturn(false);
@@ -132,12 +134,12 @@ final class SftpPayoutsReportDownloaderTest extends TestCase
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
 
         $paymentMethod
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getGatewayConfig')
             ->willReturn($gatewayConfig);
 
         $gatewayConfig
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getConfig')
             ->willReturn([
                 'partner_attribution_id' => 'PARTNER-ID',
@@ -146,14 +148,14 @@ final class SftpPayoutsReportDownloaderTest extends TestCase
             ]);
 
         $this->sftp
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('login')
             ->with('SFTP-USERNAME', 'SFTP-PASSWORD')
             ->willReturn(true);
 
         $yesterday = new \DateTime('-1 day');
         $this->sftp
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('get')
             ->with(sprintf('ppreports/outgoing/PYT.%s.PARTNER-ID.R.0.2.0.CSV', $yesterday->format('Ymd')))
             ->willReturn(false);

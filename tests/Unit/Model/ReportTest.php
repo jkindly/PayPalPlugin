@@ -22,16 +22,17 @@ final class ReportTest extends TestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->report = new Report('content', 'report.csv');
     }
 
     public function testItHasContent(): void
     {
-        $this->assertEquals('content', $this->report->content());
+        self::assertEquals('content', $this->report->content());
     }
 
     public function testItHasAFileName(): void
     {
-        $this->assertEquals('report.csv', $this->report->fileName());
+        self::assertEquals('report.csv', $this->report->fileName());
     }
 }

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Model;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\AddressInterface;
 use Sylius\Component\Core\Model\OrderInterface;
@@ -21,12 +22,13 @@ use Sylius\PayPalPlugin\Model\PayPalPurchaseUnit;
 
 final class PayPalOrderTest extends TestCase
 {
-    private OrderInterface $order;
-    private PayPalPurchaseUnit $payPalPurchaseUnit;
+    private OrderInterface&MockObject $order;
+    private PayPalPurchaseUnit&MockObject $payPalPurchaseUnit;
     private PayPalOrder $payPalOrder;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->order = $this->createMock(OrderInterface::class);
         $this->payPalPurchaseUnit = $this->createMock(PayPalPurchaseUnit::class);
         $this->payPalOrder = new PayPalOrder($this->order, $this->payPalPurchaseUnit, 'CAPTURE');
@@ -35,7 +37,7 @@ final class PayPalOrderTest extends TestCase
     public function testItReturnsFullPaypalOrderData(): void
     {
         $shippingAddress = $this->createMock(AddressInterface::class);
-        
+
         $this->order->method('isShippingRequired')->willReturn(true);
         $this->order->method('getShippingAddress')->willReturn($shippingAddress);
 
@@ -86,7 +88,7 @@ final class PayPalOrderTest extends TestCase
 
         $result = $this->payPalOrder->toArray();
 
-        $this->assertEquals([
+        self::assertEquals([
             'intent' => 'CAPTURE',
             'purchase_units' => [
                 [
@@ -181,7 +183,7 @@ final class PayPalOrderTest extends TestCase
 
         $result = $this->payPalOrder->toArray();
 
-        $this->assertEquals([
+        self::assertEquals([
             'intent' => 'CAPTURE',
             'purchase_units' => [
                 [
@@ -264,7 +266,7 @@ final class PayPalOrderTest extends TestCase
 
         $result = $this->payPalOrder->toArray();
 
-        $this->assertEquals([
+        self::assertEquals([
             'intent' => 'CAPTURE',
             'purchase_units' => [
                 [

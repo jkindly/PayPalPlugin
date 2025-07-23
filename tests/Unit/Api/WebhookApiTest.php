@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Api;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -24,13 +25,14 @@ use Sylius\PayPalPlugin\Api\WebhookApi;
 
 final class WebhookApiTest extends TestCase
 {
-    private ClientInterface $client;
-    private RequestFactoryInterface $requestFactory;
-    private StreamFactoryInterface $streamFactory;
+    private ClientInterface&MockObject $client;
+    private RequestFactoryInterface&MockObject $requestFactory;
+    private StreamFactoryInterface&MockObject $streamFactory;
     private WebhookApi $webhookApi;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->client = $this->createMock(ClientInterface::class);
         $this->requestFactory = $this->createMock(RequestFactoryInterface::class);
         $this->streamFactory = $this->createMock(StreamFactoryInterface::class);
@@ -51,7 +53,7 @@ final class WebhookApiTest extends TestCase
         $stream = $this->createMock(StreamInterface::class);
 
         $this->requestFactory
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('createRequest')
             ->with('POST', 'http://base-url.com/v1/notifications/webhooks')
             ->willReturn($request);
@@ -69,24 +71,24 @@ final class WebhookApiTest extends TestCase
             ->willReturn($stream);
 
         $this->client
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('sendRequest')
             ->with($request)
             ->willReturn($response);
 
         $response
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getBody')
             ->willReturn($body);
 
         $body
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getContents')
             ->willReturn('{ "status": "CREATED" }');
 
         $result = $this->webhookApi->register('TOKEN', 'https://webhook.com');
 
-        $this->assertEquals(['status' => 'CREATED'], $result);
+        self::assertEquals(['status' => 'CREATED'], $result);
     }
 
     public function testItRegistersWebhookWithoutHttps(): void
@@ -97,7 +99,7 @@ final class WebhookApiTest extends TestCase
         $stream = $this->createMock(StreamInterface::class);
 
         $this->requestFactory
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('createRequest')
             ->with('POST', 'http://base-url.com/v1/notifications/webhooks')
             ->willReturn($request);
@@ -115,23 +117,23 @@ final class WebhookApiTest extends TestCase
             ->willReturn($stream);
 
         $this->client
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('sendRequest')
             ->with($request)
             ->willReturn($response);
 
         $response
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getBody')
             ->willReturn($body);
 
         $body
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getContents')
             ->willReturn('{ "status": "CREATED" }');
 
         $result = $this->webhookApi->register('TOKEN', 'http://webhook.com');
 
-        $this->assertEquals(['status' => 'CREATED'], $result);
+        self::assertEquals(['status' => 'CREATED'], $result);
     }
 }

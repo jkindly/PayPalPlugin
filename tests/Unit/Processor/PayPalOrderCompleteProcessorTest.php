@@ -30,9 +30,10 @@ final class PayPalOrderCompleteProcessorTest extends TestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->paymentStateManager = $this->createMock(PaymentStateManagerInterface::class);
         $this->paymentAmountVerifier = $this->createMock(PaymentAmountVerifierInterface::class);
-        
+
         $this->paypalOrderCompleteProcessor = new PayPalOrderCompleteProcessor(
             $this->paymentStateManager,
             $this->paymentAmountVerifier
@@ -52,8 +53,8 @@ final class PayPalOrderCompleteProcessorTest extends TestCase
         $paymentMethod->method('getGatewayConfig')->willReturn($gatewayConfig);
         $gatewayConfig->method('getFactoryName')->willReturn('sylius_paypal');
 
-        $this->paymentAmountVerifier->expects($this->once())->method('verify')->with($payment);
-        $this->paymentStateManager->expects($this->once())->method('complete')->with($payment);
+        $this->paymentAmountVerifier->expects(self::once())->method('verify')->with($payment);
+        $this->paymentStateManager->expects(self::once())->method('complete')->with($payment);
 
         $this->paypalOrderCompleteProcessor->completePayPalOrder($order);
     }

@@ -29,12 +29,13 @@ final class AuthorizeActionTest extends TestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->authorizeAction = new AuthorizeAction();
     }
 
     public function testItImplementsActionInterface(): void
     {
-        $this->assertInstanceOf(ActionInterface::class, $this->authorizeAction);
+        self::assertInstanceOf(ActionInterface::class, $this->authorizeAction);
     }
 
     public function testItMarksPaymentAsCreated(): void
@@ -43,7 +44,7 @@ final class AuthorizeActionTest extends TestCase
         $payment = $this->createMock(PaymentInterface::class);
 
         $request->method('getModel')->willReturn($payment);
-        $payment->expects($this->once())->method('setDetails')->with(['status' => StatusAction::STATUS_CREATED]);
+        $payment->expects(self::once())->method('setDetails')->with(['status' => StatusAction::STATUS_CREATED]);
 
         $this->authorizeAction->execute($request);
     }
@@ -63,14 +64,14 @@ final class AuthorizeActionTest extends TestCase
 
         $request->method('getModel')->willReturn($payment);
 
-        $this->assertTrue($this->authorizeAction->supports($request));
+        self::assertTrue($this->authorizeAction->supports($request));
     }
 
     public function testItDoesNotSupportRequestOtherThanAuthorize(): void
     {
         $request = $this->createMock(Capture::class);
 
-        $this->assertFalse($this->authorizeAction->supports($request));
+        self::assertFalse($this->authorizeAction->supports($request));
     }
 
     public function testItDoesNotSupportRequestWithFirstModelOtherThanPayment(): void
@@ -78,6 +79,6 @@ final class AuthorizeActionTest extends TestCase
         $request = $this->createMock(Authorize::class);
         $request->method('getModel')->willReturn('badObject');
 
-        $this->assertFalse($this->authorizeAction->supports($request));
+        self::assertFalse($this->authorizeAction->supports($request));
     }
 }

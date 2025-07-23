@@ -25,17 +25,18 @@ final class CompleteOrderTest extends TestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->payment = $this->createMock(PaymentInterface::class);
         $this->completeOrder = new CompleteOrder($this->payment, '123123');
     }
 
     public function testItIsGenericAction(): void
     {
-        $this->assertInstanceOf(Generic::class, $this->completeOrder);
+        self::assertInstanceOf(Generic::class, $this->completeOrder);
     }
 
     public function testItHasAnOrderId(): void
     {
-        $this->assertEquals('123123', $this->completeOrder->getOrderId());
+        self::assertEquals('123123', $this->completeOrder->getOrderId());
     }
 }

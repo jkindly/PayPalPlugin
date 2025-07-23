@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Onboarding\Initiator;
 
+use Mockery\Mock;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\AdminUserInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
@@ -24,12 +26,13 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class OnboardingInitiatorTest extends TestCase
 {
-    private UrlGeneratorInterface $urlGenerator;
-    private Security $security;
+    private UrlGeneratorInterface&MockObject $urlGenerator;
+    private Security&MockObject $security;
     private OnboardingInitiator $onboardingInitiator;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->urlGenerator = $this->createMock(UrlGeneratorInterface::class);
         $this->security = $this->createMock(Security::class);
         $this->onboardingInitiator = new OnboardingInitiator($this->urlGenerator, $this->security, 'https://paypal-url');
@@ -37,7 +40,7 @@ final class OnboardingInitiatorTest extends TestCase
 
     public function testItImplementsOnboardingInitiatorInterface(): void
     {
-        $this->assertInstanceOf(OnboardingInitiatorInterface::class, $this->onboardingInitiator);
+        self::assertInstanceOf(OnboardingInitiatorInterface::class, $this->onboardingInitiator);
     }
 
     public function testItThrowsAnExceptionDuringInitializationIfPaymentMethodIsNotSupported(): void
@@ -53,35 +56,35 @@ final class OnboardingInitiatorTest extends TestCase
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
-        
+
         $paymentMethod->method('getGatewayConfig')->willReturn($gatewayConfig);
         $gatewayConfig->method('getFactoryName')->willReturn('sylius_paypal');
         $gatewayConfig->method('getConfig')->willReturn(['some_parameter' => 'test']);
 
-        $this->assertTrue($this->onboardingInitiator->supports($paymentMethod));
+        self::assertTrue($this->onboardingInitiator->supports($paymentMethod));
     }
 
     public function testItDoesNotSupportPaypalPaymentMethodWithClientIdSet(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
-        
+
         $paymentMethod->method('getGatewayConfig')->willReturn($gatewayConfig);
         $gatewayConfig->method('getFactoryName')->willReturn('sylius_paypal');
         $gatewayConfig->method('getConfig')->willReturn(['client_id' => '123123']);
 
-        $this->assertFalse($this->onboardingInitiator->supports($paymentMethod));
+        self::assertFalse($this->onboardingInitiator->supports($paymentMethod));
     }
 
     public function testItDoesNotSupportPaymentMethodWithInvalidGatewayFactoryName(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
-        
+
         $paymentMethod->method('getGatewayConfig')->willReturn($gatewayConfig);
         $gatewayConfig->method('getFactoryName')->willReturn('offline');
 
-        $this->assertFalse($this->onboardingInitiator->supports($paymentMethod));
+        self::assertFalse($this->onboardingInitiator->supports($paymentMethod));
     }
 
     public function testItDoesNotSupportPaymentMethodWithoutGatewayConfig(): void
@@ -89,7 +92,7 @@ final class OnboardingInitiatorTest extends TestCase
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $paymentMethod->method('getGatewayConfig')->willReturn(null);
 
-        $this->assertFalse($this->onboardingInitiator->supports($paymentMethod));
+        self::assertFalse($this->onboardingInitiator->supports($paymentMethod));
     }
 
     public function testItReturnsUrlWhenPaymentIsValid(): void
@@ -112,7 +115,7 @@ final class OnboardingInitiatorTest extends TestCase
 
         $result = $this->onboardingInitiator->initiate($paymentMethod);
 
-        $this->assertEquals(
+        self::assertEquals(
             'https://paypal-url/partner-referrals/create?email=sylius%40sylius.com&return_url=%2Fadmin%2Fpayment-methods%2Fnew%2Fsylius_paypal',
             $result
         );

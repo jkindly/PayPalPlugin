@@ -15,6 +15,7 @@ namespace Tests\Sylius\PayPalPlugin\Unit\Api;
 
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Payment\Model\GatewayConfigInterface;
@@ -26,14 +27,15 @@ use Sylius\PayPalPlugin\Provider\UuidProviderInterface;
 
 final class CacheAuthorizeClientApiTest extends TestCase
 {
-    private ObjectManager $payPalCredentialsManager;
-    private ObjectRepository $payPalCredentialsRepository;
-    private AuthorizeClientApiInterface $authorizeClientApi;
-    private UuidProviderInterface $uuidProvider;
+    private ObjectManager&MockObject $payPalCredentialsManager;
+    private ObjectRepository&MockObject $payPalCredentialsRepository;
+    private AuthorizeClientApiInterface&MockObject $authorizeClientApi;
+    private UuidProviderInterface&MockObject $uuidProvider;
     private CacheAuthorizeClientApi $cacheAuthorizeClientApi;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->payPalCredentialsManager = $this->createMock(ObjectManager::class);
         $this->payPalCredentialsRepository = $this->createMock(ObjectRepository::class);
         $this->authorizeClientApi = $this->createMock(AuthorizeClientApiInterface::class);
@@ -49,7 +51,7 @@ final class CacheAuthorizeClientApiTest extends TestCase
 
     public function testItImplementsCacheAuthorizeClientApiInterface(): void
     {
-        $this->assertInstanceOf(CacheAuthorizeClientApiInterface::class, $this->cacheAuthorizeClientApi);
+        self::assertInstanceOf(CacheAuthorizeClientApiInterface::class, $this->cacheAuthorizeClientApi);
     }
 
     public function testItReturnsCachedAccessTokenIfItIsNotExpired(): void
@@ -58,24 +60,24 @@ final class CacheAuthorizeClientApiTest extends TestCase
         $payPalCredentials = $this->createMock(PayPalCredentialsInterface::class);
 
         $this->payPalCredentialsRepository
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('findOneBy')
             ->with(['paymentMethod' => $paymentMethod])
             ->willReturn($payPalCredentials);
 
         $payPalCredentials
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('isExpired')
             ->willReturn(false);
 
         $payPalCredentials
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('accessToken')
             ->willReturn('TOKEN');
 
         $result = $this->cacheAuthorizeClientApi->authorize($paymentMethod);
 
-        $this->assertEquals('TOKEN', $result);
+        self::assertEquals('TOKEN', $result);
     }
 
     public function testItGetsAccessTokenFromApiCachesAndReturnsIt(): void
@@ -84,34 +86,34 @@ final class CacheAuthorizeClientApiTest extends TestCase
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
 
         $this->payPalCredentialsRepository
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('findOneBy')
             ->with(['paymentMethod' => $paymentMethod])
             ->willReturn(null);
 
         $paymentMethod
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getGatewayConfig')
             ->willReturn($gatewayConfig);
 
         $gatewayConfig
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getConfig')
             ->willReturn(['client_id' => 'CLIENT_ID', 'client_secret' => '$ECRET']);
 
         $this->authorizeClientApi
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('authorize')
             ->with('CLIENT_ID', '$ECRET')
             ->willReturn('TOKEN');
 
         $this->uuidProvider
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('provide')
             ->willReturn('UUID');
 
         $this->payPalCredentialsManager
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('persist')
             ->with($this->callback(function (PayPalCredentialsInterface $payPalCredentials) use ($paymentMethod): bool {
                 return
@@ -123,12 +125,12 @@ final class CacheAuthorizeClientApiTest extends TestCase
             }));
 
         $this->payPalCredentialsManager
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('flush');
 
         $result = $this->cacheAuthorizeClientApi->authorize($paymentMethod);
 
-        $this->assertEquals('TOKEN', $result);
+        self::assertEquals('TOKEN', $result);
     }
 
     public function testItReturnsExpiredTokenAndAskForANewOne(): void
@@ -138,7 +140,7 @@ final class CacheAuthorizeClientApiTest extends TestCase
         $payPalCredentials = $this->createMock(PayPalCredentialsInterface::class);
 
         $this->payPalCredentialsRepository
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('findOneBy')
             ->with(['paymentMethod' => $paymentMethod])
             ->willReturn($payPalCredentials);
@@ -148,7 +150,7 @@ final class CacheAuthorizeClientApiTest extends TestCase
             ->willReturn(true);
 
         $this->payPalCredentialsManager
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('remove')
             ->with($payPalCredentials);
 
@@ -157,28 +159,28 @@ final class CacheAuthorizeClientApiTest extends TestCase
             ->method('flush');
 
         $paymentMethod
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getGatewayConfig')
             ->willReturn($gatewayConfig);
 
         $gatewayConfig
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getConfig')
             ->willReturn(['client_id' => 'CLIENT_ID', 'client_secret' => '$ECRET']);
 
         $this->uuidProvider
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('provide')
             ->willReturn('UUID');
 
         $this->authorizeClientApi
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('authorize')
             ->with('CLIENT_ID', '$ECRET')
             ->willReturn('TOKEN');
 
         $this->payPalCredentialsManager
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('persist')
             ->with($this->callback(function (PayPalCredentialsInterface $payPalCredentials) use ($paymentMethod): bool {
                 return
@@ -191,6 +193,6 @@ final class CacheAuthorizeClientApiTest extends TestCase
 
         $result = $this->cacheAuthorizeClientApi->authorize($paymentMethod);
 
-        $this->assertEquals('TOKEN', $result);
+        self::assertEquals('TOKEN', $result);
     }
 }

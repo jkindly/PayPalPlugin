@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Resolver;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Payment\Model\GatewayConfigInterface;
@@ -22,11 +23,12 @@ use Sylius\PayPalPlugin\Resolver\PayPalPrioritisingPaymentMethodsResolver;
 
 final class PayPalPrioritisingPaymentMethodsResolverTest extends TestCase
 {
-    private PaymentMethodsResolverInterface $paymentMethodsResolver;
+    private PaymentMethodsResolverInterface&MockObject $paymentMethodsResolver;
     private PayPalPrioritisingPaymentMethodsResolver $payPalPrioritisingPaymentMethodsResolver;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->paymentMethodsResolver = $this->createMock(PaymentMethodsResolverInterface::class);
 
         $this->payPalPrioritisingPaymentMethodsResolver = new PayPalPrioritisingPaymentMethodsResolver(
@@ -37,7 +39,7 @@ final class PayPalPrioritisingPaymentMethodsResolverTest extends TestCase
 
     public function testItImplementsPaymentMethodsResolverInterface(): void
     {
-        $this->assertInstanceOf(PaymentMethodsResolverInterface::class, $this->payPalPrioritisingPaymentMethodsResolver);
+        self::assertInstanceOf(PaymentMethodsResolverInterface::class, $this->payPalPrioritisingPaymentMethodsResolver);
     }
 
     public function testItPrioritizesPaymentMethod(): void
@@ -63,7 +65,7 @@ final class PayPalPrioritisingPaymentMethodsResolverTest extends TestCase
 
         $result = $this->payPalPrioritisingPaymentMethodsResolver->getSupportedMethods($payment);
 
-        $this->assertSame([$thirdPayment, $firstPayment, $secondPayment], $result);
+        self::assertSame([$thirdPayment, $firstPayment, $secondPayment], $result);
     }
 
     public function testItDoesNothingIfPrioritizedPaymentIsNotAvailable(): void
@@ -89,6 +91,6 @@ final class PayPalPrioritisingPaymentMethodsResolverTest extends TestCase
 
         $result = $this->payPalPrioritisingPaymentMethodsResolver->getSupportedMethods($payment);
 
-        $this->assertSame([$firstPayment, $secondPayment, $thirdPayment], $result);
+        self::assertSame([$firstPayment, $secondPayment, $thirdPayment], $result);
     }
 }

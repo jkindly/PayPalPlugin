@@ -27,12 +27,13 @@ final class StatusActionTest extends TestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->statusAction = new StatusAction();
     }
 
     public function testItImplementsActionInterface(): void
     {
-        $this->assertInstanceOf(ActionInterface::class, $this->statusAction);
+        self::assertInstanceOf(ActionInterface::class, $this->statusAction);
     }
 
     public function testItMarksRequestAsNew(): void
@@ -42,7 +43,7 @@ final class StatusActionTest extends TestCase
 
         $request->method('getFirstModel')->willReturn($payment);
         $request->method('getModel')->willReturn(['status' => StatusAction::STATUS_CREATED]);
-        $request->expects($this->once())->method('markNew');
+        $request->expects(self::once())->method('markNew');
 
         $this->statusAction->execute($request);
     }
@@ -54,7 +55,7 @@ final class StatusActionTest extends TestCase
 
         $request->method('getFirstModel')->willReturn($payment);
         $request->method('getModel')->willReturn(['status' => StatusAction::STATUS_CAPTURED]);
-        $request->expects($this->once())->method('markPending');
+        $request->expects(self::once())->method('markPending');
 
         $this->statusAction->execute($request);
     }
@@ -66,7 +67,7 @@ final class StatusActionTest extends TestCase
 
         $request->method('getFirstModel')->willReturn($payment);
         $request->method('getModel')->willReturn(['status' => 'COMPLETED']);
-        $request->expects($this->once())->method('markCaptured');
+        $request->expects(self::once())->method('markCaptured');
 
         $this->statusAction->execute($request);
     }
@@ -86,14 +87,14 @@ final class StatusActionTest extends TestCase
 
         $request->method('getFirstModel')->willReturn($payment);
 
-        $this->assertTrue($this->statusAction->supports($request));
+        self::assertTrue($this->statusAction->supports($request));
     }
 
     public function testItDoesNotSupportRequestOtherThanGetStatus(): void
     {
         $request = $this->createMock(Capture::class);
 
-        $this->assertFalse($this->statusAction->supports($request));
+        self::assertFalse($this->statusAction->supports($request));
     }
 
     public function testItDoesNotSupportRequestWithFirstModelOtherThanPayment(): void
@@ -101,6 +102,6 @@ final class StatusActionTest extends TestCase
         $request = $this->createMock(GetStatus::class);
         $request->method('getFirstModel')->willReturn('badObject');
 
-        $this->assertFalse($this->statusAction->supports($request));
+        self::assertFalse($this->statusAction->supports($request));
     }
 }

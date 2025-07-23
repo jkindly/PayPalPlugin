@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\ApiPlatform;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
@@ -25,12 +26,13 @@ use Symfony\Component\Routing\RouterInterface;
 
 final class PayPalPaymentTest extends TestCase
 {
-    private RouterInterface $router;
-    private AvailableCountriesProviderInterface $availableCountriesProvider;
+    private RouterInterface&MockObject $router;
+    private AvailableCountriesProviderInterface&MockObject $availableCountriesProvider;
     private PayPalPayment $payPalPayment;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->router = $this->createMock(RouterInterface::class);
         $this->availableCountriesProvider = $this->createMock(AvailableCountriesProviderInterface::class);
         $this->payPalPayment = new PayPalPayment($this->router, $this->availableCountriesProvider);
@@ -42,18 +44,18 @@ final class PayPalPaymentTest extends TestCase
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
 
         $paymentMethod
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getGatewayConfig')
             ->willReturn($gatewayConfig);
 
         $gatewayConfig
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getFactoryName')
             ->willReturn('sylius_paypal');
 
         $result = $this->payPalPayment->supports($paymentMethod);
 
-        $this->assertTrue($result);
+        self::assertTrue($result);
     }
 
     public function testItProvidesProperPaypalConfiguration(): void
@@ -64,12 +66,12 @@ final class PayPalPaymentTest extends TestCase
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
 
         $payment
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getMethod')
             ->willReturn($paymentMethod);
 
         $paymentMethod
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getGatewayConfig')
             ->willReturn($gatewayConfig);
 
@@ -81,7 +83,7 @@ final class PayPalPaymentTest extends TestCase
             ]);
 
         $payment
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getOrder')
             ->willReturn($order);
 
@@ -91,7 +93,7 @@ final class PayPalPaymentTest extends TestCase
         $order->method('getTokenValue')->willReturn('TOKEN');
 
         $this->availableCountriesProvider
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('provide')
             ->willReturn(['PL', 'US']);
 
@@ -127,6 +129,6 @@ final class PayPalPaymentTest extends TestCase
             'available_countries' => ['PL', 'US'],
         ];
 
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 }

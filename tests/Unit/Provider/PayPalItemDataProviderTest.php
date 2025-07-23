@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\PayPalPlugin\Unit\Provider;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\OrderItemInterface;
@@ -22,13 +23,14 @@ use Sylius\PayPalPlugin\Provider\PayPalItemDataProvider;
 
 final class PayPalItemDataProviderTest extends TestCase
 {
-    private OrderItemNonNeutralTaxesProviderInterface $orderItemNonNeutralTaxesProvider;
+    private OrderItemNonNeutralTaxesProviderInterface&MockObject $orderItemNonNeutralTaxesProvider;
     private PayPalItemDataProvider $provider;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->orderItemNonNeutralTaxesProvider = $this->createMock(OrderItemNonNeutralTaxesProviderInterface::class);
-        
+
         $this->provider = new PayPalItemDataProvider($this->orderItemNonNeutralTaxesProvider);
     }
 
@@ -67,7 +69,7 @@ final class PayPalItemDataProviderTest extends TestCase
             'total_tax' => '2.00',
         ];
 
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     public function testReturnsArrayOfItemsWithDifferentQuantitiesWithTax(): void
@@ -129,7 +131,7 @@ final class PayPalItemDataProviderTest extends TestCase
             'total_tax' => '6.00',
         ];
 
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     public function testReturnsArrayOfItemsWithDifferentQuantitiesWithoutTax(): void
@@ -167,7 +169,7 @@ final class PayPalItemDataProviderTest extends TestCase
             'total_tax' => '0.00',
         ];
 
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     public function testReturnsArrayOfDifferentItemsWithDifferentQuantitiesWithoutTax(): void
@@ -226,7 +228,7 @@ final class PayPalItemDataProviderTest extends TestCase
             'total_tax' => '0.00',
         ];
 
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     public function testReturnsArrayOfDifferentItemsWithDifferentQuantitiesWithTax(): void
@@ -321,6 +323,6 @@ final class PayPalItemDataProviderTest extends TestCase
             'total_tax' => '6.00',
         ];
 
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 }

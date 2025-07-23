@@ -22,25 +22,26 @@ final class LocaleProcessorTest extends TestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->localeProcessor = new LocaleProcessor();
     }
 
     public function testItAlwaysProcessesLocaleToVersionWithRegion(): void
     {
-        $this->assertEquals('et_EE', $this->localeProcessor->process('et'));
-        $this->assertEquals('pl_PL', $this->localeProcessor->process('pl'));
-        $this->assertEquals('ja_JP', $this->localeProcessor->process('ja'));
+        self::assertEquals('et_EE', $this->localeProcessor->process('et'));
+        self::assertEquals('pl_PL', $this->localeProcessor->process('pl'));
+        self::assertEquals('ja_JP', $this->localeProcessor->process('ja'));
     }
 
     public function testItReturnsSameLocaleIfItIsValid(): void
     {
-        $this->assertEquals('it_IT', $this->localeProcessor->process('it_IT'));
-        $this->assertEquals('ja_JP_TRADITIONAL', $this->localeProcessor->process('ja_JP_TRADITIONAL'));
-        $this->assertEquals('sd_Arab_PK', $this->localeProcessor->process('sd_Arab_PK'));
+        self::assertEquals('it_IT', $this->localeProcessor->process('it_IT'));
+        self::assertEquals('ja_JP_TRADITIONAL', $this->localeProcessor->process('ja_JP_TRADITIONAL'));
+        self::assertEquals('sd_Arab_PK', $this->localeProcessor->process('sd_Arab_PK'));
     }
 
     public function testItReturnsCorrectLocaleForEnLocale(): void
     {
-        $this->assertEquals('en_US', $this->localeProcessor->process('en'));
+        self::assertEquals('en_US', $this->localeProcessor->process('en'));
     }
 }

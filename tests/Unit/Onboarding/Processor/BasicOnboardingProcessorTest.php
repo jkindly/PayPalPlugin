@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Onboarding\Processor;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -31,19 +32,20 @@ use Symfony\Component\HttpFoundation\Request;
 
 final class BasicOnboardingProcessorTest extends TestCase
 {
-    private ClientInterface $httpClient;
-    private SellerWebhookRegistrarInterface $sellerWebhookRegistrar;
-    private RequestFactoryInterface $requestFactory;
-    private RequestInterface $apiRequest;
+    private ClientInterface&MockObject $httpClient;
+    private SellerWebhookRegistrarInterface&MockObject $sellerWebhookRegistrar;
+    private RequestFactoryInterface&MockObject $requestFactory;
+    private RequestInterface&MockObject $apiRequest;
     private BasicOnboardingProcessor $basicOnboardingProcessor;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->httpClient = $this->createMock(ClientInterface::class);
         $this->sellerWebhookRegistrar = $this->createMock(SellerWebhookRegistrarInterface::class);
         $this->requestFactory = $this->createMock(RequestFactoryInterface::class);
         $this->apiRequest = $this->createMock(RequestInterface::class);
-        
+
         $this->basicOnboardingProcessor = new BasicOnboardingProcessor(
             $this->httpClient,
             $this->sellerWebhookRegistrar,
@@ -70,7 +72,7 @@ final class BasicOnboardingProcessorTest extends TestCase
             'merchant_id' => 'MERCHANT-ID',
         ]);
 
-        $gatewayConfig->expects($this->once())->method('setConfig')->with([
+        $gatewayConfig->expects(self::once())->method('setConfig')->with([
             'client_id' => 'CLIENT-ID',
             'client_secret' => 'CLIENT-SECRET',
             'onboarding_id' => 'ONBOARDING-ID',
@@ -87,7 +89,7 @@ final class BasicOnboardingProcessorTest extends TestCase
             ->method('createRequest')
             ->with('GET', 'https://paypal.facilitator.com/partner-referrals/check/ONBOARDING-ID')
             ->willReturn($this->apiRequest);
-        
+
         $this->httpClient->method('sendRequest')->with($this->apiRequest)->willReturn($response);
 
         $response->method('getBody')->willReturn($body);
@@ -99,11 +101,11 @@ final class BasicOnboardingProcessorTest extends TestCase
             "partner_attribution_id":"ATTRIBUTION-ID"}'
         );
 
-        $this->sellerWebhookRegistrar->expects($this->once())->method('register')->with($paymentMethod);
+        $this->sellerWebhookRegistrar->expects(self::once())->method('register')->with($paymentMethod);
 
         $result = $this->basicOnboardingProcessor->process($paymentMethod, $request);
 
-        $this->assertSame($paymentMethod, $result);
+        self::assertSame($paymentMethod, $result);
     }
 
     public function testItProcessesOnboardingForSupportedPaymentMethodWithNotGrantedPermissionsAndRequest(): void
@@ -130,7 +132,7 @@ final class BasicOnboardingProcessorTest extends TestCase
             ->method('createRequest')
             ->with('GET', 'https://paypal.facilitator.com/partner-referrals/check/ONBOARDING-ID')
             ->willReturn($this->apiRequest);
-        
+
         $this->httpClient->method('sendRequest')->with($this->apiRequest)->willReturn($response);
 
         $response->method('getBody')->willReturn($body);
@@ -142,8 +144,8 @@ final class BasicOnboardingProcessorTest extends TestCase
             "partner_attribution_id":"ATTRIBUTION-ID"}'
         );
 
-        $paymentMethod->expects($this->once())->method('setEnabled')->with(false);
-        $gatewayConfig->expects($this->once())->method('setConfig')->with([
+        $paymentMethod->expects(self::once())->method('setEnabled')->with(false);
+        $gatewayConfig->expects(self::once())->method('setConfig')->with([
             'client_id' => 'CLIENT-ID',
             'client_secret' => 'CLIENT-SECRET',
             'onboarding_id' => 'ONBOARDING-ID',
@@ -152,11 +154,11 @@ final class BasicOnboardingProcessorTest extends TestCase
             'partner_attribution_id' => 'ATTRIBUTION-ID',
         ]);
 
-        $this->sellerWebhookRegistrar->expects($this->once())->method('register')->with($paymentMethod);
+        $this->sellerWebhookRegistrar->expects(self::once())->method('register')->with($paymentMethod);
 
         $result = $this->basicOnboardingProcessor->process($paymentMethod, $request);
 
-        $this->assertSame($paymentMethod, $result);
+        self::assertSame($paymentMethod, $result);
     }
 
     public function testItProcessesOnboardingForSupportedPaymentMethodWithNotGrantedPermissionsAndWithoutRegisteredWebhook(): void
@@ -183,7 +185,7 @@ final class BasicOnboardingProcessorTest extends TestCase
             ->method('createRequest')
             ->with('GET', 'https://paypal.facilitator.com/partner-referrals/check/ONBOARDING-ID')
             ->willReturn($this->apiRequest);
-        
+
         $this->httpClient->method('sendRequest')->with($this->apiRequest)->willReturn($response);
 
         $response->method('getBody')->willReturn($body);
@@ -196,7 +198,7 @@ final class BasicOnboardingProcessorTest extends TestCase
         );
 
         $paymentMethod->expects($this->exactly(2))->method('setEnabled')->with(false);
-        $gatewayConfig->expects($this->once())->method('setConfig')->with([
+        $gatewayConfig->expects(self::once())->method('setConfig')->with([
             'client_id' => 'CLIENT-ID',
             'client_secret' => 'CLIENT-SECRET',
             'onboarding_id' => 'ONBOARDING-ID',
@@ -212,7 +214,7 @@ final class BasicOnboardingProcessorTest extends TestCase
 
         $result = $this->basicOnboardingProcessor->process($paymentMethod, $request);
 
-        $this->assertSame($paymentMethod, $result);
+        self::assertSame($paymentMethod, $result);
     }
 
     public function testItThrowsAnExceptionWhenTryingToProcessOnboardingForUnsupportedPaymentMethodOrRequest(): void
@@ -235,7 +237,7 @@ final class BasicOnboardingProcessorTest extends TestCase
 
         $request->query = new InputBag(['onboarding_id' => 'FACILITATOR-ID']);
 
-        $this->assertTrue($this->basicOnboardingProcessor->supports($paymentMethod, $request));
+        self::assertTrue($this->basicOnboardingProcessor->supports($paymentMethod, $request));
     }
 
     public function testItDoesNotSupportPaymentMethodThatHasNoGatewayConfig(): void
@@ -243,7 +245,7 @@ final class BasicOnboardingProcessorTest extends TestCase
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $request = $this->createMock(Request::class);
 
-        $this->assertFalse($this->basicOnboardingProcessor->supports($paymentMethod, $request));
+        self::assertFalse($this->basicOnboardingProcessor->supports($paymentMethod, $request));
     }
 
     public function testItDoesNotSupportPaymentMethodThatDoesNotHavePaypalAsAGatewayFactory(): void
@@ -255,7 +257,7 @@ final class BasicOnboardingProcessorTest extends TestCase
         $gatewayConfig->method('getFactoryName')->willReturn('random');
         $paymentMethod->method('getGatewayConfig')->willReturn($gatewayConfig);
 
-        $this->assertFalse($this->basicOnboardingProcessor->supports($paymentMethod, $request));
+        self::assertFalse($this->basicOnboardingProcessor->supports($paymentMethod, $request));
     }
 
     public function testItDoesNotSupportPaymentMethodThatHasClientIdIsNotSetOnRequest(): void
@@ -266,7 +268,7 @@ final class BasicOnboardingProcessorTest extends TestCase
         $gatewayConfig->method('getFactoryName')->willReturn('sylius_paypal');
         $paymentMethod->method('getGatewayConfig')->willReturn($gatewayConfig);
 
-        $this->assertFalse($this->basicOnboardingProcessor->supports($paymentMethod, new Request()));
+        self::assertFalse($this->basicOnboardingProcessor->supports($paymentMethod, new Request()));
     }
 
     public function testItThrowsErrorIfFacilitatorDataIsNotLoaded(): void
@@ -286,7 +288,7 @@ final class BasicOnboardingProcessorTest extends TestCase
             ->method('createRequest')
             ->with('GET', 'https://paypal.facilitator.com/partner-referrals/check/ONBOARDING-ID')
             ->willReturn($this->apiRequest);
-        
+
         $this->httpClient->method('sendRequest')->with($this->apiRequest)->willReturn($response);
 
         $response->method('getBody')->willReturn($body);

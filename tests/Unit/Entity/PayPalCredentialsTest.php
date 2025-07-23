@@ -25,6 +25,7 @@ final class PayPalCredentialsTest extends TestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $this->payPalCredentials = new PayPalCredentials(
             '123ASD123',
@@ -37,41 +38,41 @@ final class PayPalCredentialsTest extends TestCase
 
     public function testItImplementsPaypalCredentialsInterface(): void
     {
-        $this->assertInstanceOf(PayPalCredentialsInterface::class, $this->payPalCredentials);
+        self::assertInstanceOf(PayPalCredentialsInterface::class, $this->payPalCredentials);
     }
 
     public function testItHasAPaymentMethod(): void
     {
         $result = $this->payPalCredentials->paymentMethod();
 
-        $this->assertEquals($this->paymentMethod, $result);
+        self::assertEquals($this->paymentMethod, $result);
     }
 
     public function testItHasAAccessToken(): void
     {
         $result = $this->payPalCredentials->accessToken();
 
-        $this->assertEquals('TOKEN', $result);
+        self::assertEquals('TOKEN', $result);
     }
 
     public function testItHasACreationTime(): void
     {
         $result = $this->payPalCredentials->creationTime();
 
-        $this->assertEquals(new \DateTime('2020-01-01 10:00:00'), $result);
+        self::assertEquals(new \DateTime('2020-01-01 10:00:00'), $result);
     }
 
     public function testItHasAExpirationTime(): void
     {
         $result = $this->payPalCredentials->expirationTime();
 
-        $this->assertEquals(new \DateTime('2020-01-01 11:00:00'), $result);
+        self::assertEquals(new \DateTime('2020-01-01 11:00:00'), $result);
     }
 
     public function testItCanBeExpired(): void
     {
         $result = $this->payPalCredentials->isExpired();
 
-        $this->assertTrue($result);
+        self::assertTrue($result);
     }
 }

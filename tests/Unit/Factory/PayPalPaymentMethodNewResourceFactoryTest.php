@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Factory;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Bundle\ResourceBundle\Controller\NewResourceFactoryInterface;
 use Sylius\Bundle\ResourceBundle\Controller\RequestConfiguration;
@@ -25,12 +26,13 @@ use Symfony\Component\HttpFoundation\Request;
 
 final class PayPalPaymentMethodNewResourceFactoryTest extends TestCase
 {
-    private NewResourceFactoryInterface $newResourceFactory;
-    private OnboardingProcessorInterface $onboardingProcessor;
+    private NewResourceFactoryInterface&MockObject $newResourceFactory;
+    private OnboardingProcessorInterface&MockObject $onboardingProcessor;
     private PayPalPaymentMethodNewResourceFactory $payPalPaymentMethodNewResourceFactory;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->newResourceFactory = $this->createMock(NewResourceFactoryInterface::class);
         $this->onboardingProcessor = $this->createMock(OnboardingProcessorInterface::class);
 
@@ -42,7 +44,7 @@ final class PayPalPaymentMethodNewResourceFactoryTest extends TestCase
 
     public function testItIsANewResourceFactory(): void
     {
-        $this->assertInstanceOf(NewResourceFactoryInterface::class, $this->payPalPaymentMethodNewResourceFactory);
+        self::assertInstanceOf(NewResourceFactoryInterface::class, $this->payPalPaymentMethodNewResourceFactory);
     }
 
     public function testItProcessesOnboardingIfPaymentMethodAndRequestAreSupported(): void
@@ -54,31 +56,31 @@ final class PayPalPaymentMethodNewResourceFactoryTest extends TestCase
         $processedPaymentMethod = $this->createMock(PaymentMethodInterface::class);
 
         $this->newResourceFactory
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('create')
             ->with($requestConfiguration, $factory)
             ->willReturn($paymentMethod);
 
         $requestConfiguration
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getRequest')
             ->willReturn($request);
 
         $this->onboardingProcessor
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('supports')
             ->with($paymentMethod, $request)
             ->willReturn(true);
 
         $this->onboardingProcessor
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('process')
             ->with($paymentMethod, $request)
             ->willReturn($processedPaymentMethod);
 
         $result = $this->payPalPaymentMethodNewResourceFactory->create($requestConfiguration, $factory);
 
-        $this->assertEquals($processedPaymentMethod, $result);
+        self::assertEquals($processedPaymentMethod, $result);
     }
 
     public function testItDoesNothingIfPaymentMethodAndRequestAreUnsupported(): void
@@ -89,18 +91,18 @@ final class PayPalPaymentMethodNewResourceFactoryTest extends TestCase
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
 
         $this->newResourceFactory
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('create')
             ->with($requestConfiguration, $factory)
             ->willReturn($paymentMethod);
 
         $requestConfiguration
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getRequest')
             ->willReturn($request);
 
         $this->onboardingProcessor
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('supports')
             ->with($paymentMethod, $request)
             ->willReturn(false);
@@ -111,7 +113,7 @@ final class PayPalPaymentMethodNewResourceFactoryTest extends TestCase
 
         $result = $this->payPalPaymentMethodNewResourceFactory->create($requestConfiguration, $factory);
 
-        $this->assertEquals($paymentMethod, $result);
+        self::assertEquals($paymentMethod, $result);
     }
 
     public function testItDoesNothingIfCreatedResourceIsNotAPaymentMethod(): void
@@ -121,13 +123,13 @@ final class PayPalPaymentMethodNewResourceFactoryTest extends TestCase
         $resource = $this->createMock(ResourceInterface::class);
 
         $this->newResourceFactory
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('create')
             ->with($requestConfiguration, $factory)
             ->willReturn($resource);
 
         $result = $this->payPalPaymentMethodNewResourceFactory->create($requestConfiguration, $factory);
 
-        $this->assertEquals($resource, $result);
+        self::assertEquals($resource, $result);
     }
 }

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\PayPalPlugin\Unit\Provider;
 
 use Doctrine\Common\Collections\Collection;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Addressing\Model\CountryInterface;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
@@ -23,15 +24,16 @@ use Sylius\PayPalPlugin\Provider\AvailableCountriesProvider;
 
 final class AvailableCountriesProviderTest extends TestCase
 {
-    private RepositoryInterface $countryRepository;
-    private ChannelContextInterface $channelContext;
+    private RepositoryInterface&MockObject $countryRepository;
+    private ChannelContextInterface&MockObject $channelContext;
     private AvailableCountriesProvider $provider;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->countryRepository = $this->createMock(RepositoryInterface::class);
         $this->channelContext = $this->createMock(ChannelContextInterface::class);
-        
+
         $this->provider = new AvailableCountriesProvider(
             $this->countryRepository,
             $this->channelContext
@@ -57,7 +59,7 @@ final class AvailableCountriesProviderTest extends TestCase
 
         $result = $this->provider->provide();
 
-        $this->assertEquals(['PL', 'US', 'RU'], $result);
+        self::assertEquals(['PL', 'US', 'RU'], $result);
     }
 
     public function testProvidesAvailableCountriesIfChannelContainsCountries(): void
@@ -77,6 +79,6 @@ final class AvailableCountriesProviderTest extends TestCase
 
         $result = $this->provider->provide();
 
-        $this->assertEquals(['DE', 'CN'], $result);
+        self::assertEquals(['DE', 'CN'], $result);
     }
 }

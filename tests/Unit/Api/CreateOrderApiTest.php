@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Api;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\AddressInterface;
 use Sylius\Component\Core\Model\AdjustmentInterface;
@@ -28,13 +29,14 @@ use Sylius\PayPalPlugin\Provider\PayPalItemDataProviderInterface;
 
 final class CreateOrderApiTest extends TestCase
 {
-    private PayPalClientInterface $client;
-    private PaymentReferenceNumberProviderInterface $paymentReferenceNumberProvider;
-    private PayPalItemDataProviderInterface $payPalItemDataProvider;
+    private PayPalClientInterface&MockObject $client;
+    private PaymentReferenceNumberProviderInterface&MockObject $paymentReferenceNumberProvider;
+    private PayPalItemDataProviderInterface&MockObject $payPalItemDataProvider;
     private CreateOrderApi $createOrderApi;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->client = $this->createMock(PayPalClientInterface::class);
         $this->paymentReferenceNumberProvider = $this->createMock(PaymentReferenceNumberProviderInterface::class);
         $this->payPalItemDataProvider = $this->createMock(PayPalItemDataProviderInterface::class);
@@ -48,7 +50,7 @@ final class CreateOrderApiTest extends TestCase
 
     public function testItImplementsCreateOrderApiInterface(): void
     {
-        $this->assertInstanceOf(CreateOrderApiInterface::class, $this->createOrderApi);
+        self::assertInstanceOf(CreateOrderApiInterface::class, $this->createOrderApi);
     }
 
     public function testItCreatesPaypalOrderBasedOnGivenPayment(): void
@@ -105,7 +107,7 @@ final class CreateOrderApiTest extends TestCase
         );
 
         $this->client
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('post')
             ->with(
                 'v2/checkout/orders',
@@ -129,7 +131,7 @@ final class CreateOrderApiTest extends TestCase
 
         $result = $this->createOrderApi->create('TOKEN', $payment, 'REFERENCE_ID');
 
-        $this->assertEquals(['status' => 'CREATED', 'id' => 123], $result);
+        self::assertEquals(['status' => 'CREATED', 'id' => 123], $result);
     }
 
     public function testItCreatesPaypalOrderWithShippingAddressBasedOnGivenPayment(): void
@@ -193,7 +195,7 @@ final class CreateOrderApiTest extends TestCase
         );
 
         $this->client
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('post')
             ->with(
                 'v2/checkout/orders',
@@ -220,7 +222,7 @@ final class CreateOrderApiTest extends TestCase
 
         $result = $this->createOrderApi->create('TOKEN', $payment, 'REFERENCE_ID');
 
-        $this->assertEquals(['status' => 'CREATED', 'id' => 123], $result);
+        self::assertEquals(['status' => 'CREATED', 'id' => 123], $result);
     }
 
     public function testItAllowsToCreateDigitalOrder(): void
@@ -277,7 +279,7 @@ final class CreateOrderApiTest extends TestCase
             ->willReturn('REFERENCE-NUMBER');
 
         $this->client
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('post')
             ->with(
                 'v2/checkout/orders',
@@ -295,6 +297,6 @@ final class CreateOrderApiTest extends TestCase
 
         $result = $this->createOrderApi->create('TOKEN', $payment, 'REFERENCE_ID');
 
-        $this->assertEquals(['status' => 'CREATED', 'id' => 123], $result);
+        self::assertEquals(['status' => 'CREATED', 'id' => 123], $result);
     }
 }

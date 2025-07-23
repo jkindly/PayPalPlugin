@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\PayPalPlugin\Unit\Enabler;
 
 use Doctrine\Persistence\ObjectManager;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -29,14 +30,15 @@ use Sylius\PayPalPlugin\Registrar\SellerWebhookRegistrarInterface;
 
 final class PayPalPaymentMethodEnablerTest extends TestCase
 {
-    private ClientInterface $client;
-    private RequestFactoryInterface $requestFactory;
-    private ObjectManager $paymentMethodManager;
-    private SellerWebhookRegistrarInterface $sellerWebhookRegistrar;
+    private ClientInterface&MockObject $client;
+    private RequestFactoryInterface&MockObject $requestFactory;
+    private ObjectManager&MockObject $paymentMethodManager;
+    private SellerWebhookRegistrarInterface&MockObject $sellerWebhookRegistrar;
     private PayPalPaymentMethodEnabler $payPalPaymentMethodEnabler;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->client = $this->createMock(ClientInterface::class);
         $this->requestFactory = $this->createMock(RequestFactoryInterface::class);
         $this->paymentMethodManager = $this->createMock(ObjectManager::class);
@@ -53,7 +55,7 @@ final class PayPalPaymentMethodEnablerTest extends TestCase
 
     public function testItImplementsPaymentMethodEnablerInterface(): void
     {
-        $this->assertInstanceOf(PaymentMethodEnablerInterface::class, $this->payPalPaymentMethodEnabler);
+        self::assertInstanceOf(PaymentMethodEnablerInterface::class, $this->payPalPaymentMethodEnabler);
     }
 
     public function testItEnablesPaymentMethodIfItHasProperCredentialsAndWebhookAreSet(): void
@@ -65,49 +67,49 @@ final class PayPalPaymentMethodEnablerTest extends TestCase
         $body = $this->createMock(StreamInterface::class);
 
         $paymentMethod
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getGatewayConfig')
             ->willReturn($gatewayConfig);
 
         $gatewayConfig
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getConfig')
             ->willReturn(['merchant_id' => '123123', 'client_id' => 'CLIENT-ID', 'client_secret' => 'SECRET']);
 
         $this->requestFactory
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('createRequest')
             ->with('GET', 'http://base-url.com/seller-permissions/check/123123')
             ->willReturn($request);
 
         $this->client
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('sendRequest')
             ->with($request)
             ->willReturn($response);
 
         $response
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getBody')
             ->willReturn($body);
 
         $body
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getContents')
             ->willReturn('{ "permissionsGranted": true }');
 
         $this->sellerWebhookRegistrar
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('register')
             ->with($paymentMethod);
 
         $paymentMethod
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('setEnabled')
             ->with(true);
 
         $this->paymentMethodManager
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('flush');
 
         $this->payPalPaymentMethodEnabler->enable($paymentMethod);
@@ -122,34 +124,34 @@ final class PayPalPaymentMethodEnablerTest extends TestCase
         $body = $this->createMock(StreamInterface::class);
 
         $paymentMethod
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getGatewayConfig')
             ->willReturn($gatewayConfig);
 
         $gatewayConfig
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getConfig')
             ->willReturn(['merchant_id' => '123123', 'client_id' => 'CLIENT-ID', 'client_secret' => 'SECRET']);
 
         $this->requestFactory
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('createRequest')
             ->with('GET', 'http://base-url.com/seller-permissions/check/123123')
             ->willReturn($request);
 
         $this->client
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('sendRequest')
             ->with($request)
             ->willReturn($response);
 
         $response
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getBody')
             ->willReturn($body);
 
         $body
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getContents')
             ->willReturn('{ "permissionsGranted": false }');
 

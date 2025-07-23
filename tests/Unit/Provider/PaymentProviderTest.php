@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Provider;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Repository\PaymentRepositoryInterface;
@@ -22,19 +23,20 @@ use Sylius\PayPalPlugin\Provider\PaymentProviderInterface;
 
 final class PaymentProviderTest extends TestCase
 {
-    private PaymentRepositoryInterface $paymentRepository;
+    private PaymentRepositoryInterface&MockObject $paymentRepository;
     private PaymentProvider $provider;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->paymentRepository = $this->createMock(PaymentRepositoryInterface::class);
-        
+
         $this->provider = new PaymentProvider($this->paymentRepository);
     }
 
     public function testImplementsPaymentProviderInterface(): void
     {
-        $this->assertInstanceOf(PaymentProviderInterface::class, $this->provider);
+        self::assertInstanceOf(PaymentProviderInterface::class, $this->provider);
     }
 
     public function testReturnsPaymentForGivenPaypalOrderId(): void
@@ -51,7 +53,7 @@ final class PaymentProviderTest extends TestCase
 
         $result = $this->provider->getByPayPalOrderId('PP444');
 
-        $this->assertSame($thirdPayment, $result);
+        self::assertSame($thirdPayment, $result);
     }
 
     public function testThrowsExceptionIfThereIsNoPaymentWithGivenPaypalOrderId(): void

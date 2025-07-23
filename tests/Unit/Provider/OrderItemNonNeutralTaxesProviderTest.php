@@ -26,6 +26,7 @@ final class OrderItemNonNeutralTaxesProviderTest extends TestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->provider = new OrderItemNonNeutralTaxesProvider();
     }
 
@@ -53,6 +54,6 @@ final class OrderItemNonNeutralTaxesProviderTest extends TestCase
 
         $result = $this->provider->provide($orderItem);
 
-        $this->assertEquals([20], $result);
+        self::assertEquals([20], $result);
     }
 }

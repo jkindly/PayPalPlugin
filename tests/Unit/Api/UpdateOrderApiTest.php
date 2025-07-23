@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Api;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\AddressInterface;
 use Sylius\Component\Core\Model\AdjustmentInterface;
@@ -26,13 +27,14 @@ use Sylius\PayPalPlugin\Provider\PayPalItemDataProviderInterface;
 
 final class UpdateOrderApiTest extends TestCase
 {
-    private PayPalClientInterface $client;
-    private PaymentReferenceNumberProviderInterface $paymentReferenceNumberProvider;
-    private PayPalItemDataProviderInterface $payPalItemsDataProvider;
+    private PayPalClientInterface&MockObject $client;
+    private PaymentReferenceNumberProviderInterface&MockObject $paymentReferenceNumberProvider;
+    private PayPalItemDataProviderInterface&MockObject $payPalItemsDataProvider;
     private UpdateOrderApi $updateOrderApi;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->client = $this->createMock(PayPalClientInterface::class);
         $this->paymentReferenceNumberProvider = $this->createMock(PaymentReferenceNumberProviderInterface::class);
         $this->payPalItemsDataProvider = $this->createMock(PayPalItemDataProviderInterface::class);
@@ -46,7 +48,7 @@ final class UpdateOrderApiTest extends TestCase
 
     public function testItImplementsUpdateOrderApiInterface(): void
     {
-        $this->assertInstanceOf(UpdateOrderApiInterface::class, $this->updateOrderApi);
+        self::assertInstanceOf(UpdateOrderApiInterface::class, $this->updateOrderApi);
     }
 
     public function testItUpdatesPaypalOrderWithGivenNewTotal(): void
@@ -86,7 +88,7 @@ final class UpdateOrderApiTest extends TestCase
         $order->method('isShippingRequired')->willReturn(true);
 
         $this->client
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('patch')
             ->with(
                 'v2/checkout/orders/ORDER-ID',
@@ -147,7 +149,7 @@ final class UpdateOrderApiTest extends TestCase
         $order->method('isShippingRequired')->willReturn(false);
 
         $this->client
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('patch')
             ->with(
                 'v2/checkout/orders/ORDER-ID',

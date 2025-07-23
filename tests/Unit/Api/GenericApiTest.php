@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Api;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -24,12 +25,13 @@ use Sylius\PayPalPlugin\Api\GenericApiInterface;
 
 final class GenericApiTest extends TestCase
 {
-    private ClientInterface $client;
-    private RequestFactoryInterface $requestFactory;
+    private ClientInterface&MockObject $client;
+    private RequestFactoryInterface&MockObject $requestFactory;
     private GenericApi $genericApi;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->client = $this->createMock(ClientInterface::class);
         $this->requestFactory = $this->createMock(RequestFactoryInterface::class);
         $this->genericApi = new GenericApi($this->client, $this->requestFactory);
@@ -37,7 +39,7 @@ final class GenericApiTest extends TestCase
 
     public function testItImplementsGenericApiInterface(): void
     {
-        $this->assertInstanceOf(GenericApiInterface::class, $this->genericApi);
+        self::assertInstanceOf(GenericApiInterface::class, $this->genericApi);
     }
 
     public function testItCallsApiByUrl(): void
@@ -47,7 +49,7 @@ final class GenericApiTest extends TestCase
         $body = $this->createMock(StreamInterface::class);
 
         $this->requestFactory
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('createRequest')
             ->with('GET', 'http://url.com/')
             ->willReturn($request);
@@ -63,23 +65,23 @@ final class GenericApiTest extends TestCase
             ->willReturn($request);
 
         $this->client
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('sendRequest')
             ->with($request)
             ->willReturn($response);
 
         $response
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getBody')
             ->willReturn($body);
 
         $body
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getContents')
             ->willReturn('{ "parameter": "VALUE" }');
 
         $result = $this->genericApi->get('TOKEN', 'http://url.com/');
 
-        $this->assertEquals(['parameter' => 'VALUE'], $result);
+        self::assertEquals(['parameter' => 'VALUE'], $result);
     }
 }

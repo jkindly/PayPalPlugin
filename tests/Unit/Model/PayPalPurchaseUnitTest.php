@@ -13,17 +13,19 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Model;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\AddressInterface;
 use Sylius\PayPalPlugin\Model\PayPalPurchaseUnit;
 
 final class PayPalPurchaseUnitTest extends TestCase
 {
-    private AddressInterface $shippingAddress;
+    private AddressInterface&MockObject $shippingAddress;
     private PayPalPurchaseUnit $payPalPurchaseUnit;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->shippingAddress = $this->createMock(AddressInterface::class);
         $this->payPalPurchaseUnit = new PayPalPurchaseUnit(
             'REFERENCE_ID',
@@ -52,7 +54,7 @@ final class PayPalPurchaseUnitTest extends TestCase
 
         $result = $this->payPalPurchaseUnit->toArray();
 
-        $this->assertEquals([
+        self::assertEquals([
             'reference_id' => 'REFERENCE_ID',
             'invoice_id' => 'INVOICE_ID',
             'amount' => [
@@ -121,7 +123,7 @@ final class PayPalPurchaseUnitTest extends TestCase
 
         $result = $payPalPurchaseUnit->toArray();
 
-        $this->assertEquals([
+        self::assertEquals([
             'reference_id' => 'REFERENCE_ID',
             'invoice_id' => 'INVOICE_ID',
             'amount' => [
@@ -179,7 +181,7 @@ final class PayPalPurchaseUnitTest extends TestCase
 
         $result = $payPalPurchaseUnit->toArray();
 
-        $this->assertEquals([
+        self::assertEquals([
             'reference_id' => 'REFERENCE_ID',
             'invoice_id' => 'INVOICE_ID',
             'amount' => [

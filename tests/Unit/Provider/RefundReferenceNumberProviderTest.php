@@ -24,12 +24,13 @@ final class RefundReferenceNumberProviderTest extends TestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->provider = new RefundReferenceNumberProvider();
     }
 
     public function testImplementsRefundReferenceNumberProviderInterface(): void
     {
-        $this->assertInstanceOf(RefundReferenceNumberProviderInterface::class, $this->provider);
+        self::assertInstanceOf(RefundReferenceNumberProviderInterface::class, $this->provider);
     }
 
     public function testProvidesReferenceNumberBasedOnPaymentIdAndCurrentDate(): void
@@ -40,6 +41,6 @@ final class RefundReferenceNumberProviderTest extends TestCase
         $result = $this->provider->provide($payment);
 
         $expectedFormat = '123-' . (new \DateTime())->format('d-m-Y');
-        $this->assertEquals($expectedFormat, $result);
+        self::assertEquals($expectedFormat, $result);
     }
 }

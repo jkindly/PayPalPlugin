@@ -25,12 +25,13 @@ final class PayPalAuthAssertionGeneratorTest extends TestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->payPalAuthAssertionGenerator = new PayPalAuthAssertionGenerator();
     }
 
     public function testItImplementsPaypalAuthAssertionGeneratorInterface(): void
     {
-        $this->assertInstanceOf(PayPalAuthAssertionGeneratorInterface::class, $this->payPalAuthAssertionGenerator);
+        self::assertInstanceOf(PayPalAuthAssertionGeneratorInterface::class, $this->payPalAuthAssertionGenerator);
     }
 
     public function testItGeneratesAuthAssertionBasedOnPaymentMethodConfig(): void
@@ -39,18 +40,18 @@ final class PayPalAuthAssertionGeneratorTest extends TestCase
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
 
         $paymentMethod
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getGatewayConfig')
             ->willReturn($gatewayConfig);
 
         $gatewayConfig
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getConfig')
             ->willReturn(['client_id' => 'CLIENT_ID', 'merchant_id' => 'MERCHANT_ID']);
 
         $result = $this->payPalAuthAssertionGenerator->generate($paymentMethod);
 
-        $this->assertEquals('eyJhbGciOiJub25lIn0=.eyJpc3MiOiJDTElFTlRfSUQiLCJwYXllcl9pZCI6Ik1FUkNIQU5UX0lEIn0=.', $result);
+        self::assertEquals('eyJhbGciOiJub25lIn0=.eyJpc3MiOiJDTElFTlRfSUQiLCJwYXllcl9pZCI6Ik1FUkNIQU5UX0lEIn0=.', $result);
     }
 
     public function testItThrowsAnExceptionIfGatewayConfigDoesNotHaveClientId(): void
@@ -59,12 +60,12 @@ final class PayPalAuthAssertionGeneratorTest extends TestCase
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
 
         $paymentMethod
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getGatewayConfig')
             ->willReturn($gatewayConfig);
 
         $gatewayConfig
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getConfig')
             ->willReturn(['merchant_id' => 'MERCHANT_ID']);
 
@@ -79,12 +80,12 @@ final class PayPalAuthAssertionGeneratorTest extends TestCase
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
 
         $paymentMethod
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getGatewayConfig')
             ->willReturn($gatewayConfig);
 
         $gatewayConfig
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getConfig')
             ->willReturn(['client_id' => 'CLIENT_ID']);
 

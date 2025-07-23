@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Listener;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Bundle\ResourceBundle\Event\ResourceControllerEvent;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
@@ -29,14 +30,15 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class PayPalPaymentMethodListenerTest extends TestCase
 {
-    private OnboardingInitiatorInterface $onboardingInitiator;
-    private UrlGeneratorInterface $urlGenerator;
-    private RequestStack $requestStack;
-    private PayPalPaymentMethodProviderInterface $payPalPaymentMethodProvider;
+    private OnboardingInitiatorInterface&MockObject $onboardingInitiator;
+    private UrlGeneratorInterface&MockObject $urlGenerator;
+    private RequestStack&MockObject $requestStack;
+    private PayPalPaymentMethodProviderInterface&MockObject $payPalPaymentMethodProvider;
     private PayPalPaymentMethodListener $payPalPaymentMethodListener;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->onboardingInitiator = $this->createMock(OnboardingInitiatorInterface::class);
         $this->urlGenerator = $this->createMock(UrlGeneratorInterface::class);
         $this->requestStack = $this->createMock(RequestStack::class);
@@ -57,39 +59,39 @@ final class PayPalPaymentMethodListenerTest extends TestCase
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
 
         $event
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getSubject')
             ->willReturn($paymentMethod);
 
         $paymentMethod
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getGatewayConfig')
             ->willReturn($gatewayConfig);
 
         $gatewayConfig
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getFactoryName')
             ->willReturn('sylius_paypal');
 
         $this->payPalPaymentMethodProvider
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('provide')
             ->willThrowException(new PayPalPaymentMethodNotFoundException());
 
         $this->onboardingInitiator
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('supports')
             ->with($paymentMethod)
             ->willReturn(true);
 
         $this->onboardingInitiator
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('initiate')
             ->with($paymentMethod)
             ->willReturn('https://example.com/onboarding-url');
 
         $event
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('setResponse')
             ->with($this->callback(function ($argument): bool {
                 return $argument instanceof RedirectResponse && $argument->getTargetUrl() === 'https://example.com/onboarding-url';
@@ -103,7 +105,7 @@ final class PayPalPaymentMethodListenerTest extends TestCase
         $event = $this->createMock(ResourceControllerEvent::class);
 
         $event
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getSubject')
             ->willReturn(new \stdClass());
 
@@ -121,49 +123,49 @@ final class PayPalPaymentMethodListenerTest extends TestCase
         $flashBag = $this->createMock(FlashBagInterface::class);
 
         $event
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getSubject')
             ->willReturn($paymentMethod);
 
         $this->payPalPaymentMethodProvider
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('provide')
             ->willReturn($paymentMethod);
 
         $paymentMethod
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getGatewayConfig')
             ->willReturn($gatewayConfig);
 
         $gatewayConfig
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getFactoryName')
             ->willReturn('sylius_paypal');
 
         $flashBag
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('add')
             ->with('error', 'sylius_paypal.more_than_one_seller_not_allowed');
 
         $session
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getBag')
             ->with('flashes')
             ->willReturn($flashBag);
 
         $this->requestStack
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getSession')
             ->willReturn($session);
 
         $this->urlGenerator
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('generate')
             ->with('sylius_admin_payment_method_index')
             ->willReturn('http://redirect-url.com');
 
         $event
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('setResponse')
             ->with($this->callback(function (RedirectResponse $response): bool {
                 return $response->getTargetUrl() === 'http://redirect-url.com';
@@ -183,27 +185,27 @@ final class PayPalPaymentMethodListenerTest extends TestCase
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
 
         $event
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getSubject')
             ->willReturn($paymentMethod);
 
         $paymentMethod
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getGatewayConfig')
             ->willReturn($gatewayConfig);
 
         $gatewayConfig
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getFactoryName')
             ->willReturn('sylius_paypal');
 
         $this->payPalPaymentMethodProvider
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('provide')
             ->willThrowException(new PayPalPaymentMethodNotFoundException());
 
         $this->onboardingInitiator
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('supports')
             ->with($paymentMethod)
             ->willReturn(false);
@@ -222,17 +224,17 @@ final class PayPalPaymentMethodListenerTest extends TestCase
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
 
         $event
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getSubject')
             ->willReturn($paymentMethod);
 
         $paymentMethod
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getGatewayConfig')
             ->willReturn($gatewayConfig);
 
         $gatewayConfig
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getFactoryName')
             ->willReturn('offline');
 

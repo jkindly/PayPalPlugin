@@ -28,6 +28,7 @@ final class ResolveNextRouteActionTest extends TestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->resolveNextRouteAction = new ResolveNextRouteAction();
     }
 
@@ -50,8 +51,8 @@ final class ResolveNextRouteActionTest extends TestCase
         $payment->method('getOrder')->willReturn($order);
         $order->method('getTokenValue')->willReturn('123!@#asd');
 
-        $request->expects($this->once())->method('setRouteName')->with('sylius_paypal_shop_pay_with_paypal_form');
-        $request->expects($this->once())->method('setRouteParameters')->with(['orderToken' => '123!@#asd', 'paymentId' => 12]);
+        $request->expects(self::once())->method('setRouteName')->with('sylius_paypal_shop_pay_with_paypal_form');
+        $request->expects(self::once())->method('setRouteParameters')->with(['orderToken' => '123!@#asd', 'paymentId' => 12]);
 
         $this->resolveNextRouteAction->execute($request);
     }
@@ -72,7 +73,7 @@ final class ResolveNextRouteActionTest extends TestCase
         $paymentMethod->method('getGatewayConfig')->willReturn($gatewayConfig);
         $gatewayConfig->method('getFactoryName')->willReturn('sylius_paypal');
 
-        $request->expects($this->once())->method('setRouteName')->with('sylius_shop_order_thank_you');
+        $request->expects(self::once())->method('setRouteName')->with('sylius_shop_order_thank_you');
 
         $this->resolveNextRouteAction->execute($request);
     }
@@ -95,8 +96,8 @@ final class ResolveNextRouteActionTest extends TestCase
 
         $order->method('getTokenValue')->willReturn('TOKEN_VALUE');
 
-        $request->expects($this->once())->method('setRouteName')->with('sylius_shop_order_show');
-        $request->expects($this->once())->method('setRouteParameters')->with(['tokenValue' => 'TOKEN_VALUE']);
+        $request->expects(self::once())->method('setRouteName')->with('sylius_shop_order_show');
+        $request->expects(self::once())->method('setRouteParameters')->with(['tokenValue' => 'TOKEN_VALUE']);
 
         $this->resolveNextRouteAction->execute($request);
     }
@@ -113,7 +114,7 @@ final class ResolveNextRouteActionTest extends TestCase
         $paymentMethod->method('getGatewayConfig')->willReturn($gatewayConfig);
         $gatewayConfig->method('getFactoryName')->willReturn('sylius_paypal');
 
-        $this->assertTrue($this->resolveNextRouteAction->supports($request));
+        self::assertTrue($this->resolveNextRouteAction->supports($request));
     }
 
     public function testItDoesNotSupportPaymentWithOtherFactoryNameThanPaypal(): void
@@ -128,14 +129,14 @@ final class ResolveNextRouteActionTest extends TestCase
         $paymentMethod->method('getGatewayConfig')->willReturn($gatewayConfig);
         $gatewayConfig->method('getFactoryName')->willReturn('offline');
 
-        $this->assertFalse($this->resolveNextRouteAction->supports($request));
+        self::assertFalse($this->resolveNextRouteAction->supports($request));
     }
 
     public function testItDoesNotSupportRequestOtherThanResolveNextRoute(): void
     {
         $request = $this->createMock(Capture::class);
 
-        $this->assertFalse($this->resolveNextRouteAction->supports($request));
+        self::assertFalse($this->resolveNextRouteAction->supports($request));
     }
 
     public function testItDoesNotSupportRequestWithFirstModelOtherThanPayment(): void
@@ -143,6 +144,6 @@ final class ResolveNextRouteActionTest extends TestCase
         $request = $this->createMock(ResolveNextRoute::class);
         $request->method('getFirstModel')->willReturn('badObject');
 
-        $this->assertFalse($this->resolveNextRouteAction->supports($request));
+        self::assertFalse($this->resolveNextRouteAction->supports($request));
     }
 }

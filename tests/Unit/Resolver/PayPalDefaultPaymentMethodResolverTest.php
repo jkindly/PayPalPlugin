@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Resolver;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\OrderInterface;
@@ -27,11 +28,12 @@ use Sylius\PayPalPlugin\Resolver\PayPalDefaultPaymentMethodResolver;
 final class PayPalDefaultPaymentMethodResolverTest extends TestCase
 {
     private DefaultPaymentMethodResolverInterface $decoratedDefaultPaymentMethodResolver;
-    private PaymentMethodRepositoryInterface $paymentMethodRepository;
+    private PaymentMethodRepositoryInterface&MockObject $paymentMethodRepository;
     private PayPalDefaultPaymentMethodResolver $payPalDefaultPaymentMethodResolver;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->decoratedDefaultPaymentMethodResolver = $this->createMock(DefaultPaymentMethodResolverInterface::class);
         $this->paymentMethodRepository = $this->createMock(PaymentMethodRepositoryInterface::class);
 
@@ -43,7 +45,7 @@ final class PayPalDefaultPaymentMethodResolverTest extends TestCase
 
     public function testItImplementsDefaultPaymentMethodResolverInterface(): void
     {
-        $this->assertInstanceOf(DefaultPaymentMethodResolverInterface::class, $this->payPalDefaultPaymentMethodResolver);
+        self::assertInstanceOf(DefaultPaymentMethodResolverInterface::class, $this->payPalDefaultPaymentMethodResolver);
     }
 
     public function testItReturnsPrioritisedPaymentMethodForChannel(): void
@@ -69,7 +71,7 @@ final class PayPalDefaultPaymentMethodResolverTest extends TestCase
 
         $result = $this->payPalDefaultPaymentMethodResolver->getDefaultPaymentMethod($subject, 'prioritised.payment');
 
-        $this->assertSame($secondPayment, $result);
+        self::assertSame($secondPayment, $result);
     }
 
     public function testItReturnsFirstAvailablePaymentMethodIfPrioritisedPaymentMethodIsInvalid(): void
@@ -95,7 +97,7 @@ final class PayPalDefaultPaymentMethodResolverTest extends TestCase
 
         $result = $this->payPalDefaultPaymentMethodResolver->getDefaultPaymentMethod($subject, 'prioritised');
 
-        $this->assertSame($firstPayment, $result);
+        self::assertSame($firstPayment, $result);
     }
 
     public function testItThrowsErrorIfThereIsNoAvailablePayment(): void

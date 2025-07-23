@@ -24,12 +24,13 @@ final class PaymentReferenceNumberProviderTest extends TestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->provider = new PaymentReferenceNumberProvider();
     }
 
     public function testImplementsPaymentReferenceNumberProviderInterface(): void
     {
-        $this->assertInstanceOf(PaymentReferenceNumberProviderInterface::class, $this->provider);
+        self::assertInstanceOf(PaymentReferenceNumberProviderInterface::class, $this->provider);
     }
 
     public function testProvidesReferenceNumberBasedOnPaymentIdAndCreationDate(): void
@@ -40,6 +41,6 @@ final class PaymentReferenceNumberProviderTest extends TestCase
 
         $result = $this->provider->provide($payment);
 
-        $this->assertEquals('123-10-03-2012', $result);
+        self::assertEquals('123-10-03-2012', $result);
     }
 }

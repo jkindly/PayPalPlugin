@@ -15,6 +15,7 @@ namespace Tests\Sylius\PayPalPlugin\Unit\Client;
 
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -34,17 +35,18 @@ use Sylius\PayPalPlugin\Provider\UuidProviderInterface;
 
 final class PayPalClientTest extends TestCase
 {
-    private ClientInterface $client;
-    private LoggerInterface $logger;
-    private UuidProviderInterface $uuidProvider;
-    private PayPalConfigurationProviderInterface $payPalConfigurationProvider;
-    private ChannelContextInterface $channelContext;
-    private RequestFactoryInterface $requestFactory;
-    private StreamFactoryInterface $streamFactory;
+    private ClientInterface&MockObject $client;
+    private LoggerInterface&MockObject $logger;
+    private UuidProviderInterface&MockObject $uuidProvider;
+    private PayPalConfigurationProviderInterface&MockObject $payPalConfigurationProvider;
+    private ChannelContextInterface&MockObject $channelContext;
+    private RequestFactoryInterface&MockObject $requestFactory;
+    private StreamFactoryInterface&MockObject $streamFactory;
     private PayPalClient $payPalClient;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->client = $this->createMock(ClientInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->uuidProvider = $this->createMock(UuidProviderInterface::class);
@@ -72,7 +74,7 @@ final class PayPalClientTest extends TestCase
 
     public function testItImplementsPaypalClientInterface(): void
     {
-        $this->assertInstanceOf(PayPalClientInterface::class, $this->payPalClient);
+        self::assertInstanceOf(PayPalClientInterface::class, $this->payPalClient);
     }
 
     public function testItReturnsAuthTokenForGivenClientData(): void
@@ -82,7 +84,7 @@ final class PayPalClientTest extends TestCase
         $body = $this->createMock(StreamInterface::class);
 
         $this->requestFactory
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('createRequest')
             ->with('POST', 'https://test-api.paypal.com/v1/oauth2/token')
             ->willReturn($request);
@@ -91,29 +93,29 @@ final class PayPalClientTest extends TestCase
         $request->method('withBody')->willReturn($request);
 
         $this->client
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('sendRequest')
             ->with($request)
             ->willReturn($response);
 
         $response
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getStatusCode')
             ->willReturn(200);
 
         $response
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getBody')
             ->willReturn($body);
 
         $body
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getContents')
             ->willReturn('{"access_token": "TOKEN"}');
 
         $result = $this->payPalClient->authorize('CLIENT_ID', 'CLIENT_SECRET');
 
-        $this->assertEquals(['access_token' => 'TOKEN'], $result);
+        self::assertEquals(['access_token' => 'TOKEN'], $result);
     }
 
     public function testItThrowsAnExceptionIfClientCouldNotBeAuthorized(): void
@@ -122,7 +124,7 @@ final class PayPalClientTest extends TestCase
         $response = $this->createMock(ResponseInterface::class);
 
         $this->requestFactory
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('createRequest')
             ->with('POST', 'https://test-api.paypal.com/v1/oauth2/token')
             ->willReturn($request);
@@ -131,13 +133,13 @@ final class PayPalClientTest extends TestCase
         $request->method('withBody')->willReturn($request);
 
         $this->client
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('sendRequest')
             ->with($request)
             ->willReturn($response);
 
         $response
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getStatusCode')
             ->willReturn(401);
 
@@ -158,13 +160,13 @@ final class PayPalClientTest extends TestCase
             ->willReturn($channel);
 
         $this->payPalConfigurationProvider
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getPartnerAttributionId')
             ->with($channel)
             ->willReturn('TRACKING-ID');
 
         $this->requestFactory
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('createRequest')
             ->with('GET', 'https://test-api.paypal.com/v2/get-request/')
             ->willReturn($request);
@@ -172,29 +174,29 @@ final class PayPalClientTest extends TestCase
         $request->method('withHeader')->willReturn($request);
 
         $this->client
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('sendRequest')
             ->with($request)
             ->willReturn($response);
 
         $response
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getStatusCode')
             ->willReturn(200);
 
         $response
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getBody')
             ->willReturn($body);
 
         $body
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getContents')
             ->willReturn('{"status": "OK", "id": "123123"}');
 
         $result = $this->payPalClient->get('v2/get-request/', 'TOKEN');
 
-        $this->assertEquals(['status' => 'OK', 'id' => '123123'], $result);
+        self::assertEquals(['status' => 'OK', 'id' => '123123'], $result);
     }
 
     public function testItCallsPostRequestOnPaypalApi(): void
@@ -210,18 +212,18 @@ final class PayPalClientTest extends TestCase
             ->willReturn($channel);
 
         $this->uuidProvider
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('provide')
             ->willReturn('REQUEST-ID');
 
         $this->payPalConfigurationProvider
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getPartnerAttributionId')
             ->with($channel)
             ->willReturn('TRACKING-ID');
 
         $this->requestFactory
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('createRequest')
             ->with('POST', 'https://test-api.paypal.com/v2/post-request/')
             ->willReturn($request);
@@ -234,29 +236,29 @@ final class PayPalClientTest extends TestCase
         $request->method('withBody')->willReturn($request);
 
         $this->client
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('sendRequest')
             ->with($request)
             ->willReturn($response);
 
         $response
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getStatusCode')
             ->willReturn(200);
 
         $response
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getBody')
             ->willReturn($body);
 
         $body
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getContents')
             ->willReturn('{"status": "OK", "id": "123123"}');
 
         $result = $this->payPalClient->post('v2/post-request/', 'TOKEN', ['parameter' => 'value', 'another_parameter' => 'another_value']);
 
-        $this->assertEquals(['status' => 'OK', 'id' => '123123'], $result);
+        self::assertEquals(['status' => 'OK', 'id' => '123123'], $result);
     }
 
     public function testItCallsPatchRequestOnPaypalApi(): void
@@ -272,13 +274,13 @@ final class PayPalClientTest extends TestCase
             ->willReturn($channel);
 
         $this->payPalConfigurationProvider
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getPartnerAttributionId')
             ->with($channel)
             ->willReturn('TRACKING-ID');
 
         $this->requestFactory
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('createRequest')
             ->with('PATCH', 'https://test-api.paypal.com/v2/patch-request/123123')
             ->willReturn($request);
@@ -291,29 +293,29 @@ final class PayPalClientTest extends TestCase
         $request->method('withBody')->willReturn($request);
 
         $this->client
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('sendRequest')
             ->with($request)
             ->willReturn($response);
 
         $response
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getStatusCode')
             ->willReturn(200);
 
         $response
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getBody')
             ->willReturn($body);
 
         $body
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getContents')
             ->willReturn('{"status": "OK", "id": "123123"}');
 
         $result = $this->payPalClient->patch('v2/patch-request/123123', 'TOKEN', ['parameter' => 'value', 'another_parameter' => 'another_value']);
 
-        $this->assertEquals(['status' => 'OK', 'id' => '123123'], $result);
+        self::assertEquals(['status' => 'OK', 'id' => '123123'], $result);
     }
 
     public function testItThrowsExceptionIfTheTimeoutHasBeenReachedTheSpecifiedAmountOfTime(): void
@@ -326,7 +328,7 @@ final class PayPalClientTest extends TestCase
             ->willReturn($channel);
 
         $this->payPalConfigurationProvider
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getPartnerAttributionId')
             ->with($channel)
             ->willReturn('TRACKING-ID');

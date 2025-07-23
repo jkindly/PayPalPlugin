@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Provider;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
@@ -23,18 +24,19 @@ use Sylius\PayPalPlugin\Provider\PayPalConfigurationProviderInterface;
 
 final class PayPalConfigurationProviderTest extends TestCase
 {
-    private PaymentMethodRepositoryInterface $paymentMethodRepository;
+    private PaymentMethodRepositoryInterface&MockObject $paymentMethodRepository;
     private PayPalConfigurationProvider $payPalConfigurationProvider;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->paymentMethodRepository = $this->createMock(PaymentMethodRepositoryInterface::class);
         $this->payPalConfigurationProvider = new PayPalConfigurationProvider($this->paymentMethodRepository);
     }
 
     public function testItImplementsPayPalConfigurationProviderInterface(): void
     {
-        $this->assertInstanceOf(PayPalConfigurationProviderInterface::class, $this->payPalConfigurationProvider);
+        self::assertInstanceOf(PayPalConfigurationProviderInterface::class, $this->payPalConfigurationProvider);
     }
 
     public function testItReturnsClientIdFromPaymentMethodConfig(): void
@@ -53,7 +55,7 @@ final class PayPalConfigurationProviderTest extends TestCase
         $otherPaymentMethod
             ->method('getGatewayConfig')
             ->willReturn($otherGatewayConfig);
-        
+
         $otherGatewayConfig
             ->method('getFactoryName')
             ->willReturn('other');
@@ -61,7 +63,7 @@ final class PayPalConfigurationProviderTest extends TestCase
         $payPalPaymentMethod
             ->method('getGatewayConfig')
             ->willReturn($payPalGatewayConfig);
-        
+
         $payPalGatewayConfig
             ->method('getFactoryName')
             ->willReturn('sylius_paypal');
@@ -72,7 +74,7 @@ final class PayPalConfigurationProviderTest extends TestCase
 
         $result = $this->payPalConfigurationProvider->getClientId($channel);
 
-        $this->assertEquals('123123', $result);
+        self::assertEquals('123123', $result);
     }
 
     public function testItReturnsPartnerAttributionIdFromPaymentMethodConfig(): void
@@ -91,7 +93,7 @@ final class PayPalConfigurationProviderTest extends TestCase
         $otherPaymentMethod
             ->method('getGatewayConfig')
             ->willReturn($otherGatewayConfig);
-        
+
         $otherGatewayConfig
             ->method('getFactoryName')
             ->willReturn('other');
@@ -99,7 +101,7 @@ final class PayPalConfigurationProviderTest extends TestCase
         $payPalPaymentMethod
             ->method('getGatewayConfig')
             ->willReturn($payPalGatewayConfig);
-        
+
         $payPalGatewayConfig
             ->method('getFactoryName')
             ->willReturn('sylius_paypal');
@@ -110,7 +112,7 @@ final class PayPalConfigurationProviderTest extends TestCase
 
         $result = $this->payPalConfigurationProvider->getPartnerAttributionId($channel);
 
-        $this->assertEquals('123123', $result);
+        self::assertEquals('123123', $result);
     }
 
     public function testItThrowsAnExceptionIfThereIsNoPayPalPaymentMethodDefined(): void
@@ -127,7 +129,7 @@ final class PayPalConfigurationProviderTest extends TestCase
         $otherPaymentMethod
             ->method('getGatewayConfig')
             ->willReturn($otherGatewayConfig);
-        
+
         $otherGatewayConfig
             ->method('getFactoryName')
             ->willReturn('other');
@@ -150,7 +152,7 @@ final class PayPalConfigurationProviderTest extends TestCase
         $otherPaymentMethod
             ->method('getGatewayConfig')
             ->willReturn($otherGatewayConfig);
-        
+
         $otherGatewayConfig
             ->method('getFactoryName')
             ->willReturn('other');
@@ -175,7 +177,7 @@ final class PayPalConfigurationProviderTest extends TestCase
         $otherPaymentMethod
             ->method('getGatewayConfig')
             ->willReturn($otherGatewayConfig);
-        
+
         $otherGatewayConfig
             ->method('getFactoryName')
             ->willReturn('other');
@@ -183,7 +185,7 @@ final class PayPalConfigurationProviderTest extends TestCase
         $payPalPaymentMethod
             ->method('getGatewayConfig')
             ->willReturn($payPalGatewayConfig);
-        
+
         $payPalGatewayConfig
             ->method('getFactoryName')
             ->willReturn('sylius_paypal');
@@ -212,7 +214,7 @@ final class PayPalConfigurationProviderTest extends TestCase
         $otherPaymentMethod
             ->method('getGatewayConfig')
             ->willReturn($otherGatewayConfig);
-        
+
         $otherGatewayConfig
             ->method('getFactoryName')
             ->willReturn('other');
@@ -220,7 +222,7 @@ final class PayPalConfigurationProviderTest extends TestCase
         $payPalPaymentMethod
             ->method('getGatewayConfig')
             ->willReturn($payPalGatewayConfig);
-        
+
         $payPalGatewayConfig
             ->method('getFactoryName')
             ->willReturn('sylius_paypal');

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Processor;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\OrderCheckoutStates;
@@ -21,18 +22,19 @@ use Sylius\PayPalPlugin\Processor\AfterCheckoutOrderPaymentProcessor;
 
 final class AfterCheckoutOrderPaymentProcessorTest extends TestCase
 {
-    private OrderProcessorInterface $baseOrderPaymentProcessor;
+    private OrderProcessorInterface&MockObject $baseOrderPaymentProcessor;
     private AfterCheckoutOrderPaymentProcessor $afterCheckoutOrderPaymentProcessor;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->baseOrderPaymentProcessor = $this->createMock(OrderProcessorInterface::class);
         $this->afterCheckoutOrderPaymentProcessor = new AfterCheckoutOrderPaymentProcessor($this->baseOrderPaymentProcessor);
     }
 
     public function testItImplementsOrderProcessorInterface(): void
     {
-        $this->assertInstanceOf(OrderProcessorInterface::class, $this->afterCheckoutOrderPaymentProcessor);
+        self::assertInstanceOf(OrderProcessorInterface::class, $this->afterCheckoutOrderPaymentProcessor);
     }
 
     public function testItDoesNothingIfOrderIsNotCompleted(): void
@@ -50,7 +52,7 @@ final class AfterCheckoutOrderPaymentProcessorTest extends TestCase
         $order = $this->createMock(OrderInterface::class);
         $order->method('getCheckoutState')->willReturn(OrderCheckoutStates::STATE_COMPLETED);
 
-        $this->baseOrderPaymentProcessor->expects($this->once())->method('process')->with($order);
+        $this->baseOrderPaymentProcessor->expects(self::once())->method('process')->with($order);
 
         $this->afterCheckoutOrderPaymentProcessor->process($order);
     }

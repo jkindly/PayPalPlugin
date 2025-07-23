@@ -31,9 +31,10 @@ final class OrderPaymentProcessorTest extends TestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->baseOrderProcessor = $this->createMock(OrderProcessorInterface::class);
         $this->stateMachine = $this->createMock(StateMachineInterface::class);
-        
+
         $this->orderPaymentProcessor = new OrderPaymentProcessor(
             $this->baseOrderProcessor,
             $this->stateMachine
@@ -42,7 +43,7 @@ final class OrderPaymentProcessorTest extends TestCase
 
     public function testItImplementsOrderProcessorInterface(): void
     {
-        $this->assertInstanceOf(OrderProcessorInterface::class, $this->orderPaymentProcessor);
+        self::assertInstanceOf(OrderProcessorInterface::class, $this->orderPaymentProcessor);
     }
 
     public function testItDoesNothingIfThereIsAPaypalProcessingCapturedPayment(): void
@@ -69,7 +70,7 @@ final class OrderPaymentProcessorTest extends TestCase
 
         $order->method('getLastPayment')->with(PaymentInterface::STATE_PROCESSING)->willReturn(null);
 
-        $this->baseOrderProcessor->expects($this->once())->method('process')->with($order);
+        $this->baseOrderProcessor->expects(self::once())->method('process')->with($order);
 
         $this->orderPaymentProcessor->process($order);
     }
@@ -87,7 +88,7 @@ final class OrderPaymentProcessorTest extends TestCase
         $paymentMethod->method('getGatewayConfig')->willReturn($gatewayConfig);
         $gatewayConfig->method('getFactoryName')->willReturn('sylius_paypal');
 
-        $this->baseOrderProcessor->expects($this->once())->method('process')->with($order);
+        $this->baseOrderProcessor->expects(self::once())->method('process')->with($order);
 
         $this->orderPaymentProcessor->process($order);
     }
@@ -105,11 +106,11 @@ final class OrderPaymentProcessorTest extends TestCase
         $paymentMethod->method('getGatewayConfig')->willReturn($gatewayConfig);
         $gatewayConfig->method('getFactoryName')->willReturn('offline');
 
-        $this->stateMachine->expects($this->once())
+        $this->stateMachine->expects(self::once())
             ->method('apply')
             ->with($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_CANCEL);
 
-        $this->baseOrderProcessor->expects($this->once())->method('process')->with($order);
+        $this->baseOrderProcessor->expects(self::once())->method('process')->with($order);
 
         $this->orderPaymentProcessor->process($order);
     }

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Provider;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\PayPalPlugin\Api\CacheAuthorizeClientApiInterface;
@@ -23,17 +24,18 @@ use Sylius\PayPalPlugin\Provider\PayPalRefundDataProvider;
 
 final class PayPalRefundDataProviderTest extends TestCase
 {
-    private CacheAuthorizeClientApiInterface $authorizeClientApi;
-    private GenericApiInterface $genericApi;
-    private PayPalPaymentMethodProviderInterface $payPalPaymentMethodProvider;
+    private CacheAuthorizeClientApiInterface&MockObject $authorizeClientApi;
+    private GenericApiInterface&MockObject $genericApi;
+    private PayPalPaymentMethodProviderInterface&MockObject $payPalPaymentMethodProvider;
     private PayPalRefundDataProvider $provider;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->authorizeClientApi = $this->createMock(CacheAuthorizeClientApiInterface::class);
         $this->genericApi = $this->createMock(GenericApiInterface::class);
         $this->payPalPaymentMethodProvider = $this->createMock(PayPalPaymentMethodProviderInterface::class);
-        
+
         $this->provider = new PayPalRefundDataProvider(
             $this->authorizeClientApi,
             $this->genericApi,
@@ -47,7 +49,7 @@ final class PayPalRefundDataProviderTest extends TestCase
 
         $this->payPalPaymentMethodProvider->method('provide')->willReturn($paymentMethod);
         $this->authorizeClientApi->method('authorize')->with($paymentMethod)->willReturn('TOKEN');
-        
+
         $this->genericApi->expects($this->exactly(2))
             ->method('get')
             ->withConsecutive(

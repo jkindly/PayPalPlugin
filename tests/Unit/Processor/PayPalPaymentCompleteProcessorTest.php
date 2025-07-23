@@ -15,6 +15,7 @@ namespace Tests\Sylius\PayPalPlugin\Unit\Processor;
 
 use Payum\Core\GatewayInterface;
 use Payum\Core\Payum;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
@@ -26,18 +27,19 @@ use Sylius\PayPalPlugin\Processor\PayPalPaymentCompleteProcessor;
 final class PayPalPaymentCompleteProcessorTest extends TestCase
 {
     private PayPalPaymentCompleteProcessor $paypalPaymentCompleteProcessor;
-    private Payum $payum;
+    private Payum&MockObject $payum;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->payum = $this->createMock(Payum::class);
-        
+
         $this->paypalPaymentCompleteProcessor = new PayPalPaymentCompleteProcessor($this->payum);
     }
 
     public function testItImplementsPaymentCompleteProcessorInterface(): void
     {
-        $this->assertInstanceOf(PaymentCompleteProcessorInterface::class, $this->paypalPaymentCompleteProcessor);
+        self::assertInstanceOf(PaymentCompleteProcessorInterface::class, $this->paypalPaymentCompleteProcessor);
     }
 
     public function testItCompletesPaymentInPaypal(): void
@@ -53,8 +55,8 @@ final class PayPalPaymentCompleteProcessorTest extends TestCase
         $gatewayConfig->method('getGatewayName')->willReturn('paypal');
 
         $this->payum->method('getGateway')->with('paypal')->willReturn($gateway);
-        
-        $gateway->expects($this->once())
+
+        $gateway->expects(self::once())
             ->method('execute')
             ->with($this->callback(function (CompleteOrder $request): bool {
                 return $request->getOrderId() === '123123';

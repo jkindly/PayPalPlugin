@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\PayPalPlugin\Unit\Manager;
 
 use Doctrine\Persistence\ObjectManager;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Abstraction\StateMachine\StateMachineInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
@@ -25,13 +26,14 @@ use Sylius\PayPalPlugin\Processor\PaymentCompleteProcessorInterface;
 
 final class PaymentStateManagerTest extends TestCase
 {
-    private StateMachineInterface $stateMachine;
-    private ObjectManager $paymentManager;
-    private PaymentCompleteProcessorInterface $paymentCompleteProcessor;
+    private StateMachineInterface&MockObject $stateMachine;
+    private ObjectManager&MockObject $paymentManager;
+    private PaymentCompleteProcessorInterface&MockObject $paymentCompleteProcessor;
     private PaymentStateManager $paymentStateManager;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->stateMachine = $this->createMock(StateMachineInterface::class);
         $this->paymentManager = $this->createMock(ObjectManager::class);
         $this->paymentCompleteProcessor = $this->createMock(PaymentCompleteProcessorInterface::class);
@@ -45,7 +47,7 @@ final class PaymentStateManagerTest extends TestCase
 
     public function testItImplementsPaymentStateManagerInterface(): void
     {
-        $this->assertInstanceOf(PaymentStateManagerInterface::class, $this->paymentStateManager);
+        self::assertInstanceOf(PaymentStateManagerInterface::class, $this->paymentStateManager);
     }
 
     public function testItCreatesPayment(): void
@@ -53,12 +55,12 @@ final class PaymentStateManagerTest extends TestCase
         $payment = $this->createMock(PaymentInterface::class);
 
         $this->stateMachine
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('apply')
             ->with($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_CREATE);
 
         $this->paymentManager
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('flush');
 
         $this->paymentStateManager->create($payment);
@@ -69,22 +71,22 @@ final class PaymentStateManagerTest extends TestCase
         $payment = $this->createMock(PaymentInterface::class);
 
         $this->paymentCompleteProcessor
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('completePayment')
             ->with($payment);
 
         $payment
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getDetails')
             ->willReturn(['status' => StatusAction::STATUS_COMPLETED]);
 
         $this->stateMachine
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('apply')
             ->with($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_COMPLETE);
 
         $this->paymentManager
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('flush');
 
         $this->paymentStateManager->complete($payment);
@@ -95,27 +97,27 @@ final class PaymentStateManagerTest extends TestCase
         $payment = $this->createMock(PaymentInterface::class);
 
         $this->paymentCompleteProcessor
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('completePayment')
             ->with($payment);
 
         $payment
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getDetails')
             ->willReturn(['status' => StatusAction::STATUS_PROCESSING]);
 
         $payment
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getState')
             ->willReturn(PaymentInterface::STATE_NEW);
 
         $this->stateMachine
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('apply')
             ->with($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_PROCESS);
 
         $this->paymentManager
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('flush');
 
         $this->paymentStateManager->complete($payment);
@@ -126,17 +128,17 @@ final class PaymentStateManagerTest extends TestCase
         $payment = $this->createMock(PaymentInterface::class);
 
         $this->paymentCompleteProcessor
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('completePayment')
             ->with($payment);
 
         $payment
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getDetails')
             ->willReturn(['status' => StatusAction::STATUS_PROCESSING]);
 
         $payment
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('getState')
             ->willReturn(PaymentInterface::STATE_PROCESSING);
 
@@ -152,12 +154,12 @@ final class PaymentStateManagerTest extends TestCase
         $payment = $this->createMock(PaymentInterface::class);
 
         $this->stateMachine
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('apply')
             ->with($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_PROCESS);
 
         $this->paymentManager
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('flush');
 
         $this->paymentStateManager->process($payment);
@@ -168,12 +170,12 @@ final class PaymentStateManagerTest extends TestCase
         $payment = $this->createMock(PaymentInterface::class);
 
         $this->stateMachine
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('apply')
             ->with($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_CANCEL);
 
         $this->paymentManager
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('flush');
 
         $this->paymentStateManager->cancel($payment);

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Registrar;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Payment\Model\GatewayConfigInterface;
@@ -25,13 +26,14 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class SellerWebhookRegistrarTest extends TestCase
 {
-    private AuthorizeClientApiInterface $authorizeClientApi;
-    private UrlGeneratorInterface $urlGenerator;
-    private WebhookApiInterface $webhookApi;
+    private AuthorizeClientApiInterface&MockObject $authorizeClientApi;
+    private UrlGeneratorInterface&MockObject $urlGenerator;
+    private WebhookApiInterface&MockObject $webhookApi;
     private SellerWebhookRegistrar $sellerWebhookRegistrar;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->authorizeClientApi = $this->createMock(AuthorizeClientApiInterface::class);
         $this->urlGenerator = $this->createMock(UrlGeneratorInterface::class);
         $this->webhookApi = $this->createMock(WebhookApiInterface::class);
@@ -45,7 +47,7 @@ final class SellerWebhookRegistrarTest extends TestCase
 
     public function testItImplementsSellerWebhookRegistrarInterface(): void
     {
-        $this->assertInstanceOf(SellerWebhookRegistrarInterface::class, $this->sellerWebhookRegistrar);
+        self::assertInstanceOf(SellerWebhookRegistrarInterface::class, $this->sellerWebhookRegistrar);
     }
 
     public function testItRegistersSellersWebhook(): void
@@ -63,16 +65,16 @@ final class SellerWebhookRegistrarTest extends TestCase
             ->willReturn('https://webhook-url.com');
 
         $this->webhookApi
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('register')
             ->with('TOKEN', 'https://webhook-url.com')
             ->willReturn(['name' => 'WEBHOOK_REGISTERED']);
 
         // Test that register method executes without throwing an exception
         $this->sellerWebhookRegistrar->register($paymentMethod);
-        
+
         // Assert that we get here without exceptions (test passes)
-        $this->assertTrue(true);
+        self::assertTrue(true);
     }
 
     public function testItThrowsExceptionIfWebhookCouldNotBeRegistered(): void

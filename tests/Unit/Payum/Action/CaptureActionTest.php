@@ -16,6 +16,7 @@ namespace Tests\Sylius\PayPalPlugin\Unit\Payum\Action;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Request\Capture;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Bundle\PayumBundle\Request\GetStatus;
 use Sylius\Component\Core\Model\OrderInterface;
@@ -29,17 +30,18 @@ use Sylius\PayPalPlugin\Provider\UuidProviderInterface;
 
 final class CaptureActionTest extends TestCase
 {
-    private CacheAuthorizeClientApiInterface $authorizeClientApi;
-    private CreateOrderApiInterface $createOrderApi;
-    private UuidProviderInterface $uuidProvider;
+    private CacheAuthorizeClientApiInterface&MockObject $authorizeClientApi;
+    private CreateOrderApiInterface&MockObject $createOrderApi;
+    private UuidProviderInterface&MockObject $uuidProvider;
     private CaptureAction $captureAction;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->authorizeClientApi = $this->createMock(CacheAuthorizeClientApiInterface::class);
         $this->createOrderApi = $this->createMock(CreateOrderApiInterface::class);
         $this->uuidProvider = $this->createMock(UuidProviderInterface::class);
-        
+
         $this->captureAction = new CaptureAction(
             $this->authorizeClientApi,
             $this->createOrderApi,
@@ -49,7 +51,7 @@ final class CaptureActionTest extends TestCase
 
     public function testItImplementsActionInterface(): void
     {
-        $this->assertInstanceOf(ActionInterface::class, $this->captureAction);
+        self::assertInstanceOf(ActionInterface::class, $this->captureAction);
     }
 
     public function testItAuthorizesSellerSendCreateOrderRequestAndSetsOrderResponseDataOnPayment(): void
@@ -70,7 +72,7 @@ final class CaptureActionTest extends TestCase
         $this->authorizeClientApi->method('authorize')->with($paymentMethod)->willReturn('ACCESS_TOKEN');
         $this->createOrderApi->method('create')->with('ACCESS_TOKEN', $payment, 'UUID')->willReturn(['status' => 'CREATED', 'id' => '123123']);
 
-        $payment->expects($this->once())->method('setDetails')->with([
+        $payment->expects(self::once())->method('setDetails')->with([
             'status' => StatusAction::STATUS_CAPTURED,
             'paypal_order_id' => '123123',
             'reference_id' => 'UUID',
@@ -95,14 +97,14 @@ final class CaptureActionTest extends TestCase
 
         $request->method('getModel')->willReturn($payment);
 
-        $this->assertTrue($this->captureAction->supports($request));
+        self::assertTrue($this->captureAction->supports($request));
     }
 
     public function testItDoesNotSupportRequestOtherThanCapture(): void
     {
         $request = $this->createMock(GetStatus::class);
 
-        $this->assertFalse($this->captureAction->supports($request));
+        self::assertFalse($this->captureAction->supports($request));
     }
 
     public function testItDoesNotSupportRequestWithFirstModelOtherThanPayment(): void
@@ -110,6 +112,6 @@ final class CaptureActionTest extends TestCase
         $request = $this->createMock(Capture::class);
         $request->method('getModel')->willReturn('badObject');
 
-        $this->assertFalse($this->captureAction->supports($request));
+        self::assertFalse($this->captureAction->supports($request));
     }
 }

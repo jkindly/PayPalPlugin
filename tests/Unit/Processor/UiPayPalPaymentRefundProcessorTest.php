@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Processor;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Resource\Exception\UpdateHandlingException;
@@ -23,18 +24,19 @@ use Sylius\PayPalPlugin\Processor\UiPayPalPaymentRefundProcessor;
 final class UiPayPalPaymentRefundProcessorTest extends TestCase
 {
     private UiPayPalPaymentRefundProcessor $uiPaypalPaymentRefundProcessor;
-    private PaymentRefundProcessorInterface $paymentRefundProcessor;
+    private PaymentRefundProcessorInterface&MockObject $paymentRefundProcessor;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->paymentRefundProcessor = $this->createMock(PaymentRefundProcessorInterface::class);
-        
+
         $this->uiPaypalPaymentRefundProcessor = new UiPayPalPaymentRefundProcessor($this->paymentRefundProcessor);
     }
 
     public function testItImplementsPaymentRefundProcessorInterface(): void
     {
-        $this->assertInstanceOf(PaymentRefundProcessorInterface::class, $this->uiPaypalPaymentRefundProcessor);
+        self::assertInstanceOf(PaymentRefundProcessorInterface::class, $this->uiPaypalPaymentRefundProcessor);
     }
 
     public function testItThrowsExceptionIfRefundHasFails(): void
@@ -55,7 +57,7 @@ final class UiPayPalPaymentRefundProcessorTest extends TestCase
     {
         $payment = $this->createMock(PaymentInterface::class);
 
-        $this->paymentRefundProcessor->expects($this->once())->method('refund')->with($payment);
+        $this->paymentRefundProcessor->expects(self::once())->method('refund')->with($payment);
 
         $this->uiPaypalPaymentRefundProcessor->refund($payment);
     }

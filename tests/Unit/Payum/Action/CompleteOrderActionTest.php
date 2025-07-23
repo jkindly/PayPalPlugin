@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\PayPalPlugin\Unit\Payum\Action;
 
 use Payum\Core\Action\ActionInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\AddressInterface;
 use Sylius\Component\Core\Model\OrderInterface;
@@ -32,23 +33,24 @@ use Sylius\PayPalPlugin\Updater\PaymentUpdaterInterface;
 
 final class CompleteOrderActionTest extends TestCase
 {
-    private CacheAuthorizeClientApiInterface $authorizeClientApi;
-    private UpdateOrderApiInterface $updateOrderApi;
-    private CompleteOrderApiInterface $completeOrderApi;
-    private OrderDetailsApiInterface $orderDetailsApi;
+    private CacheAuthorizeClientApiInterface&MockObject $authorizeClientApi;
+    private UpdateOrderApiInterface&MockObject $updateOrderApi;
+    private CompleteOrderApiInterface&MockObject $completeOrderApi;
+    private OrderDetailsApiInterface&MockObject $orderDetailsApi;
     private PaymentUpdaterInterface $payPalPaymentUpdater;
     private StateResolverInterface $orderPaymentStateResolver;
     private CompleteOrderAction $completeOrderAction;
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->authorizeClientApi = $this->createMock(CacheAuthorizeClientApiInterface::class);
         $this->updateOrderApi = $this->createMock(UpdateOrderApiInterface::class);
         $this->completeOrderApi = $this->createMock(CompleteOrderApiInterface::class);
         $this->orderDetailsApi = $this->createMock(OrderDetailsApiInterface::class);
         $this->payPalPaymentUpdater = $this->createMock(PaymentUpdaterInterface::class);
         $this->orderPaymentStateResolver = $this->createMock(StateResolverInterface::class);
-        
+
         $this->completeOrderAction = new CompleteOrderAction(
             $this->authorizeClientApi,
             $this->updateOrderApi,
@@ -63,7 +65,7 @@ final class CompleteOrderActionTest extends TestCase
 
     public function testItImplementsActionInterface(): void
     {
-        $this->assertInstanceOf(ActionInterface::class, $this->completeOrderAction);
+        self::assertInstanceOf(ActionInterface::class, $this->completeOrderAction);
     }
 
     public function testItCompletesOrder(): void
@@ -85,7 +87,7 @@ final class CompleteOrderActionTest extends TestCase
         $payment->method('getAmount')->willReturn(1000);
         $order->method('getTotal')->willReturn(1000);
 
-        $this->completeOrderApi->expects($this->once())->method('complete')->with('TOKEN', '123123');
+        $this->completeOrderApi->expects(self::once())->method('complete')->with('TOKEN', '123123');
         $this->orderDetailsApi->method('get')->with('TOKEN', '123123')->willReturn([
             'status' => 'COMPLETED',
             'id' => '123123',
@@ -94,7 +96,7 @@ final class CompleteOrderActionTest extends TestCase
             ],
         ]);
 
-        $payment->expects($this->once())->method('setDetails')->with([
+        $payment->expects(self::once())->method('setDetails')->with([
             'status' => StatusAction::STATUS_COMPLETED,
             'paypal_order_id' => '123123',
             'reference_id' => 'REFERENCE_ID',
@@ -124,7 +126,7 @@ final class CompleteOrderActionTest extends TestCase
         $payment->method('getAmount')->willReturn(1000);
         $order->method('getTotal')->willReturn(1000);
 
-        $this->completeOrderApi->expects($this->once())->method('complete')->with('TOKEN', '123123');
+        $this->completeOrderApi->expects(self::once())->method('complete')->with('TOKEN', '123123');
         $this->orderDetailsApi->method('get')->with('TOKEN', '123123')->willReturn([
             'status' => 'COMPLETED',
             'id' => '123123',
@@ -136,7 +138,7 @@ final class CompleteOrderActionTest extends TestCase
             ],
         ]);
 
-        $payment->expects($this->once())->method('setDetails')->with([
+        $payment->expects(self::once())->method('setDetails')->with([
             'status' => StatusAction::STATUS_COMPLETED,
             'paypal_order_id' => '123123',
             'reference_id' => 'REFERENCE_ID',
@@ -151,7 +153,7 @@ final class CompleteOrderActionTest extends TestCase
     public function testItUpdatesPaypalShippingAddressAndCompletesOrder(): void
     {
         $updateOrderAddressApi = $this->createMock(UpdateOrderAddressApiInterface::class);
-        
+
         $completeOrderAction = new CompleteOrderAction(
             $this->authorizeClientApi,
             $this->updateOrderApi,
@@ -184,7 +186,7 @@ final class CompleteOrderActionTest extends TestCase
         $payment->method('getAmount')->willReturn(1000);
         $order->method('getTotal')->willReturn(1000);
 
-        $this->completeOrderApi->expects($this->once())->method('complete')->with('TOKEN', '123123');
+        $this->completeOrderApi->expects(self::once())->method('complete')->with('TOKEN', '123123');
         $this->orderDetailsApi->method('get')->with('TOKEN', '123123')->willReturn([
             'status' => 'COMPLETED',
             'id' => '123123',
@@ -193,7 +195,7 @@ final class CompleteOrderActionTest extends TestCase
             ],
         ]);
 
-        $payment->expects($this->once())->method('setDetails')->with([
+        $payment->expects(self::once())->method('setDetails')->with([
             'status' => StatusAction::STATUS_COMPLETED,
             'paypal_order_id' => '123123',
             'reference_id' => 'REFERENCE_ID',
@@ -202,7 +204,7 @@ final class CompleteOrderActionTest extends TestCase
         $order->method('isShippingRequired')->willReturn(true);
         $order->method('getShippingAddress')->willReturn($shippingAddress);
 
-        $updateOrderAddressApi->expects($this->once())->method('update')->with('TOKEN', '123123', 'REFERENCE_ID', $shippingAddress);
+        $updateOrderAddressApi->expects(self::once())->method('update')->with('TOKEN', '123123', 'REFERENCE_ID', $shippingAddress);
 
         $completeOrderAction->execute($request);
     }
