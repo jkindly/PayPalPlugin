@@ -1,0 +1,115 @@
+<?php
+
+/*
+ * This file is part of the Sylius package.
+ *
+ * (c) Sylius Sp. z o.o.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
+namespace Tests\Sylius\PayPalPlugin\Unit\Payum\Action;
+
+use Payum\Core\Action\ActionInterface;
+use Payum\Core\Exception\RequestNotSupportedException;
+use Payum\Core\Request\Capture;
+use PHPUnit\Framework\TestCase;
+use Sylius\Bundle\PayumBundle\Request\GetStatus;
+use Sylius\Component\Core\Model\OrderInterface;
+use Sylius\Component\Core\Model\PaymentInterface;
+use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\PayPalPlugin\Api\CacheAuthorizeClientApiInterface;
+use Sylius\PayPalPlugin\Api\CreateOrderApiInterface;
+use Sylius\PayPalPlugin\Payum\Action\CaptureAction;
+use Sylius\PayPalPlugin\Payum\Action\StatusAction;
+use Sylius\PayPalPlugin\Provider\UuidProviderInterface;
+
+final class CaptureActionTest extends TestCase
+{
+    private CacheAuthorizeClientApiInterface $authorizeClientApi;
+    private CreateOrderApiInterface $createOrderApi;
+    private UuidProviderInterface $uuidProvider;
+    private CaptureAction $captureAction;
+
+    protected function setUp(): void
+    {
+        $this->authorizeClientApi = $this->createMock(CacheAuthorizeClientApiInterface::class);
+        $this->createOrderApi = $this->createMock(CreateOrderApiInterface::class);
+        $this->uuidProvider = $this->createMock(UuidProviderInterface::class);
+        
+        $this->captureAction = new CaptureAction(
+            $this->authorizeClientApi,
+            $this->createOrderApi,
+            $this->uuidProvider
+        );
+    }
+
+    public function testItImplementsActionInterface(): void
+    {
+        $this->assertInstanceOf(ActionInterface::class, $this->captureAction);
+    }
+
+    public function testItAuthorizesSellerSendCreateOrderRequestAndSetsOrderResponseDataOnPayment(): void
+    {
+        $request = $this->createMock(Capture::class);
+        $payment = $this->createMock(PaymentInterface::class);
+        $paymentMethod = $this->createMock(PaymentMethodInterface::class);
+        $order = $this->createMock(OrderInterface::class);
+
+        $request->method('getModel')->willReturn($payment);
+        $payment->method('getMethod')->willReturn($paymentMethod);
+        $payment->method('getAmount')->willReturn(1000);
+        $payment->method('getOrder')->willReturn($order);
+        $order->method('getCurrencyCode')->willReturn('USD');
+
+        $this->uuidProvider->method('provide')->willReturn('UUID');
+
+        $this->authorizeClientApi->method('authorize')->with($paymentMethod)->willReturn('ACCESS_TOKEN');
+        $this->createOrderApi->method('create')->with('ACCESS_TOKEN', $payment, 'UUID')->willReturn(['status' => 'CREATED', 'id' => '123123']);
+
+        $payment->expects($this->once())->method('setDetails')->with([
+            'status' => StatusAction::STATUS_CAPTURED,
+            'paypal_order_id' => '123123',
+            'reference_id' => 'UUID',
+            'payment_amount' => 1000,
+        ]);
+
+        $this->captureAction->execute($request);
+    }
+
+    public function testItThrowsAnExceptionIfRequestTypeIsInvalid(): void
+    {
+        $request = $this->createMock(GetStatus::class);
+
+        $this->expectException(RequestNotSupportedException::class);
+        $this->captureAction->execute($request);
+    }
+
+    public function testItSupportsCaptureRequestWithPaymentAsFirstModel(): void
+    {
+        $request = $this->createMock(Capture::class);
+        $payment = $this->createMock(PaymentInterface::class);
+
+        $request->method('getModel')->willReturn($payment);
+
+        $this->assertTrue($this->captureAction->supports($request));
+    }
+
+    public function testItDoesNotSupportRequestOtherThanCapture(): void
+    {
+        $request = $this->createMock(GetStatus::class);
+
+        $this->assertFalse($this->captureAction->supports($request));
+    }
+
+    public function testItDoesNotSupportRequestWithFirstModelOtherThanPayment(): void
+    {
+        $request = $this->createMock(Capture::class);
+        $request->method('getModel')->willReturn('badObject');
+
+        $this->assertFalse($this->captureAction->supports($request));
+    }
+}

@@ -1,0 +1,72 @@
+<?php
+
+/*
+ * This file is part of the Sylius package.
+ *
+ * (c) Sylius Sp. z o.o.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
+namespace Tests\Sylius\PayPalPlugin\Unit\Provider;
+
+use PHPUnit\Framework\TestCase;
+use Sylius\Component\Core\Model\PaymentInterface;
+use Sylius\Component\Core\Repository\PaymentRepositoryInterface;
+use Sylius\PayPalPlugin\Exception\PaymentNotFoundException;
+use Sylius\PayPalPlugin\Provider\PaymentProvider;
+use Sylius\PayPalPlugin\Provider\PaymentProviderInterface;
+
+final class PaymentProviderTest extends TestCase
+{
+    private PaymentRepositoryInterface $paymentRepository;
+    private PaymentProvider $provider;
+
+    protected function setUp(): void
+    {
+        $this->paymentRepository = $this->createMock(PaymentRepositoryInterface::class);
+        
+        $this->provider = new PaymentProvider($this->paymentRepository);
+    }
+
+    public function testImplementsPaymentProviderInterface(): void
+    {
+        $this->assertInstanceOf(PaymentProviderInterface::class, $this->provider);
+    }
+
+    public function testReturnsPaymentForGivenPaypalOrderId(): void
+    {
+        $firstPayment = $this->createMock(PaymentInterface::class);
+        $secondPayment = $this->createMock(PaymentInterface::class);
+        $thirdPayment = $this->createMock(PaymentInterface::class);
+
+        $this->paymentRepository->method('findAll')->willReturn([$firstPayment, $secondPayment, $thirdPayment]);
+
+        $firstPayment->method('getDetails')->willReturn(['test' => 'TEST']);
+        $secondPayment->method('getDetails')->willReturn(['paypal_order_id' => 'PP123']);
+        $thirdPayment->method('getDetails')->willReturn(['paypal_order_id' => 'PP444']);
+
+        $result = $this->provider->getByPayPalOrderId('PP444');
+
+        $this->assertSame($thirdPayment, $result);
+    }
+
+    public function testThrowsExceptionIfThereIsNoPaymentWithGivenPaypalOrderId(): void
+    {
+        $firstPayment = $this->createMock(PaymentInterface::class);
+        $secondPayment = $this->createMock(PaymentInterface::class);
+        $thirdPayment = $this->createMock(PaymentInterface::class);
+
+        $this->paymentRepository->method('findAll')->willReturn([$firstPayment, $secondPayment, $thirdPayment]);
+
+        $firstPayment->method('getDetails')->willReturn(['test' => 'TEST']);
+        $secondPayment->method('getDetails')->willReturn(['paypal_order_id' => 'PP123']);
+        $thirdPayment->method('getDetails')->willReturn(['paypal_order_id' => 'PP444']);
+
+        $this->expectException(PaymentNotFoundException::class);
+        $this->provider->getByPayPalOrderId('PP666');
+    }
+}
