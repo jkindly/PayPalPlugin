@@ -28,8 +28,11 @@ use Sylius\PayPalPlugin\Provider\PayPalItemDataProviderInterface;
 final class UpdateOrderApiTest extends TestCase
 {
     private PayPalClientInterface&MockObject $client;
+
     private PaymentReferenceNumberProviderInterface&MockObject $paymentReferenceNumberProvider;
+
     private PayPalItemDataProviderInterface&MockObject $payPalItemsDataProvider;
+
     private UpdateOrderApi $updateOrderApi;
 
     protected function setUp(): void
@@ -112,7 +115,7 @@ final class UpdateOrderApiTest extends TestCase
                         $data[0]['value']['shipping']['address']['country_code'] === 'US' &&
                         $data[0]['value']['items'] === ['data']
                     ;
-                })
+                }),
             );
 
         $this->updateOrderApi->update('TOKEN', 'ORDER-ID', $payment, 'REFERENCE-ID', 'MERCHANT-ID');
@@ -168,7 +171,7 @@ final class UpdateOrderApiTest extends TestCase
                         $data[0]['value']['payee']['merchant_id'] === 'MERCHANT-ID' &&
                         $data[0]['value']['items'] === ['data']
                     ;
-                })
+                }),
             );
 
         $this->updateOrderApi->update('TOKEN', 'ORDER-ID', $payment, 'REFERENCE-ID', 'MERCHANT-ID');

@@ -24,6 +24,7 @@ use Sylius\PayPalPlugin\Resolver\PayPalPrioritisingPaymentMethodsResolver;
 final class PayPalPrioritisingPaymentMethodsResolverTest extends TestCase
 {
     private PaymentMethodsResolverInterface&MockObject $paymentMethodsResolver;
+
     private PayPalPrioritisingPaymentMethodsResolver $payPalPrioritisingPaymentMethodsResolver;
 
     protected function setUp(): void
@@ -33,7 +34,7 @@ final class PayPalPrioritisingPaymentMethodsResolverTest extends TestCase
 
         $this->payPalPrioritisingPaymentMethodsResolver = new PayPalPrioritisingPaymentMethodsResolver(
             $this->paymentMethodsResolver,
-            'prioritised'
+            'prioritised',
         );
     }
 

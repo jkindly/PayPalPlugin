@@ -34,11 +34,17 @@ use Sylius\PayPalPlugin\Updater\PaymentUpdaterInterface;
 final class CompleteOrderActionTest extends TestCase
 {
     private CacheAuthorizeClientApiInterface&MockObject $authorizeClientApi;
+
     private UpdateOrderApiInterface&MockObject $updateOrderApi;
+
     private CompleteOrderApiInterface&MockObject $completeOrderApi;
+
     private OrderDetailsApiInterface&MockObject $orderDetailsApi;
+
     private PaymentUpdaterInterface $payPalPaymentUpdater;
+
     private StateResolverInterface $orderPaymentStateResolver;
+
     private CompleteOrderAction $completeOrderAction;
 
     protected function setUp(): void
@@ -59,7 +65,7 @@ final class CompleteOrderActionTest extends TestCase
             null,
             $this->payPalPaymentUpdater,
             $this->orderPaymentStateResolver,
-            null
+            null,
         );
     }
 
@@ -162,7 +168,7 @@ final class CompleteOrderActionTest extends TestCase
             null,
             $this->payPalPaymentUpdater,
             $this->orderPaymentStateResolver,
-            $updateOrderAddressApi
+            $updateOrderAddressApi,
         );
 
         $request = $this->createMock(CompleteOrder::class);

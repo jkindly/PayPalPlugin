@@ -24,6 +24,7 @@ use Sylius\PayPalPlugin\Processor\UiPayPalPaymentRefundProcessor;
 final class UiPayPalPaymentRefundProcessorTest extends TestCase
 {
     private UiPayPalPaymentRefundProcessor $uiPaypalPaymentRefundProcessor;
+
     private PaymentRefundProcessorInterface&MockObject $paymentRefundProcessor;
 
     protected function setUp(): void
@@ -46,7 +47,7 @@ final class UiPayPalPaymentRefundProcessorTest extends TestCase
         $this->paymentRefundProcessor
             ->method('refund')
             ->with($payment)
-            ->willThrowException(new PayPalOrderRefundException('Refund failed'));
+            ->willThrowException(new PayPalOrderRefundException());
 
         $this->expectException(UpdateHandlingException::class);
 

@@ -27,8 +27,11 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 final class SellerWebhookRegistrarTest extends TestCase
 {
     private AuthorizeClientApiInterface&MockObject $authorizeClientApi;
+
     private UrlGeneratorInterface&MockObject $urlGenerator;
+
     private WebhookApiInterface&MockObject $webhookApi;
+
     private SellerWebhookRegistrar $sellerWebhookRegistrar;
 
     protected function setUp(): void
@@ -41,7 +44,7 @@ final class SellerWebhookRegistrarTest extends TestCase
         $this->sellerWebhookRegistrar = new SellerWebhookRegistrar(
             $this->authorizeClientApi,
             $this->urlGenerator,
-            $this->webhookApi
+            $this->webhookApi,
         );
     }
 
@@ -73,8 +76,8 @@ final class SellerWebhookRegistrarTest extends TestCase
         // Test that register method executes without throwing an exception
         $this->sellerWebhookRegistrar->register($paymentMethod);
 
-        // Assert that we get here without exceptions (test passes)
-        self::assertTrue(true);
+        // If we reach this point, the test passes
+        $this->addToAssertionCount(1);
     }
 
     public function testItThrowsExceptionIfWebhookCouldNotBeRegistered(): void

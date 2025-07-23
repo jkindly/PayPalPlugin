@@ -27,6 +27,7 @@ use Sylius\PayPalPlugin\Resolver\CapturePaymentResolverInterface;
 final class CapturePaymentResolverTest extends TestCase
 {
     private Payum&MockObject $payum;
+
     private CapturePaymentResolver $capturePaymentResolver;
 
     protected function setUp(): void

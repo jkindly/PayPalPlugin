@@ -28,9 +28,14 @@ use Sylius\PayPalPlugin\Provider\UuidProviderInterface;
 final class CacheAuthorizeClientApiTest extends TestCase
 {
     private ObjectManager&MockObject $payPalCredentialsManager;
+
+    /** @var ObjectRepository<PayPalCredentialsInterface>&MockObject */
     private ObjectRepository&MockObject $payPalCredentialsRepository;
+
     private AuthorizeClientApiInterface&MockObject $authorizeClientApi;
+
     private UuidProviderInterface&MockObject $uuidProvider;
+
     private CacheAuthorizeClientApi $cacheAuthorizeClientApi;
 
     protected function setUp(): void

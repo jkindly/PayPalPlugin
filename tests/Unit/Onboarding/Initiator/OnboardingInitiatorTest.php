@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Onboarding\Initiator;
 
-use Mockery\Mock;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\AdminUserInterface;
@@ -27,7 +26,9 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 final class OnboardingInitiatorTest extends TestCase
 {
     private UrlGeneratorInterface&MockObject $urlGenerator;
+
     private Security&MockObject $security;
+
     private OnboardingInitiator $onboardingInitiator;
 
     protected function setUp(): void
@@ -117,7 +118,7 @@ final class OnboardingInitiatorTest extends TestCase
 
         self::assertEquals(
             'https://paypal-url/partner-referrals/create?email=sylius%40sylius.com&return_url=%2Fadmin%2Fpayment-methods%2Fnew%2Fsylius_paypal',
-            $result
+            $result,
         );
     }
 }

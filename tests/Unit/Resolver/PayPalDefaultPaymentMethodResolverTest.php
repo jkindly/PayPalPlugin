@@ -28,7 +28,10 @@ use Sylius\PayPalPlugin\Resolver\PayPalDefaultPaymentMethodResolver;
 final class PayPalDefaultPaymentMethodResolverTest extends TestCase
 {
     private DefaultPaymentMethodResolverInterface $decoratedDefaultPaymentMethodResolver;
+
+    /** @var PaymentMethodRepositoryInterface<PaymentMethodInterface>&MockObject */
     private PaymentMethodRepositoryInterface&MockObject $paymentMethodRepository;
+
     private PayPalDefaultPaymentMethodResolver $payPalDefaultPaymentMethodResolver;
 
     protected function setUp(): void
@@ -39,7 +42,7 @@ final class PayPalDefaultPaymentMethodResolverTest extends TestCase
 
         $this->payPalDefaultPaymentMethodResolver = new PayPalDefaultPaymentMethodResolver(
             $this->decoratedDefaultPaymentMethodResolver,
-            $this->paymentMethodRepository
+            $this->paymentMethodRepository,
         );
     }
 

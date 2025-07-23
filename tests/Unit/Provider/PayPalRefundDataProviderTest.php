@@ -25,8 +25,11 @@ use Sylius\PayPalPlugin\Provider\PayPalRefundDataProvider;
 final class PayPalRefundDataProviderTest extends TestCase
 {
     private CacheAuthorizeClientApiInterface&MockObject $authorizeClientApi;
+
     private GenericApiInterface&MockObject $genericApi;
+
     private PayPalPaymentMethodProviderInterface&MockObject $payPalPaymentMethodProvider;
+
     private PayPalRefundDataProvider $provider;
 
     protected function setUp(): void
@@ -39,7 +42,7 @@ final class PayPalRefundDataProviderTest extends TestCase
         $this->provider = new PayPalRefundDataProvider(
             $this->authorizeClientApi,
             $this->genericApi,
-            $this->payPalPaymentMethodProvider
+            $this->payPalPaymentMethodProvider,
         );
     }
 
@@ -54,7 +57,7 @@ final class PayPalRefundDataProviderTest extends TestCase
             ->method('get')
             ->withConsecutive(
                 ['TOKEN', 'https://get-refund-data.com'],
-                ['TOKEN', 'https://up.url.com']
+                ['TOKEN', 'https://up.url.com'],
             )
             ->willReturnOnConsecutiveCalls(
                 [
@@ -63,7 +66,7 @@ final class PayPalRefundDataProviderTest extends TestCase
                         ['rel' => 'up', 'href' => 'https://up.url.com'],
                     ],
                 ],
-                ['data' => 'refund-data']
+                ['data' => 'refund-data'],
             );
 
         $this->provider->provide('https://get-refund-data.com');

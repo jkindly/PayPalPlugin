@@ -22,6 +22,7 @@ use Sylius\PayPalPlugin\Client\PayPalClientInterface;
 final class IdentityApiTest extends TestCase
 {
     private PayPalClientInterface&MockObject $payPalClient;
+
     private IdentityApi $identityApi;
 
     protected function setUp(): void

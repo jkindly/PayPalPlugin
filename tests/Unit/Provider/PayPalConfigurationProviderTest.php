@@ -24,7 +24,9 @@ use Sylius\PayPalPlugin\Provider\PayPalConfigurationProviderInterface;
 
 final class PayPalConfigurationProviderTest extends TestCase
 {
+    /** @var PaymentMethodRepositoryInterface<PaymentMethodInterface>&MockObject */
     private PaymentMethodRepositoryInterface&MockObject $paymentMethodRepository;
+
     private PayPalConfigurationProvider $payPalConfigurationProvider;
 
     protected function setUp(): void

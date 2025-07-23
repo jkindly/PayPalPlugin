@@ -30,8 +30,11 @@ use Sylius\PayPalPlugin\Provider\PayPalItemDataProviderInterface;
 final class CreateOrderApiTest extends TestCase
 {
     private PayPalClientInterface&MockObject $client;
+
     private PaymentReferenceNumberProviderInterface&MockObject $paymentReferenceNumberProvider;
+
     private PayPalItemDataProviderInterface&MockObject $payPalItemDataProvider;
+
     private CreateOrderApi $createOrderApi;
 
     protected function setUp(): void

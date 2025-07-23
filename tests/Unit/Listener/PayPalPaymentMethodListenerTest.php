@@ -31,9 +31,13 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 final class PayPalPaymentMethodListenerTest extends TestCase
 {
     private OnboardingInitiatorInterface&MockObject $onboardingInitiator;
+
     private UrlGeneratorInterface&MockObject $urlGenerator;
+
     private RequestStack&MockObject $requestStack;
+
     private PayPalPaymentMethodProviderInterface&MockObject $payPalPaymentMethodProvider;
+
     private PayPalPaymentMethodListener $payPalPaymentMethodListener;
 
     protected function setUp(): void

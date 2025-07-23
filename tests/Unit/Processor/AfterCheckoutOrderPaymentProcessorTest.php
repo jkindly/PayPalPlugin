@@ -23,6 +23,7 @@ use Sylius\PayPalPlugin\Processor\AfterCheckoutOrderPaymentProcessor;
 final class AfterCheckoutOrderPaymentProcessorTest extends TestCase
 {
     private OrderProcessorInterface&MockObject $baseOrderPaymentProcessor;
+
     private AfterCheckoutOrderPaymentProcessor $afterCheckoutOrderPaymentProcessor;
 
     protected function setUp(): void

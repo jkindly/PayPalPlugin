@@ -21,6 +21,7 @@ use Sylius\PayPalPlugin\Entity\PayPalCredentialsInterface;
 final class PayPalCredentialsTest extends TestCase
 {
     private PaymentMethodInterface $paymentMethod;
+
     private PayPalCredentials $payPalCredentials;
 
     protected function setUp(): void
@@ -32,7 +33,7 @@ final class PayPalCredentialsTest extends TestCase
             $this->paymentMethod,
             'TOKEN',
             new \DateTime('2020-01-01 10:00:00'),
-            3600
+            3600,
         );
     }
 

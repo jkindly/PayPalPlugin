@@ -26,7 +26,9 @@ use Sylius\PayPalPlugin\Api\GenericApiInterface;
 final class GenericApiTest extends TestCase
 {
     private ClientInterface&MockObject $client;
+
     private RequestFactoryInterface&MockObject $requestFactory;
+
     private GenericApi $genericApi;
 
     protected function setUp(): void
@@ -60,7 +62,7 @@ final class GenericApiTest extends TestCase
             ->withConsecutive(
                 ['Authorization', 'Bearer TOKEN'],
                 ['Content-Type', 'application/json'],
-                ['Accept', 'application/json']
+                ['Accept', 'application/json'],
             )
             ->willReturn($request);
 

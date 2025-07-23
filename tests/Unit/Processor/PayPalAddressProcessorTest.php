@@ -24,11 +24,11 @@ use Sylius\PayPalPlugin\Processor\PayPalAddressProcessorInterface;
 final class PayPalAddressProcessorTest extends TestCase
 {
     private PayPalAddressProcessor $paypalAddressProcessor;
+
     private ObjectManager&MockObject $objectManager;
 
     protected function setUp(): void
     {
-
         $this->objectManager = $this->createMock(ObjectManager::class);
 
         $this->paypalAddressProcessor = new PayPalAddressProcessor($this->objectManager);
@@ -60,7 +60,7 @@ final class PayPalAddressProcessorTest extends TestCase
                 'postal_code' => '10001',
                 'country_code' => 'US',
             ],
-            $order
+            $order,
         );
     }
 
@@ -86,7 +86,7 @@ final class PayPalAddressProcessorTest extends TestCase
                 'postal_code' => '10001',
                 'country_code' => 'US',
             ],
-            $order
+            $order,
         );
     }
 

@@ -27,8 +27,11 @@ use Sylius\PayPalPlugin\Processor\PaymentCompleteProcessorInterface;
 final class PaymentStateManagerTest extends TestCase
 {
     private StateMachineInterface&MockObject $stateMachine;
+
     private ObjectManager&MockObject $paymentManager;
+
     private PaymentCompleteProcessorInterface&MockObject $paymentCompleteProcessor;
+
     private PaymentStateManager $paymentStateManager;
 
     protected function setUp(): void

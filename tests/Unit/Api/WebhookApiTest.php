@@ -26,8 +26,11 @@ use Sylius\PayPalPlugin\Api\WebhookApi;
 final class WebhookApiTest extends TestCase
 {
     private ClientInterface&MockObject $client;
+
     private RequestFactoryInterface&MockObject $requestFactory;
+
     private StreamFactoryInterface&MockObject $streamFactory;
+
     private WebhookApi $webhookApi;
 
     protected function setUp(): void
@@ -41,7 +44,7 @@ final class WebhookApiTest extends TestCase
             $this->client,
             'http://base-url.com/',
             $this->requestFactory,
-            $this->streamFactory
+            $this->streamFactory,
         );
     }
 

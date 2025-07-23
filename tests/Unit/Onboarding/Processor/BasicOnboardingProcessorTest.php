@@ -33,9 +33,13 @@ use Symfony\Component\HttpFoundation\Request;
 final class BasicOnboardingProcessorTest extends TestCase
 {
     private ClientInterface&MockObject $httpClient;
+
     private SellerWebhookRegistrarInterface&MockObject $sellerWebhookRegistrar;
+
     private RequestFactoryInterface&MockObject $requestFactory;
+
     private RequestInterface&MockObject $apiRequest;
+
     private BasicOnboardingProcessor $basicOnboardingProcessor;
 
     protected function setUp(): void
@@ -50,7 +54,7 @@ final class BasicOnboardingProcessorTest extends TestCase
             $this->httpClient,
             $this->sellerWebhookRegistrar,
             'https://paypal.facilitator.com',
-            $this->requestFactory
+            $this->requestFactory,
         );
 
         $this->apiRequest->method('withHeader')->willReturn($this->apiRequest);
@@ -98,7 +102,7 @@ final class BasicOnboardingProcessorTest extends TestCase
             "client_secret":"CLIENT-SECRET",
             "sylius_merchant_id":"SYLIUS-MERCHANT-ID",
             "merchant_id":"MERCHANT-ID",
-            "partner_attribution_id":"ATTRIBUTION-ID"}'
+            "partner_attribution_id":"ATTRIBUTION-ID"}',
         );
 
         $this->sellerWebhookRegistrar->expects(self::once())->method('register')->with($paymentMethod);
@@ -141,7 +145,7 @@ final class BasicOnboardingProcessorTest extends TestCase
             "client_secret":"CLIENT-SECRET",
             "sylius_merchant_id":"SYLIUS-MERCHANT-ID",
             "merchant_id":"MERCHANT-ID",
-            "partner_attribution_id":"ATTRIBUTION-ID"}'
+            "partner_attribution_id":"ATTRIBUTION-ID"}',
         );
 
         $paymentMethod->expects(self::once())->method('setEnabled')->with(false);
@@ -194,7 +198,7 @@ final class BasicOnboardingProcessorTest extends TestCase
             "client_secret":"CLIENT-SECRET",
             "sylius_merchant_id":"SYLIUS-MERCHANT-ID",
             "merchant_id":"MERCHANT-ID",
-            "partner_attribution_id":"ATTRIBUTION-ID"}'
+            "partner_attribution_id":"ATTRIBUTION-ID"}',
         );
 
         $paymentMethod->expects($this->exactly(2))->method('setEnabled')->with(false);

@@ -22,6 +22,7 @@ use Sylius\PayPalPlugin\Client\PayPalClientInterface;
 final class RefundPaymentApiTest extends TestCase
 {
     private PayPalClientInterface&MockObject $client;
+
     private RefundPaymentApi $refundPaymentApi;
 
     protected function setUp(): void

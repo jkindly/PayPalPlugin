@@ -27,7 +27,9 @@ use Symfony\Component\Routing\RouterInterface;
 final class PayPalPaymentTest extends TestCase
 {
     private RouterInterface&MockObject $router;
+
     private AvailableCountriesProviderInterface&MockObject $availableCountriesProvider;
+
     private PayPalPayment $payPalPayment;
 
     protected function setUp(): void
@@ -104,13 +106,13 @@ final class PayPalPaymentTest extends TestCase
                 ['sylius_paypal_shop_complete_paypal_order', ['token' => 'TOKEN'], UrlGeneratorInterface::ABSOLUTE_URL],
                 ['sylius_paypal_shop_create_paypal_order', ['token' => 'TOKEN'], UrlGeneratorInterface::ABSOLUTE_URL],
                 ['sylius_paypal_shop_cancel_payment', [], UrlGeneratorInterface::ABSOLUTE_URL],
-                ['sylius_paypal_shop_payment_error', [], UrlGeneratorInterface::ABSOLUTE_URL]
+                ['sylius_paypal_shop_payment_error', [], UrlGeneratorInterface::ABSOLUTE_URL],
             )
             ->willReturnOnConsecutiveCalls(
                 'https://path-to-complete/TOKEN',
                 'https://path-to-create/TOKEN',
                 'https://path-to-cancel',
-                'https://path-to-error'
+                'https://path-to-error',
             );
 
         $result = $this->payPalPayment->provideConfiguration($payment);

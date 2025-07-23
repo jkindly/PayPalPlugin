@@ -23,7 +23,9 @@ use Sylius\PayPalPlugin\Model\PayPalPurchaseUnit;
 final class PayPalOrderTest extends TestCase
 {
     private OrderInterface&MockObject $order;
+
     private PayPalPurchaseUnit&MockObject $payPalPurchaseUnit;
+
     private PayPalOrder $payPalOrder;
 
     protected function setUp(): void

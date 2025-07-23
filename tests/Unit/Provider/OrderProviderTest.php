@@ -23,7 +23,9 @@ use Sylius\PayPalPlugin\Provider\OrderProviderInterface;
 
 final class OrderProviderTest extends TestCase
 {
+    /** @var OrderRepositoryInterface<OrderInterface>&MockObject */
     private OrderRepositoryInterface&MockObject $orderRepository;
+
     private OrderProvider $provider;
 
     protected function setUp(): void

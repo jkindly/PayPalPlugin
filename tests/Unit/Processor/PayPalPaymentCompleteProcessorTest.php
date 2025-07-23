@@ -27,6 +27,7 @@ use Sylius\PayPalPlugin\Processor\PayPalPaymentCompleteProcessor;
 final class PayPalPaymentCompleteProcessorTest extends TestCase
 {
     private PayPalPaymentCompleteProcessor $paypalPaymentCompleteProcessor;
+
     private Payum&MockObject $payum;
 
     protected function setUp(): void

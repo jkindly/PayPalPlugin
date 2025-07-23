@@ -23,7 +23,9 @@ use Sylius\PayPalPlugin\Provider\PaymentProviderInterface;
 
 final class PaymentProviderTest extends TestCase
 {
+    /** @var PaymentRepositoryInterface<PaymentInterface>&MockObject */
     private PaymentRepositoryInterface&MockObject $paymentRepository;
+
     private PaymentProvider $provider;
 
     protected function setUp(): void

@@ -15,6 +15,7 @@ namespace Tests\Sylius\PayPalPlugin\Unit\Payum\Action;
 
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
+use Payum\Core\Request\Authorize;
 use Payum\Core\Request\Capture;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -31,8 +32,11 @@ use Sylius\PayPalPlugin\Provider\UuidProviderInterface;
 final class CaptureActionTest extends TestCase
 {
     private CacheAuthorizeClientApiInterface&MockObject $authorizeClientApi;
+
     private CreateOrderApiInterface&MockObject $createOrderApi;
+
     private UuidProviderInterface&MockObject $uuidProvider;
+
     private CaptureAction $captureAction;
 
     protected function setUp(): void
@@ -45,7 +49,7 @@ final class CaptureActionTest extends TestCase
         $this->captureAction = new CaptureAction(
             $this->authorizeClientApi,
             $this->createOrderApi,
-            $this->uuidProvider
+            $this->uuidProvider,
         );
     }
 
@@ -84,7 +88,7 @@ final class CaptureActionTest extends TestCase
 
     public function testItThrowsAnExceptionIfRequestTypeIsInvalid(): void
     {
-        $request = $this->createMock(GetStatus::class);
+        $request = $this->createMock(Authorize::class);
 
         $this->expectException(RequestNotSupportedException::class);
         $this->captureAction->execute($request);

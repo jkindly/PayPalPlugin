@@ -31,9 +31,13 @@ use Sylius\PayPalPlugin\Registrar\SellerWebhookRegistrarInterface;
 final class PayPalPaymentMethodEnablerTest extends TestCase
 {
     private ClientInterface&MockObject $client;
+
     private RequestFactoryInterface&MockObject $requestFactory;
+
     private ObjectManager&MockObject $paymentMethodManager;
+
     private SellerWebhookRegistrarInterface&MockObject $sellerWebhookRegistrar;
+
     private PayPalPaymentMethodEnabler $payPalPaymentMethodEnabler;
 
     protected function setUp(): void

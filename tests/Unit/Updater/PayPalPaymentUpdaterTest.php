@@ -23,6 +23,7 @@ use Sylius\PayPalPlugin\Updater\PayPalPaymentUpdater;
 final class PayPalPaymentUpdaterTest extends TestCase
 {
     private ObjectManager&MockObject $paymentManager;
+
     private PayPalPaymentUpdater $payPalPaymentUpdater;
 
     protected function setUp(): void

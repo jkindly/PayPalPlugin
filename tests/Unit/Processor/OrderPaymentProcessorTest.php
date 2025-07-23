@@ -27,7 +27,9 @@ use Sylius\PayPalPlugin\Processor\OrderPaymentProcessor;
 final class OrderPaymentProcessorTest extends TestCase
 {
     private OrderPaymentProcessor $orderPaymentProcessor;
+
     private OrderProcessorInterface&MockObject $baseOrderProcessor;
+
     private StateMachineInterface&MockObject $stateMachine;
 
     protected function setUp(): void
@@ -38,7 +40,7 @@ final class OrderPaymentProcessorTest extends TestCase
 
         $this->orderPaymentProcessor = new OrderPaymentProcessor(
             $this->baseOrderProcessor,
-            $this->stateMachine
+            $this->stateMachine,
         );
     }
 

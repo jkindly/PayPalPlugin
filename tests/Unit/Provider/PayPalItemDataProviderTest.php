@@ -24,6 +24,7 @@ use Sylius\PayPalPlugin\Provider\PayPalItemDataProvider;
 final class PayPalItemDataProviderTest extends TestCase
 {
     private OrderItemNonNeutralTaxesProviderInterface&MockObject $orderItemNonNeutralTaxesProvider;
+
     private PayPalItemDataProvider $provider;
 
     protected function setUp(): void

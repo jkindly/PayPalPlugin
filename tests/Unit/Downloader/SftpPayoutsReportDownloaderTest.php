@@ -26,6 +26,7 @@ use Sylius\PayPalPlugin\Model\Report;
 final class SftpPayoutsReportDownloaderTest extends TestCase
 {
     private SFTP&MockObject $sftp;
+
     private SftpPayoutsReportDownloader $sftpPayoutsReportDownloader;
 
     protected function setUp(): void

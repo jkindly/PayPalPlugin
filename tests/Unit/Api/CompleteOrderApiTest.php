@@ -22,6 +22,7 @@ use Sylius\PayPalPlugin\Client\PayPalClientInterface;
 final class CompleteOrderApiTest extends TestCase
 {
     private PayPalClientInterface&MockObject $client;
+
     private CompleteOrderApi $completeOrderApi;
 
     protected function setUp(): void

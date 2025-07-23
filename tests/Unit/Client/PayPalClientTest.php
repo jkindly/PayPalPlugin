@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Tests\Sylius\PayPalPlugin\Unit\Client;
 
 use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Exception\RequestException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
@@ -36,12 +35,19 @@ use Sylius\PayPalPlugin\Provider\UuidProviderInterface;
 final class PayPalClientTest extends TestCase
 {
     private ClientInterface&MockObject $client;
+
     private LoggerInterface&MockObject $logger;
+
     private UuidProviderInterface&MockObject $uuidProvider;
+
     private PayPalConfigurationProviderInterface&MockObject $payPalConfigurationProvider;
+
     private ChannelContextInterface&MockObject $channelContext;
+
     private RequestFactoryInterface&MockObject $requestFactory;
+
     private StreamFactoryInterface&MockObject $streamFactory;
+
     private PayPalClient $payPalClient;
 
     protected function setUp(): void

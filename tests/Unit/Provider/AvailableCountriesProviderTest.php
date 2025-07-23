@@ -25,7 +25,9 @@ use Sylius\PayPalPlugin\Provider\AvailableCountriesProvider;
 final class AvailableCountriesProviderTest extends TestCase
 {
     private RepositoryInterface&MockObject $countryRepository;
+
     private ChannelContextInterface&MockObject $channelContext;
+
     private AvailableCountriesProvider $provider;
 
     protected function setUp(): void
@@ -36,7 +38,7 @@ final class AvailableCountriesProviderTest extends TestCase
 
         $this->provider = new AvailableCountriesProvider(
             $this->countryRepository,
-            $this->channelContext
+            $this->channelContext,
         );
     }
 

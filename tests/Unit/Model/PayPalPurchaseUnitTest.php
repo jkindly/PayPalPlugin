@@ -21,6 +21,7 @@ use Sylius\PayPalPlugin\Model\PayPalPurchaseUnit;
 final class PayPalPurchaseUnitTest extends TestCase
 {
     private AddressInterface&MockObject $shippingAddress;
+
     private PayPalPurchaseUnit $payPalPurchaseUnit;
 
     protected function setUp(): void
@@ -40,7 +41,7 @@ final class PayPalPurchaseUnitTest extends TestCase
             [['test_item']],
             true,
             $this->shippingAddress,
-            'DESCRIPTION'
+            'DESCRIPTION',
         );
     }
 
@@ -118,7 +119,7 @@ final class PayPalPurchaseUnitTest extends TestCase
             'MERCHANT_ID',
             [['test_item']],
             false,
-            $this->shippingAddress
+            $this->shippingAddress,
         );
 
         $result = $payPalPurchaseUnit->toArray();
@@ -176,7 +177,7 @@ final class PayPalPurchaseUnitTest extends TestCase
             'MERCHANT_ID',
             [['test_item']],
             false,
-            null
+            null,
         );
 
         $result = $payPalPurchaseUnit->toArray();

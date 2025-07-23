@@ -26,7 +26,9 @@ use Sylius\PayPalPlugin\Verifier\PaymentAmountVerifierInterface;
 final class PayPalOrderCompleteProcessorTest extends TestCase
 {
     private PayPalOrderCompleteProcessor $paypalOrderCompleteProcessor;
+
     private PaymentStateManagerInterface&MockObject $paymentStateManager;
+
     private PaymentAmountVerifierInterface&MockObject $paymentAmountVerifier;
 
     protected function setUp(): void
@@ -37,7 +39,7 @@ final class PayPalOrderCompleteProcessorTest extends TestCase
 
         $this->paypalOrderCompleteProcessor = new PayPalOrderCompleteProcessor(
             $this->paymentStateManager,
-            $this->paymentAmountVerifier
+            $this->paymentAmountVerifier,
         );
     }
 

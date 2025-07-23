@@ -27,7 +27,9 @@ use Symfony\Component\HttpFoundation\Request;
 final class PayPalPaymentMethodNewResourceFactoryTest extends TestCase
 {
     private NewResourceFactoryInterface&MockObject $newResourceFactory;
+
     private OnboardingProcessorInterface&MockObject $onboardingProcessor;
+
     private PayPalPaymentMethodNewResourceFactory $payPalPaymentMethodNewResourceFactory;
 
     protected function setUp(): void

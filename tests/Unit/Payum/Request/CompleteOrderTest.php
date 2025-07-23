@@ -21,6 +21,7 @@ use Sylius\PayPalPlugin\Payum\Request\CompleteOrder;
 final class CompleteOrderTest extends TestCase
 {
     private PaymentInterface $payment;
+
     private CompleteOrder $completeOrder;
 
     protected function setUp(): void

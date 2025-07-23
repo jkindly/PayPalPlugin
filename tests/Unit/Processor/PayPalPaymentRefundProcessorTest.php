@@ -32,10 +32,15 @@ use Sylius\PayPalPlugin\Provider\RefundReferenceNumberProviderInterface;
 final class PayPalPaymentRefundProcessorTest extends TestCase
 {
     private PayPalPaymentRefundProcessor $paypalPaymentRefundProcessor;
+
     private CacheAuthorizeClientApiInterface&MockObject $authorizeClientApi;
+
     private OrderDetailsApiInterface&MockObject $orderDetailsApi;
+
     private RefundPaymentApiInterface&MockObject $refundOrderApi;
+
     private PayPalAuthAssertionGeneratorInterface&MockObject $payPalAuthAssertionGenerator;
+
     private RefundReferenceNumberProviderInterface&MockObject $refundReferenceNumberProvider;
 
     protected function setUp(): void
@@ -52,7 +57,7 @@ final class PayPalPaymentRefundProcessorTest extends TestCase
             $this->orderDetailsApi,
             $this->refundOrderApi,
             $this->payPalAuthAssertionGenerator,
-            $this->refundReferenceNumberProvider
+            $this->refundReferenceNumberProvider,
         );
     }
 
@@ -95,8 +100,8 @@ final class PayPalPaymentRefundProcessorTest extends TestCase
         // Test that refund method executes without throwing an exception
         $this->paypalPaymentRefundProcessor->refund($payment);
 
-        // Assert that we get here without exceptions (test passes)
-        self::assertTrue(true);
+        // If we reach this point, the test passes
+        $this->addToAssertionCount(1);
     }
 
     public function testItDoesNothingIfPaymentIsNotPaypal(): void
