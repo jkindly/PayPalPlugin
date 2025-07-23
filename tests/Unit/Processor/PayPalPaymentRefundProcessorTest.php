@@ -85,11 +85,16 @@ final class PayPalPaymentRefundProcessorTest extends TestCase
         $this->refundReferenceNumberProvider->method('provide')->with($payment)->willReturn('REFERENCE-NUMBER');
 
         $this->refundOrderApi
+            ->expects($this->once())
             ->method('refund')
             ->with('TOKEN', '555', 'AUTH-ASSERTION', 'REFERENCE-NUMBER', '10', 'USD')
             ->willReturn(['status' => 'COMPLETED', 'id' => '123123']);
 
+        // Test that refund method executes without throwing an exception
         $this->paypalPaymentRefundProcessor->refund($payment);
+        
+        // Assert that we get here without exceptions (test passes)
+        $this->assertTrue(true);
     }
 
     public function testItDoesNothingIfPaymentIsNotPaypal(): void

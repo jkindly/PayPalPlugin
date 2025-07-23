@@ -62,9 +62,17 @@ final class SellerWebhookRegistrarTest extends TestCase
             ->with('sylius_paypal_webhook_refund_order', [], UrlGeneratorInterface::ABSOLUTE_URL)
             ->willReturn('https://webhook-url.com');
 
-        $this->webhookApi->method('register')->with('TOKEN', 'https://webhook-url.com')->willReturn(['name' => 'WEBHOOK_REGISTERED']);
+        $this->webhookApi
+            ->expects($this->once())
+            ->method('register')
+            ->with('TOKEN', 'https://webhook-url.com')
+            ->willReturn(['name' => 'WEBHOOK_REGISTERED']);
 
+        // Test that register method executes without throwing an exception
         $this->sellerWebhookRegistrar->register($paymentMethod);
+        
+        // Assert that we get here without exceptions (test passes)
+        $this->assertTrue(true);
     }
 
     public function testItThrowsExceptionIfWebhookCouldNotBeRegistered(): void
