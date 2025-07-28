@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\PayPalPlugin\Unit\Payum\Action;
 
 use Payum\Core\Action\ActionInterface;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\AddressInterface;
@@ -69,12 +70,14 @@ final class CompleteOrderActionTest extends TestCase
         );
     }
 
-    public function testItImplementsActionInterface(): void
+    #[Test]
+    public function it_implements_action_interface(): void
     {
         self::assertInstanceOf(ActionInterface::class, $this->completeOrderAction);
     }
 
-    public function testItCompletesOrder(): void
+    #[Test]
+    public function it_completes_order(): void
     {
         $request = $this->createMock(CompleteOrder::class);
         $payment = $this->createMock(PaymentInterface::class);
@@ -113,7 +116,8 @@ final class CompleteOrderActionTest extends TestCase
         $this->completeOrderAction->execute($request);
     }
 
-    public function testItCompletesOrderAndSavesTransactionId(): void
+    #[Test]
+    public function it_completes_order_and_saves_transaction_id(): void
     {
         $request = $this->createMock(CompleteOrder::class);
         $payment = $this->createMock(PaymentInterface::class);
@@ -156,7 +160,8 @@ final class CompleteOrderActionTest extends TestCase
         $this->completeOrderAction->execute($request);
     }
 
-    public function testItUpdatesPaypalShippingAddressAndCompletesOrder(): void
+    #[Test]
+    public function it_updates_paypal_shipping_address_and_completes_order(): void
     {
         $updateOrderAddressApi = $this->createMock(UpdateOrderAddressApiInterface::class);
 

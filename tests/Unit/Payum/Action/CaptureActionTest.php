@@ -17,6 +17,7 @@ use Payum\Core\Action\ActionInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Request\Authorize;
 use Payum\Core\Request\Capture;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Bundle\PayumBundle\Request\GetStatus;
@@ -53,12 +54,14 @@ final class CaptureActionTest extends TestCase
         );
     }
 
-    public function testItImplementsActionInterface(): void
+    #[Test]
+    public function it_implements_action_interface(): void
     {
         self::assertInstanceOf(ActionInterface::class, $this->captureAction);
     }
 
-    public function testItAuthorizesSellerSendCreateOrderRequestAndSetsOrderResponseDataOnPayment(): void
+    #[Test]
+    public function it_authorizes_seller_send_create_order_request_and_sets_order_response_data_on_payment(): void
     {
         $request = $this->createMock(Capture::class);
         $payment = $this->createMock(PaymentInterface::class);
@@ -86,7 +89,8 @@ final class CaptureActionTest extends TestCase
         $this->captureAction->execute($request);
     }
 
-    public function testItThrowsAnExceptionIfRequestTypeIsInvalid(): void
+    #[Test]
+    public function it_throws_an_exception_if_request_type_is_invalid(): void
     {
         $request = $this->createMock(Authorize::class);
 
@@ -94,7 +98,8 @@ final class CaptureActionTest extends TestCase
         $this->captureAction->execute($request);
     }
 
-    public function testItSupportsCaptureRequestWithPaymentAsFirstModel(): void
+    #[Test]
+    public function it_supports_capture_request_with_payment_as_first_model(): void
     {
         $request = $this->createMock(Capture::class);
         $payment = $this->createMock(PaymentInterface::class);
@@ -104,14 +109,16 @@ final class CaptureActionTest extends TestCase
         self::assertTrue($this->captureAction->supports($request));
     }
 
-    public function testItDoesNotSupportRequestOtherThanCapture(): void
+    #[Test]
+    public function it_does_not_support_request_other_than_capture(): void
     {
         $request = $this->createMock(GetStatus::class);
 
         self::assertFalse($this->captureAction->supports($request));
     }
 
-    public function testItDoesNotSupportRequestWithFirstModelOtherThanPayment(): void
+    #[Test]
+    public function it_does_not_support_request_with_first_model_other_than_payment(): void
     {
         $request = $this->createMock(Capture::class);
         $request->method('getModel')->willReturn('badObject');

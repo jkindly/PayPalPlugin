@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Provider;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
@@ -46,7 +47,8 @@ final class PayPalRefundDataProviderTest extends TestCase
         );
     }
 
-    public function testProvidesDataFromProvidedUrl(): void
+    #[Test]
+    public function provides_data_from_provided_url(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
 
@@ -55,24 +57,29 @@ final class PayPalRefundDataProviderTest extends TestCase
 
         $this->genericApi->expects($this->exactly(2))
             ->method('get')
-            ->withConsecutive(
-                ['TOKEN', 'https://get-refund-data.com'],
-                ['TOKEN', 'https://up.url.com'],
-            )
-            ->willReturnOnConsecutiveCalls(
-                [
-                    'links' => [
-                        ['rel' => 'self', 'href' => 'https://self.url.com'],
-                        ['rel' => 'up', 'href' => 'https://up.url.com'],
-                    ],
-                ],
-                ['data' => 'refund-data'],
-            );
+            ->willReturnCallback(function ($token, $url) {
+                $this->assertEquals('TOKEN', $token);
+
+                if ($url === 'https://get-refund-data.com') {
+                    return [
+                        'links' => [
+                            ['rel' => 'self', 'href' => 'https://self.url.com'],
+                            ['rel' => 'up', 'href' => 'https://up.url.com'],
+                        ],
+                    ];
+                }
+                if ($url === 'https://up.url.com') {
+                    return ['data' => 'refund-data'];
+                }
+
+                $this->fail("Unexpected call to get() with URL: $url");
+            });
 
         $this->provider->provide('https://get-refund-data.com');
     }
 
-    public function testThrowsErrorIfPaypalDataDoesntContainUrl(): void
+    #[Test]
+    public function throws_error_if_paypal_data_doesnt_contain_url(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
 

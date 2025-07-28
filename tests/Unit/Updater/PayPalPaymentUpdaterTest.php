@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\PayPalPlugin\Unit\Updater;
 
 use Doctrine\Persistence\ObjectManager;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\PaymentInterface;
@@ -34,12 +35,14 @@ final class PayPalPaymentUpdaterTest extends TestCase
         $this->payPalPaymentUpdater = new PayPalPaymentUpdater($this->paymentManager);
     }
 
-    public function testItImplementsPaymentUpdaterInterface(): void
+    #[Test]
+    public function it_implements_payment_updater_interface(): void
     {
         self::assertInstanceOf(PaymentUpdaterInterface::class, $this->payPalPaymentUpdater);
     }
 
-    public function testItUpdatesPaymentAmount(): void
+    #[Test]
+    public function it_updates_payment_amount(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
 

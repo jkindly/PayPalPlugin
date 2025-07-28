@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Provider;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\OrderInterface;
@@ -36,12 +37,14 @@ final class OrderProviderTest extends TestCase
         $this->provider = new OrderProvider($this->orderRepository);
     }
 
-    public function testIsAnOrderProvider(): void
+    #[Test]
+    public function is_an_order_provider(): void
     {
         self::assertInstanceOf(OrderProviderInterface::class, $this->provider);
     }
 
-    public function testProvidesOrderByGivenId(): void
+    #[Test]
+    public function provides_order_by_given_id(): void
     {
         $order = $this->createMock(OrderInterface::class);
         $this->orderRepository->method('find')->with(420)->willReturn($order);
@@ -51,7 +54,8 @@ final class OrderProviderTest extends TestCase
         self::assertSame($order, $result);
     }
 
-    public function testProvidesOrderByGivenToken(): void
+    #[Test]
+    public function provides_order_by_given_token(): void
     {
         $order = $this->createMock(OrderInterface::class);
         $this->orderRepository->method('findOneByTokenValue')->with('token-str')->willReturn($order);
@@ -61,7 +65,8 @@ final class OrderProviderTest extends TestCase
         self::assertSame($order, $result);
     }
 
-    public function testThrowsErrorIfOrderIsNotFoundById(): void
+    #[Test]
+    public function throws_error_if_order_is_not_found_by_id(): void
     {
         $this->orderRepository->method('find')->with(123)->willReturn(null);
 
@@ -69,7 +74,8 @@ final class OrderProviderTest extends TestCase
         $this->provider->provideOrderById(123);
     }
 
-    public function testThrowsErrorIfOrderIsNotFoundByToken(): void
+    #[Test]
+    public function throws_error_if_order_is_not_found_by_token(): void
     {
         $this->orderRepository->method('findOneByTokenValue')->with('token')->willReturn(null);
 

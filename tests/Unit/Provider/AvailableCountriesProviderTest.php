@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\PayPalPlugin\Unit\Provider;
 
 use Doctrine\Common\Collections\Collection;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Addressing\Model\CountryInterface;
@@ -42,7 +43,8 @@ final class AvailableCountriesProviderTest extends TestCase
         );
     }
 
-    public function testProvidesAvailableCountriesIfChannelDoesNotHaveAny(): void
+    #[Test]
+    public function provides_available_countries_if_channel_does_not_have_any(): void
     {
         $countryOne = $this->createMock(CountryInterface::class);
         $countryTwo = $this->createMock(CountryInterface::class);
@@ -64,7 +66,8 @@ final class AvailableCountriesProviderTest extends TestCase
         self::assertEquals(['PL', 'US', 'RU'], $result);
     }
 
-    public function testProvidesAvailableCountriesIfChannelContainsCountries(): void
+    #[Test]
+    public function provides_available_countries_if_channel_contains_countries(): void
     {
         $countryOne = $this->createMock(CountryInterface::class);
         $countryTwo = $this->createMock(CountryInterface::class);

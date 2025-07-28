@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Api;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\AddressInterface;
@@ -49,12 +50,14 @@ final class UpdateOrderApiTest extends TestCase
         );
     }
 
-    public function testItImplementsUpdateOrderApiInterface(): void
+    #[Test]
+    public function it_implements_update_order_api_interface(): void
     {
         self::assertInstanceOf(UpdateOrderApiInterface::class, $this->updateOrderApi);
     }
 
-    public function testItUpdatesPaypalOrderWithGivenNewTotal(): void
+    #[Test]
+    public function it_updates_paypal_order_with_given_new_total(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
         $order = $this->createMock(OrderInterface::class);
@@ -121,7 +124,8 @@ final class UpdateOrderApiTest extends TestCase
         $this->updateOrderApi->update('TOKEN', 'ORDER-ID', $payment, 'REFERENCE-ID', 'MERCHANT-ID');
     }
 
-    public function testItUpdatesDigitalOrder(): void
+    #[Test]
+    public function it_updates_digital_order(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
         $order = $this->createMock(OrderInterface::class);

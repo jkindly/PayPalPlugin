@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\PayPalPlugin\Unit\Downloader;
 
 use phpseclib3\Net\SFTP;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
@@ -36,12 +37,14 @@ final class SftpPayoutsReportDownloaderTest extends TestCase
         $this->sftpPayoutsReportDownloader = new SftpPayoutsReportDownloader($this->sftp);
     }
 
-    public function testItImplementsPayoutsReportDownloaderInterface(): void
+    #[Test]
+    public function it_implements_payouts_report_downloader_interface(): void
     {
         self::assertInstanceOf(PayoutsReportDownloaderInterface::class, $this->sftpPayoutsReportDownloader);
     }
 
-    public function testItReturnsContentOfTheLatestPytReportFromPaypalSftpServer(): void
+    #[Test]
+    public function it_returns_content_of_the_latest_pyt_report_from_paypal_sftp_server(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
@@ -79,7 +82,8 @@ final class SftpPayoutsReportDownloaderTest extends TestCase
         self::assertEquals($expected, $result);
     }
 
-    public function testItThrowsAnExceptionIfPaymentMethodHasNoPartnerAttributionId(): void
+    #[Test]
+    public function it_throws_an_exception_if_payment_method_has_no_partner_attribution_id(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
@@ -99,7 +103,8 @@ final class SftpPayoutsReportDownloaderTest extends TestCase
         $this->sftpPayoutsReportDownloader->downloadFor(new \DateTime(), $paymentMethod);
     }
 
-    public function testItThrowsAnExceptionIfCredentialsAreInvalid(): void
+    #[Test]
+    public function it_throws_an_exception_if_credentials_are_invalid(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
@@ -129,7 +134,8 @@ final class SftpPayoutsReportDownloaderTest extends TestCase
         $this->sftpPayoutsReportDownloader->downloadFor(new \DateTime(), $paymentMethod);
     }
 
-    public function testItThrowsAnExceptionIfThereIsNoReportWithGivenName(): void
+    #[Test]
+    public function it_throws_an_exception_if_there_is_no_report_with_given_name(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);

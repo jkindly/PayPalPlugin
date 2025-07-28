@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\PayPalPlugin\Unit\Processor;
 
 use Doctrine\Persistence\ObjectManager;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\AddressInterface;
@@ -34,12 +35,14 @@ final class PayPalAddressProcessorTest extends TestCase
         $this->paypalAddressProcessor = new PayPalAddressProcessor($this->objectManager);
     }
 
-    public function testItImplementsPaypalAddressProcessorInterface(): void
+    #[Test]
+    public function it_implements_paypal_address_processor_interface(): void
     {
         self::assertInstanceOf(PayPalAddressProcessorInterface::class, $this->paypalAddressProcessor);
     }
 
-    public function testItUpdatesOrderAddress(): void
+    #[Test]
+    public function it_updates_order_address(): void
     {
         $order = $this->createMock(OrderInterface::class);
         $orderAddress = $this->createMock(AddressInterface::class);
@@ -64,7 +67,8 @@ final class PayPalAddressProcessorTest extends TestCase
         );
     }
 
-    public function testItUpdatesOrderAddressWithTwoAddressLines(): void
+    #[Test]
+    public function it_updates_order_address_with_two_address_lines(): void
     {
         $order = $this->createMock(OrderInterface::class);
         $orderAddress = $this->createMock(AddressInterface::class);
@@ -90,7 +94,8 @@ final class PayPalAddressProcessorTest extends TestCase
         );
     }
 
-    public function testItThrowsAnExceptionIfAddressDataIsMissing(): void
+    #[Test]
+    public function it_throws_an_exception_if_address_data_is_missing(): void
     {
         $order = $this->createMock(OrderInterface::class);
         $orderAddress = $this->createMock(AddressInterface::class);

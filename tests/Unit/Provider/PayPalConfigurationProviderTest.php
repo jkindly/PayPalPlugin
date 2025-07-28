@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Provider;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\ChannelInterface;
@@ -36,12 +37,14 @@ final class PayPalConfigurationProviderTest extends TestCase
         $this->payPalConfigurationProvider = new PayPalConfigurationProvider($this->paymentMethodRepository);
     }
 
-    public function testItImplementsPayPalConfigurationProviderInterface(): void
+    #[Test]
+    public function it_implements_pay_pal_configuration_provider_interface(): void
     {
         self::assertInstanceOf(PayPalConfigurationProviderInterface::class, $this->payPalConfigurationProvider);
     }
 
-    public function testItReturnsClientIdFromPaymentMethodConfig(): void
+    #[Test]
+    public function it_returns_client_id_from_payment_method_config(): void
     {
         $channel = $this->createMock(ChannelInterface::class);
         $payPalPaymentMethod = $this->createMock(PaymentMethodInterface::class);
@@ -79,7 +82,8 @@ final class PayPalConfigurationProviderTest extends TestCase
         self::assertEquals('123123', $result);
     }
 
-    public function testItReturnsPartnerAttributionIdFromPaymentMethodConfig(): void
+    #[Test]
+    public function it_returns_partner_attribution_id_from_payment_method_config(): void
     {
         $channel = $this->createMock(ChannelInterface::class);
         $payPalPaymentMethod = $this->createMock(PaymentMethodInterface::class);
@@ -117,7 +121,8 @@ final class PayPalConfigurationProviderTest extends TestCase
         self::assertEquals('123123', $result);
     }
 
-    public function testItThrowsAnExceptionIfThereIsNoPayPalPaymentMethodDefined(): void
+    #[Test]
+    public function it_throws_an_exception_if_there_is_no_pay_pal_payment_method_defined(): void
     {
         $channel = $this->createMock(ChannelInterface::class);
         $otherPaymentMethod = $this->createMock(PaymentMethodInterface::class);
@@ -140,7 +145,8 @@ final class PayPalConfigurationProviderTest extends TestCase
         $this->payPalConfigurationProvider->getClientId($channel);
     }
 
-    public function testItThrowsAnExceptionIfThereIsNoPayPalPaymentMethodDefinedForPartnerAttributionId(): void
+    #[Test]
+    public function it_throws_an_exception_if_there_is_no_pay_pal_payment_method_defined_for_partner_attribution_id(): void
     {
         $channel = $this->createMock(ChannelInterface::class);
         $otherPaymentMethod = $this->createMock(PaymentMethodInterface::class);
@@ -163,7 +169,8 @@ final class PayPalConfigurationProviderTest extends TestCase
         $this->payPalConfigurationProvider->getPartnerAttributionId($channel);
     }
 
-    public function testItThrowsAnExceptionIfThereIsNoClientIdOnPayPalPaymentMethod(): void
+    #[Test]
+    public function it_throws_an_exception_if_there_is_no_client_id_on_pay_pal_payment_method(): void
     {
         $channel = $this->createMock(ChannelInterface::class);
         $payPalPaymentMethod = $this->createMock(PaymentMethodInterface::class);
@@ -200,7 +207,8 @@ final class PayPalConfigurationProviderTest extends TestCase
         $this->payPalConfigurationProvider->getClientId($channel);
     }
 
-    public function testItThrowsAnExceptionIfThereIsNoPartnerAttributionIdOnPayPalPaymentMethod(): void
+    #[Test]
+    public function it_throws_an_exception_if_there_is_no_partner_attribution_id_on_pay_pal_payment_method(): void
     {
         $channel = $this->createMock(ChannelInterface::class);
         $payPalPaymentMethod = $this->createMock(PaymentMethodInterface::class);

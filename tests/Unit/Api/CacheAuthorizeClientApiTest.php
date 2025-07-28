@@ -15,6 +15,7 @@ namespace Tests\Sylius\PayPalPlugin\Unit\Api;
 
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
@@ -54,12 +55,14 @@ final class CacheAuthorizeClientApiTest extends TestCase
         );
     }
 
-    public function testItImplementsCacheAuthorizeClientApiInterface(): void
+    #[Test]
+    public function it_implements_cache_authorize_client_api_interface(): void
     {
         self::assertInstanceOf(CacheAuthorizeClientApiInterface::class, $this->cacheAuthorizeClientApi);
     }
 
-    public function testItReturnsCachedAccessTokenIfItIsNotExpired(): void
+    #[Test]
+    public function it_returns_cached_access_token_if_it_is_not_expired(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $payPalCredentials = $this->createMock(PayPalCredentialsInterface::class);
@@ -85,7 +88,8 @@ final class CacheAuthorizeClientApiTest extends TestCase
         self::assertEquals('TOKEN', $result);
     }
 
-    public function testItGetsAccessTokenFromApiCachesAndReturnsIt(): void
+    #[Test]
+    public function it_gets_access_token_from_api_caches_and_returns_it(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
@@ -138,7 +142,8 @@ final class CacheAuthorizeClientApiTest extends TestCase
         self::assertEquals('TOKEN', $result);
     }
 
-    public function testItReturnsExpiredTokenAndAskForANewOne(): void
+    #[Test]
+    public function it_returns_expired_token_and_ask_for_a_new_one(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);

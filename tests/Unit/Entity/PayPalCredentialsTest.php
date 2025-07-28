@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Entity;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\PayPalPlugin\Entity\PayPalCredentials;
@@ -37,40 +38,46 @@ final class PayPalCredentialsTest extends TestCase
         );
     }
 
-    public function testItImplementsPaypalCredentialsInterface(): void
+    #[Test]
+    public function it_implements_paypal_credentials_interface(): void
     {
         self::assertInstanceOf(PayPalCredentialsInterface::class, $this->payPalCredentials);
     }
 
-    public function testItHasAPaymentMethod(): void
+    #[Test]
+    public function it_has_a_payment_method(): void
     {
         $result = $this->payPalCredentials->paymentMethod();
 
         self::assertEquals($this->paymentMethod, $result);
     }
 
-    public function testItHasAAccessToken(): void
+    #[Test]
+    public function it_has_a_access_token(): void
     {
         $result = $this->payPalCredentials->accessToken();
 
         self::assertEquals('TOKEN', $result);
     }
 
-    public function testItHasACreationTime(): void
+    #[Test]
+    public function it_has_a_creation_time(): void
     {
         $result = $this->payPalCredentials->creationTime();
 
         self::assertEquals(new \DateTime('2020-01-01 10:00:00'), $result);
     }
 
-    public function testItHasAExpirationTime(): void
+    #[Test]
+    public function it_has_a_expiration_time(): void
     {
         $result = $this->payPalCredentials->expirationTime();
 
         self::assertEquals(new \DateTime('2020-01-01 11:00:00'), $result);
     }
 
-    public function testItCanBeExpired(): void
+    #[Test]
+    public function it_can_be_expired(): void
     {
         $result = $this->payPalCredentials->isExpired();
 

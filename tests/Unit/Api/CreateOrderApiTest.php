@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Api;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\AddressInterface;
@@ -51,12 +52,14 @@ final class CreateOrderApiTest extends TestCase
         );
     }
 
-    public function testItImplementsCreateOrderApiInterface(): void
+    #[Test]
+    public function it_implements_create_order_api_interface(): void
     {
         self::assertInstanceOf(CreateOrderApiInterface::class, $this->createOrderApi);
     }
 
-    public function testItCreatesPaypalOrderBasedOnGivenPayment(): void
+    #[Test]
+    public function it_creates_paypal_order_based_on_given_payment(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
         $order = $this->createMock(OrderInterface::class);
@@ -137,7 +140,8 @@ final class CreateOrderApiTest extends TestCase
         self::assertEquals(['status' => 'CREATED', 'id' => 123], $result);
     }
 
-    public function testItCreatesPaypalOrderWithShippingAddressBasedOnGivenPayment(): void
+    #[Test]
+    public function it_creates_paypal_order_with_shipping_address_based_on_given_payment(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
         $order = $this->createMock(OrderInterface::class);
@@ -228,7 +232,8 @@ final class CreateOrderApiTest extends TestCase
         self::assertEquals(['status' => 'CREATED', 'id' => 123], $result);
     }
 
-    public function testItAllowsToCreateDigitalOrder(): void
+    #[Test]
+    public function it_allows_to_create_digital_order(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
         $order = $this->createMock(OrderInterface::class);

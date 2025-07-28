@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Processor;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Abstraction\StateMachine\StateMachineInterface;
@@ -44,12 +45,14 @@ final class OrderPaymentProcessorTest extends TestCase
         );
     }
 
-    public function testItImplementsOrderProcessorInterface(): void
+    #[Test]
+    public function it_implements_order_processor_interface(): void
     {
         self::assertInstanceOf(OrderProcessorInterface::class, $this->orderPaymentProcessor);
     }
 
-    public function testItDoesNothingIfThereIsAPaypalProcessingCapturedPayment(): void
+    #[Test]
+    public function it_does_nothing_if_there_is_a_paypal_processing_captured_payment(): void
     {
         $order = $this->createMock(OrderInterface::class);
         $payment = $this->createMock(PaymentInterface::class);
@@ -67,7 +70,8 @@ final class OrderPaymentProcessorTest extends TestCase
         $this->orderPaymentProcessor->process($order);
     }
 
-    public function testItProcessesOrderIfThereIsNoProcessingPayment(): void
+    #[Test]
+    public function it_processes_order_if_there_is_no_processing_payment(): void
     {
         $order = $this->createMock(OrderInterface::class);
 
@@ -78,7 +82,8 @@ final class OrderPaymentProcessorTest extends TestCase
         $this->orderPaymentProcessor->process($order);
     }
 
-    public function testItProcessesOrderIfTheProcessingPaymentIsNotCaptured(): void
+    #[Test]
+    public function it_processes_order_if_the_processing_payment_is_not_captured(): void
     {
         $order = $this->createMock(OrderInterface::class);
         $payment = $this->createMock(PaymentInterface::class);
@@ -96,7 +101,8 @@ final class OrderPaymentProcessorTest extends TestCase
         $this->orderPaymentProcessor->process($order);
     }
 
-    public function testItCancelsPaymentAndProcessesOrderIfTheProcessingPaymentHasMethodChangeToNonPaypal(): void
+    #[Test]
+    public function it_cancels_payment_and_processes_order_if_the_processing_payment_has_method_change_to_non_paypal(): void
     {
         $order = $this->createMock(OrderInterface::class);
         $payment = $this->createMock(PaymentInterface::class);

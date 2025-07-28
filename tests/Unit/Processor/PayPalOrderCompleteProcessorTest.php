@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Processor;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\OrderInterface;
@@ -43,7 +44,8 @@ final class PayPalOrderCompleteProcessorTest extends TestCase
         );
     }
 
-    public function testItCompletesPaypalOrder(): void
+    #[Test]
+    public function it_completes_paypal_order(): void
     {
         $order = $this->createMock(OrderInterface::class);
         $payment = $this->createMock(PaymentInterface::class);
@@ -62,7 +64,8 @@ final class PayPalOrderCompleteProcessorTest extends TestCase
         $this->paypalOrderCompleteProcessor->completePayPalOrder($order);
     }
 
-    public function testItDoesNothingIfProcessingPaymentIsNotPaypal(): void
+    #[Test]
+    public function it_does_nothing_if_processing_payment_is_not_paypal(): void
     {
         $order = $this->createMock(OrderInterface::class);
         $payment = $this->createMock(PaymentInterface::class);
@@ -80,7 +83,8 @@ final class PayPalOrderCompleteProcessorTest extends TestCase
         $this->paypalOrderCompleteProcessor->completePayPalOrder($order);
     }
 
-    public function testItDoesNothingIfThereIsNoProcessingPaymentForTheOrder(): void
+    #[Test]
+    public function it_does_nothing_if_there_is_no_processing_payment_for_the_order(): void
     {
         $order = $this->createMock(OrderInterface::class);
 

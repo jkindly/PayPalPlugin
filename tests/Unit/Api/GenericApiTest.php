@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Api;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
@@ -39,12 +40,14 @@ final class GenericApiTest extends TestCase
         $this->genericApi = new GenericApi($this->client, $this->requestFactory);
     }
 
-    public function testItImplementsGenericApiInterface(): void
+    #[Test]
+    public function it_implements_generic_api_interface(): void
     {
         self::assertInstanceOf(GenericApiInterface::class, $this->genericApi);
     }
 
-    public function testItCallsApiByUrl(): void
+    #[Test]
+    public function it_calls_api_by_url(): void
     {
         $request = $this->createMock(RequestInterface::class);
         $response = $this->createMock(ResponseInterface::class);
@@ -59,12 +62,15 @@ final class GenericApiTest extends TestCase
         $request
             ->expects($this->exactly(3))
             ->method('withHeader')
-            ->withConsecutive(
-                ['Authorization', 'Bearer TOKEN'],
-                ['Content-Type', 'application/json'],
-                ['Accept', 'application/json'],
-            )
-            ->willReturn($request);
+            ->willReturnCallback(function ($name, $value) use ($request) {
+                $this->assertContains([$name, $value], [
+                    ['Authorization', 'Bearer TOKEN'],
+                    ['Content-Type', 'application/json'],
+                    ['Accept', 'application/json'],
+                ]);
+
+                return $request;
+            });
 
         $this->client
             ->expects(self::once())

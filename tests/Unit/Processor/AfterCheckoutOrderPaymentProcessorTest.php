@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Processor;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\OrderInterface;
@@ -33,12 +34,14 @@ final class AfterCheckoutOrderPaymentProcessorTest extends TestCase
         $this->afterCheckoutOrderPaymentProcessor = new AfterCheckoutOrderPaymentProcessor($this->baseOrderPaymentProcessor);
     }
 
-    public function testItImplementsOrderProcessorInterface(): void
+    #[Test]
+    public function it_implements_order_processor_interface(): void
     {
         self::assertInstanceOf(OrderProcessorInterface::class, $this->afterCheckoutOrderPaymentProcessor);
     }
 
-    public function testItDoesNothingIfOrderIsNotCompleted(): void
+    #[Test]
+    public function it_does_nothing_if_order_is_not_completed(): void
     {
         $order = $this->createMock(OrderInterface::class);
         $order->method('getCheckoutState')->willReturn(OrderCheckoutStates::STATE_ADDRESSED);
@@ -48,7 +51,8 @@ final class AfterCheckoutOrderPaymentProcessorTest extends TestCase
         $this->afterCheckoutOrderPaymentProcessor->process($order);
     }
 
-    public function testItUsesProcessorIfOrderIsCompleted(): void
+    #[Test]
+    public function it_uses_processor_if_order_is_completed(): void
     {
         $order = $this->createMock(OrderInterface::class);
         $order->method('getCheckoutState')->willReturn(OrderCheckoutStates::STATE_COMPLETED);

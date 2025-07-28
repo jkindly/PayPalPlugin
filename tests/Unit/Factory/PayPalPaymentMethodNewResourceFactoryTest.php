@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Factory;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Bundle\ResourceBundle\Controller\NewResourceFactoryInterface;
@@ -44,12 +45,14 @@ final class PayPalPaymentMethodNewResourceFactoryTest extends TestCase
         );
     }
 
-    public function testItIsANewResourceFactory(): void
+    #[Test]
+    public function it_is_a_new_resource_factory(): void
     {
         self::assertInstanceOf(NewResourceFactoryInterface::class, $this->payPalPaymentMethodNewResourceFactory);
     }
 
-    public function testItProcessesOnboardingIfPaymentMethodAndRequestAreSupported(): void
+    #[Test]
+    public function it_processes_onboarding_if_payment_method_and_request_are_supported(): void
     {
         $requestConfiguration = $this->createMock(RequestConfiguration::class);
         $request = $this->createMock(Request::class);
@@ -85,7 +88,8 @@ final class PayPalPaymentMethodNewResourceFactoryTest extends TestCase
         self::assertEquals($processedPaymentMethod, $result);
     }
 
-    public function testItDoesNothingIfPaymentMethodAndRequestAreUnsupported(): void
+    #[Test]
+    public function it_does_nothing_if_payment_method_and_request_are_unsupported(): void
     {
         $requestConfiguration = $this->createMock(RequestConfiguration::class);
         $request = $this->createMock(Request::class);
@@ -118,7 +122,8 @@ final class PayPalPaymentMethodNewResourceFactoryTest extends TestCase
         self::assertEquals($paymentMethod, $result);
     }
 
-    public function testItDoesNothingIfCreatedResourceIsNotAPaymentMethod(): void
+    #[Test]
+    public function it_does_nothing_if_created_resource_is_not_a_payment_method(): void
     {
         $requestConfiguration = $this->createMock(RequestConfiguration::class);
         $factory = $this->createMock(FactoryInterface::class);

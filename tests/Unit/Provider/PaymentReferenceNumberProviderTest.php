@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Provider;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\PayPalPlugin\Provider\PaymentReferenceNumberProvider;
@@ -28,12 +29,14 @@ final class PaymentReferenceNumberProviderTest extends TestCase
         $this->provider = new PaymentReferenceNumberProvider();
     }
 
-    public function testImplementsPaymentReferenceNumberProviderInterface(): void
+    #[Test]
+    public function implements_payment_reference_number_provider_interface(): void
     {
         self::assertInstanceOf(PaymentReferenceNumberProviderInterface::class, $this->provider);
     }
 
-    public function testProvidesReferenceNumberBasedOnPaymentIdAndCreationDate(): void
+    #[Test]
+    public function provides_reference_number_based_on_payment_id_and_creation_date(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
         $payment->method('getId')->willReturn(123);

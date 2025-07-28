@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\PayPalPlugin\Unit\Provider;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\AdjustmentInterface;
 use Sylius\Component\Core\Model\OrderItemInterface;
@@ -30,7 +31,8 @@ final class OrderItemNonNeutralTaxesProviderTest extends TestCase
         $this->provider = new OrderItemNonNeutralTaxesProvider();
     }
 
-    public function testProvidesNonNeutralTaxBasedOnGivenOrderItem(): void
+    #[Test]
+    public function provides_non_neutral_tax_based_on_given_order_item(): void
     {
         $orderItem = $this->createMock(OrderItemInterface::class);
         $adjustment = $this->createMock(AdjustmentInterface::class);

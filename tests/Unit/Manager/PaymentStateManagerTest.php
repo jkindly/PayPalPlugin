@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\PayPalPlugin\Unit\Manager;
 
 use Doctrine\Persistence\ObjectManager;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Abstraction\StateMachine\StateMachineInterface;
@@ -48,12 +49,14 @@ final class PaymentStateManagerTest extends TestCase
         );
     }
 
-    public function testItImplementsPaymentStateManagerInterface(): void
+    #[Test]
+    public function it_implements_payment_state_manager_interface(): void
     {
         self::assertInstanceOf(PaymentStateManagerInterface::class, $this->paymentStateManager);
     }
 
-    public function testItCreatesPayment(): void
+    #[Test]
+    public function it_creates_payment(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
 
@@ -69,7 +72,8 @@ final class PaymentStateManagerTest extends TestCase
         $this->paymentStateManager->create($payment);
     }
 
-    public function testItCompletesPaymentIfItsCompletedInPaypal(): void
+    #[Test]
+    public function it_completes_payment_if_its_completed_in_paypal(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
 
@@ -95,7 +99,8 @@ final class PaymentStateManagerTest extends TestCase
         $this->paymentStateManager->complete($payment);
     }
 
-    public function testItProcessesPaymentIfItsProcessingInPaypalAndNotProcessingInSyliusYet(): void
+    #[Test]
+    public function it_processes_payment_if_its_processing_in_paypal_and_not_processing_in_sylius_yet(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
 
@@ -126,7 +131,8 @@ final class PaymentStateManagerTest extends TestCase
         $this->paymentStateManager->complete($payment);
     }
 
-    public function testItDoesNothingIfPaymentIsProcessingInPaypalButAlreadyProcessingInSylius(): void
+    #[Test]
+    public function it_does_nothing_if_payment_is_processing_in_paypal_but_already_processing_in_sylius(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
 
@@ -152,7 +158,8 @@ final class PaymentStateManagerTest extends TestCase
         $this->paymentStateManager->complete($payment);
     }
 
-    public function testItProcessesPayment(): void
+    #[Test]
+    public function it_processes_payment(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
 
@@ -168,7 +175,8 @@ final class PaymentStateManagerTest extends TestCase
         $this->paymentStateManager->process($payment);
     }
 
-    public function testItCancelsPayment(): void
+    #[Test]
+    public function it_cancels_payment(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
 

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Onboarding\Initiator;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\AdminUserInterface;
@@ -39,12 +40,14 @@ final class OnboardingInitiatorTest extends TestCase
         $this->onboardingInitiator = new OnboardingInitiator($this->urlGenerator, $this->security, 'https://paypal-url');
     }
 
-    public function testItImplementsOnboardingInitiatorInterface(): void
+    #[Test]
+    public function it_implements_onboarding_initiator_interface(): void
     {
         self::assertInstanceOf(OnboardingInitiatorInterface::class, $this->onboardingInitiator);
     }
 
-    public function testItThrowsAnExceptionDuringInitializationIfPaymentMethodIsNotSupported(): void
+    #[Test]
+    public function it_throws_an_exception_during_initialization_if_payment_method_is_not_supported(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $paymentMethod->method('getGatewayConfig')->willReturn(null);
@@ -53,7 +56,8 @@ final class OnboardingInitiatorTest extends TestCase
         $this->onboardingInitiator->initiate($paymentMethod);
     }
 
-    public function testItSupportsPaypalPaymentMethodWithoutClientIdSet(): void
+    #[Test]
+    public function it_supports_paypal_payment_method_without_client_id_set(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
@@ -65,7 +69,8 @@ final class OnboardingInitiatorTest extends TestCase
         self::assertTrue($this->onboardingInitiator->supports($paymentMethod));
     }
 
-    public function testItDoesNotSupportPaypalPaymentMethodWithClientIdSet(): void
+    #[Test]
+    public function it_does_not_support_paypal_payment_method_with_client_id_set(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
@@ -77,7 +82,8 @@ final class OnboardingInitiatorTest extends TestCase
         self::assertFalse($this->onboardingInitiator->supports($paymentMethod));
     }
 
-    public function testItDoesNotSupportPaymentMethodWithInvalidGatewayFactoryName(): void
+    #[Test]
+    public function it_does_not_support_payment_method_with_invalid_gateway_factory_name(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
@@ -88,7 +94,8 @@ final class OnboardingInitiatorTest extends TestCase
         self::assertFalse($this->onboardingInitiator->supports($paymentMethod));
     }
 
-    public function testItDoesNotSupportPaymentMethodWithoutGatewayConfig(): void
+    #[Test]
+    public function it_does_not_support_payment_method_without_gateway_config(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $paymentMethod->method('getGatewayConfig')->willReturn(null);
@@ -96,7 +103,8 @@ final class OnboardingInitiatorTest extends TestCase
         self::assertFalse($this->onboardingInitiator->supports($paymentMethod));
     }
 
-    public function testItReturnsUrlWhenPaymentIsValid(): void
+    #[Test]
+    public function it_returns_url_when_payment_is_valid(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);

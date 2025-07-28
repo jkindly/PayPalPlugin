@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\PayPalPlugin\Unit\Payum\Request;
 
 use Payum\Core\Request\Generic;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\PayPalPlugin\Payum\Request\CompleteOrder;
@@ -31,12 +32,14 @@ final class CompleteOrderTest extends TestCase
         $this->completeOrder = new CompleteOrder($this->payment, '123123');
     }
 
-    public function testItIsGenericAction(): void
+    #[Test]
+    public function it_is_generic_action(): void
     {
         self::assertInstanceOf(Generic::class, $this->completeOrder);
     }
 
-    public function testItHasAnOrderId(): void
+    #[Test]
+    public function it_has_an_order_id(): void
     {
         self::assertEquals('123123', $this->completeOrder->getOrderId());
     }

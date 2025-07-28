@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Model;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\AddressInterface;
@@ -36,7 +37,8 @@ final class PayPalOrderTest extends TestCase
         $this->payPalOrder = new PayPalOrder($this->order, $this->payPalPurchaseUnit, 'CAPTURE');
     }
 
-    public function testItReturnsFullPaypalOrderData(): void
+    #[Test]
+    public function it_returns_full_paypal_order_data(): void
     {
         $shippingAddress = $this->createMock(AddressInterface::class);
 
@@ -144,7 +146,8 @@ final class PayPalOrderTest extends TestCase
         ], $result);
     }
 
-    public function testItReturnsPaypalOrderDataWithoutShippingAddress(): void
+    #[Test]
+    public function it_returns_paypal_order_data_without_shipping_address(): void
     {
         $this->order->method('isShippingRequired')->willReturn(true);
         $this->order->method('getShippingAddress')->willReturn(null);
@@ -228,7 +231,8 @@ final class PayPalOrderTest extends TestCase
         ], $result);
     }
 
-    public function testItReturnsPaypalOrderDataIfShippingIsNotRequired(): void
+    #[Test]
+    public function it_returns_paypal_order_data_if_shipping_is_not_required(): void
     {
         $this->order->method('isShippingRequired')->willReturn(false);
 

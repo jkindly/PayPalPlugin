@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Api;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\PayPalPlugin\Api\AuthorizeClientApi;
@@ -32,12 +33,14 @@ final class AuthorizeClientApiTest extends TestCase
         $this->authorizeClientApi = new AuthorizeClientApi($this->payPalClient);
     }
 
-    public function testItImplementsAuthorizeClientApiInterface(): void
+    #[Test]
+    public function it_implements_authorize_client_api_interface(): void
     {
         self::assertInstanceOf(AuthorizeClientApiInterface::class, $this->authorizeClientApi);
     }
 
-    public function testItReturnsAuthTokenForGivenClientData(): void
+    #[Test]
+    public function it_returns_auth_token_for_given_client_data(): void
     {
         $this->payPalClient
             ->method('authorize')

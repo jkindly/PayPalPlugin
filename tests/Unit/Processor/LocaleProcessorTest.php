@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Processor;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Sylius\PayPalPlugin\Processor\LocaleProcessor;
 
@@ -26,21 +27,24 @@ final class LocaleProcessorTest extends TestCase
         $this->localeProcessor = new LocaleProcessor();
     }
 
-    public function testItAlwaysProcessesLocaleToVersionWithRegion(): void
+    #[Test]
+    public function it_always_processes_locale_to_version_with_region(): void
     {
         self::assertEquals('et_EE', $this->localeProcessor->process('et'));
         self::assertEquals('pl_PL', $this->localeProcessor->process('pl'));
         self::assertEquals('ja_JP', $this->localeProcessor->process('ja'));
     }
 
-    public function testItReturnsSameLocaleIfItIsValid(): void
+    #[Test]
+    public function it_returns_same_locale_if_it_is_valid(): void
     {
         self::assertEquals('it_IT', $this->localeProcessor->process('it_IT'));
         self::assertEquals('ja_JP_TRADITIONAL', $this->localeProcessor->process('ja_JP_TRADITIONAL'));
         self::assertEquals('sd_Arab_PK', $this->localeProcessor->process('sd_Arab_PK'));
     }
 
-    public function testItReturnsCorrectLocaleForEnLocale(): void
+    #[Test]
+    public function it_returns_correct_locale_for_en_locale(): void
     {
         self::assertEquals('en_US', $this->localeProcessor->process('en'));
     }

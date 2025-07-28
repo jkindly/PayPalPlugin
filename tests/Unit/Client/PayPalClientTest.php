@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\PayPalPlugin\Unit\Client;
 
 use GuzzleHttp\Exception\ConnectException;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
@@ -78,12 +79,14 @@ final class PayPalClientTest extends TestCase
         );
     }
 
-    public function testItImplementsPaypalClientInterface(): void
+    #[Test]
+    public function it_implements_paypal_client_interface(): void
     {
         self::assertInstanceOf(PayPalClientInterface::class, $this->payPalClient);
     }
 
-    public function testItReturnsAuthTokenForGivenClientData(): void
+    #[Test]
+    public function it_returns_auth_token_for_given_client_data(): void
     {
         $request = $this->createMock(RequestInterface::class);
         $response = $this->createMock(ResponseInterface::class);
@@ -124,7 +127,8 @@ final class PayPalClientTest extends TestCase
         self::assertEquals(['access_token' => 'TOKEN'], $result);
     }
 
-    public function testItThrowsAnExceptionIfClientCouldNotBeAuthorized(): void
+    #[Test]
+    public function it_throws_an_exception_if_client_could_not_be_authorized(): void
     {
         $request = $this->createMock(RequestInterface::class);
         $response = $this->createMock(ResponseInterface::class);
@@ -154,7 +158,8 @@ final class PayPalClientTest extends TestCase
         $this->payPalClient->authorize('CLIENT_ID', 'CLIENT_SECRET');
     }
 
-    public function testItCallsGetRequestOnPaypalApi(): void
+    #[Test]
+    public function it_calls_get_request_on_paypal_api(): void
     {
         $request = $this->createMock(RequestInterface::class);
         $response = $this->createMock(ResponseInterface::class);
@@ -205,7 +210,8 @@ final class PayPalClientTest extends TestCase
         self::assertEquals(['status' => 'OK', 'id' => '123123'], $result);
     }
 
-    public function testItCallsPostRequestOnPaypalApi(): void
+    #[Test]
+    public function it_calls_post_request_on_paypal_api(): void
     {
         $request = $this->createMock(RequestInterface::class);
         $response = $this->createMock(ResponseInterface::class);
@@ -267,7 +273,8 @@ final class PayPalClientTest extends TestCase
         self::assertEquals(['status' => 'OK', 'id' => '123123'], $result);
     }
 
-    public function testItCallsPatchRequestOnPaypalApi(): void
+    #[Test]
+    public function it_calls_patch_request_on_paypal_api(): void
     {
         $request = $this->createMock(RequestInterface::class);
         $response = $this->createMock(ResponseInterface::class);
@@ -324,7 +331,8 @@ final class PayPalClientTest extends TestCase
         self::assertEquals(['status' => 'OK', 'id' => '123123'], $result);
     }
 
-    public function testItThrowsExceptionIfTheTimeoutHasBeenReachedTheSpecifiedAmountOfTime(): void
+    #[Test]
+    public function it_throws_exception_if_the_timeout_has_been_reached_the_specified_amount_of_time(): void
     {
         $request = $this->createMock(RequestInterface::class);
         $channel = $this->createMock(ChannelInterface::class);

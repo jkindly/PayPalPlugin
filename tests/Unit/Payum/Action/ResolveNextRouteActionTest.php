@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\PayPalPlugin\Unit\Payum\Action;
 
 use Payum\Core\Request\Capture;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Sylius\Bundle\PayumBundle\Request\ResolveNextRoute;
 use Sylius\Component\Core\Model\OrderInterface;
@@ -32,7 +33,8 @@ final class ResolveNextRouteActionTest extends TestCase
         $this->resolveNextRouteAction = new ResolveNextRouteAction();
     }
 
-    public function testItExecutesResolveNextRouteRequestWithProcessingPayment(): void
+    #[Test]
+    public function it_executes_resolve_next_route_request_with_processing_payment(): void
     {
         $request = $this->createMock(ResolveNextRoute::class);
         $payment = $this->createMock(PaymentInterface::class);
@@ -57,7 +59,8 @@ final class ResolveNextRouteActionTest extends TestCase
         $this->resolveNextRouteAction->execute($request);
     }
 
-    public function testItExecutesResolveNextRouteRequestWithCompletedPayment(): void
+    #[Test]
+    public function it_executes_resolve_next_route_request_with_completed_payment(): void
     {
         $request = $this->createMock(ResolveNextRoute::class);
         $payment = $this->createMock(PaymentInterface::class);
@@ -78,7 +81,8 @@ final class ResolveNextRouteActionTest extends TestCase
         $this->resolveNextRouteAction->execute($request);
     }
 
-    public function testItExecutesResolveNextRouteRequestWithSomeOtherPayment(): void
+    #[Test]
+    public function it_executes_resolve_next_route_request_with_some_other_payment(): void
     {
         $request = $this->createMock(ResolveNextRoute::class);
         $payment = $this->createMock(PaymentInterface::class);
@@ -102,7 +106,8 @@ final class ResolveNextRouteActionTest extends TestCase
         $this->resolveNextRouteAction->execute($request);
     }
 
-    public function testItSupportsResolveNextRouteRequestWithPaymentAsFirstModel(): void
+    #[Test]
+    public function it_supports_resolve_next_route_request_with_payment_as_first_model(): void
     {
         $request = $this->createMock(ResolveNextRoute::class);
         $payment = $this->createMock(PaymentInterface::class);
@@ -117,7 +122,8 @@ final class ResolveNextRouteActionTest extends TestCase
         self::assertTrue($this->resolveNextRouteAction->supports($request));
     }
 
-    public function testItDoesNotSupportPaymentWithOtherFactoryNameThanPaypal(): void
+    #[Test]
+    public function it_does_not_support_payment_with_other_factory_name_than_paypal(): void
     {
         $request = $this->createMock(ResolveNextRoute::class);
         $payment = $this->createMock(PaymentInterface::class);
@@ -132,14 +138,16 @@ final class ResolveNextRouteActionTest extends TestCase
         self::assertFalse($this->resolveNextRouteAction->supports($request));
     }
 
-    public function testItDoesNotSupportRequestOtherThanResolveNextRoute(): void
+    #[Test]
+    public function it_does_not_support_request_other_than_resolve_next_route(): void
     {
         $request = $this->createMock(Capture::class);
 
         self::assertFalse($this->resolveNextRouteAction->supports($request));
     }
 
-    public function testItDoesNotSupportRequestWithFirstModelOtherThanPayment(): void
+    #[Test]
+    public function it_does_not_support_request_with_first_model_other_than_payment(): void
     {
         $request = $this->createMock(ResolveNextRoute::class);
         $request->method('getFirstModel')->willReturn('badObject');

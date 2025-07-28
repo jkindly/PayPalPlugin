@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Onboarding\Processor;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
@@ -60,7 +61,8 @@ final class BasicOnboardingProcessorTest extends TestCase
         $this->apiRequest->method('withHeader')->willReturn($this->apiRequest);
     }
 
-    public function testItProcessesOnboardingForSupportedPaymentMethodAndRequest(): void
+    #[Test]
+    public function it_processes_onboarding_for_supported_payment_method_and_request(): void
     {
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
@@ -112,7 +114,8 @@ final class BasicOnboardingProcessorTest extends TestCase
         self::assertSame($paymentMethod, $result);
     }
 
-    public function testItProcessesOnboardingForSupportedPaymentMethodWithNotGrantedPermissionsAndRequest(): void
+    #[Test]
+    public function it_processes_onboarding_for_supported_payment_method_with_not_granted_permissions_and_request(): void
     {
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
@@ -165,7 +168,8 @@ final class BasicOnboardingProcessorTest extends TestCase
         self::assertSame($paymentMethod, $result);
     }
 
-    public function testItProcessesOnboardingForSupportedPaymentMethodWithNotGrantedPermissionsAndWithoutRegisteredWebhook(): void
+    #[Test]
+    public function it_processes_onboarding_for_supported_payment_method_with_not_granted_permissions_and_without_registered_webhook(): void
     {
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
@@ -221,7 +225,8 @@ final class BasicOnboardingProcessorTest extends TestCase
         self::assertSame($paymentMethod, $result);
     }
 
-    public function testItThrowsAnExceptionWhenTryingToProcessOnboardingForUnsupportedPaymentMethodOrRequest(): void
+    #[Test]
+    public function it_throws_an_exception_when_trying_to_process_onboarding_for_unsupported_payment_method_or_request(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $request = $this->createMock(Request::class);
@@ -230,7 +235,8 @@ final class BasicOnboardingProcessorTest extends TestCase
         $this->basicOnboardingProcessor->process($paymentMethod, $request);
     }
 
-    public function testItSupportsPaypalPaymentMethodWithRequestContainingId(): void
+    #[Test]
+    public function it_supports_paypal_payment_method_with_request_containing_id(): void
     {
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
         $paymentMethod = $this->createMock(PaymentMethod::class);
@@ -244,7 +250,8 @@ final class BasicOnboardingProcessorTest extends TestCase
         self::assertTrue($this->basicOnboardingProcessor->supports($paymentMethod, $request));
     }
 
-    public function testItDoesNotSupportPaymentMethodThatHasNoGatewayConfig(): void
+    #[Test]
+    public function it_does_not_support_payment_method_that_has_no_gateway_config(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $request = $this->createMock(Request::class);
@@ -252,7 +259,8 @@ final class BasicOnboardingProcessorTest extends TestCase
         self::assertFalse($this->basicOnboardingProcessor->supports($paymentMethod, $request));
     }
 
-    public function testItDoesNotSupportPaymentMethodThatDoesNotHavePaypalAsAGatewayFactory(): void
+    #[Test]
+    public function it_does_not_support_payment_method_that_does_not_have_paypal_as_a_gateway_factory(): void
     {
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
@@ -264,7 +272,8 @@ final class BasicOnboardingProcessorTest extends TestCase
         self::assertFalse($this->basicOnboardingProcessor->supports($paymentMethod, $request));
     }
 
-    public function testItDoesNotSupportPaymentMethodThatHasClientIdIsNotSetOnRequest(): void
+    #[Test]
+    public function it_does_not_support_payment_method_that_has_client_id_is_not_set_on_request(): void
     {
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
@@ -275,7 +284,8 @@ final class BasicOnboardingProcessorTest extends TestCase
         self::assertFalse($this->basicOnboardingProcessor->supports($paymentMethod, new Request()));
     }
 
-    public function testItThrowsErrorIfFacilitatorDataIsNotLoaded(): void
+    #[Test]
+    public function it_throws_error_if_facilitator_data_is_not_loaded(): void
     {
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);

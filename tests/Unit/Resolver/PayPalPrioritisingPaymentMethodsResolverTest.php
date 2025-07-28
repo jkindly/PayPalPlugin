@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Resolver;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
@@ -38,12 +39,14 @@ final class PayPalPrioritisingPaymentMethodsResolverTest extends TestCase
         );
     }
 
-    public function testItImplementsPaymentMethodsResolverInterface(): void
+    #[Test]
+    public function it_implements_payment_methods_resolver_interface(): void
     {
         self::assertInstanceOf(PaymentMethodsResolverInterface::class, $this->payPalPrioritisingPaymentMethodsResolver);
     }
 
-    public function testItPrioritizesPaymentMethod(): void
+    #[Test]
+    public function it_prioritizes_payment_method(): void
     {
         $payment = $this->createMock(BasePaymentInterface::class);
         $firstPayment = $this->createMock(PaymentMethodInterface::class);
@@ -69,7 +72,8 @@ final class PayPalPrioritisingPaymentMethodsResolverTest extends TestCase
         self::assertSame([$thirdPayment, $firstPayment, $secondPayment], $result);
     }
 
-    public function testItDoesNothingIfPrioritizedPaymentIsNotAvailable(): void
+    #[Test]
+    public function it_does_nothing_if_prioritized_payment_is_not_available(): void
     {
         $payment = $this->createMock(BasePaymentInterface::class);
         $firstPayment = $this->createMock(PaymentMethodInterface::class);

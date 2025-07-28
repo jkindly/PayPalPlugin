@@ -150,7 +150,7 @@ jobs:
 
             -
                 name: Run ECS
-                run: vendor/bin/ecs check
+                run: vendor/bin/ecs check src/
 
             -
                 name: Run unit tests

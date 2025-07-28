@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Api;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\PayPalPlugin\Api\OrderDetailsApi;
@@ -32,12 +33,14 @@ final class OrderDetailsApiTest extends TestCase
         $this->orderDetailsApi = new OrderDetailsApi($this->client);
     }
 
-    public function testItImplementsPaypalOrderDetailsProviderInterface(): void
+    #[Test]
+    public function it_implements_paypal_order_details_provider_interface(): void
     {
         self::assertInstanceOf(OrderDetailsApiInterface::class, $this->orderDetailsApi);
     }
 
-    public function testItProvidesDetailsAboutPaypalOrder(): void
+    #[Test]
+    public function it_provides_details_about_paypal_order(): void
     {
         $this->client
             ->expects(self::once())

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\PayPalPlugin\Unit\Processor;
 
 use GuzzleHttp\Exception\ClientException;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\OrderInterface;
@@ -61,12 +62,14 @@ final class PayPalPaymentRefundProcessorTest extends TestCase
         );
     }
 
-    public function testItImplementsPaymentRefundProcessorInterface(): void
+    #[Test]
+    public function it_implements_payment_refund_processor_interface(): void
     {
         self::assertInstanceOf(PaymentRefundProcessorInterface::class, $this->paypalPaymentRefundProcessor);
     }
 
-    public function testItFullyRefundsPaymentInPaypal(): void
+    #[Test]
+    public function it_fully_refunds_payment_in_paypal(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
@@ -104,7 +107,8 @@ final class PayPalPaymentRefundProcessorTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function testItDoesNothingIfPaymentIsNotPaypal(): void
+    #[Test]
+    public function it_does_nothing_if_payment_is_not_paypal(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
@@ -120,7 +124,8 @@ final class PayPalPaymentRefundProcessorTest extends TestCase
         $this->paypalPaymentRefundProcessor->refund($payment);
     }
 
-    public function testItDoesNothingIfPaymentIsPaymentHasNotPaypalOrderId(): void
+    #[Test]
+    public function it_does_nothing_if_payment_is_payment_has_not_paypal_order_id(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
@@ -137,7 +142,8 @@ final class PayPalPaymentRefundProcessorTest extends TestCase
         $this->paypalPaymentRefundProcessor->refund($payment);
     }
 
-    public function testItThrowsExceptionIfSomethingWentWrongDuringRefundingPayment(): void
+    #[Test]
+    public function it_throws_exception_if_something_went_wrong_during_refunding_payment(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);

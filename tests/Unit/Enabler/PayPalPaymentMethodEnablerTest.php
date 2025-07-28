@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\PayPalPlugin\Unit\Enabler;
 
 use Doctrine\Persistence\ObjectManager;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
@@ -57,12 +58,14 @@ final class PayPalPaymentMethodEnablerTest extends TestCase
         );
     }
 
-    public function testItImplementsPaymentMethodEnablerInterface(): void
+    #[Test]
+    public function it_implements_payment_method_enabler_interface(): void
     {
         self::assertInstanceOf(PaymentMethodEnablerInterface::class, $this->payPalPaymentMethodEnabler);
     }
 
-    public function testItEnablesPaymentMethodIfItHasProperCredentialsAndWebhookAreSet(): void
+    #[Test]
+    public function it_enables_payment_method_if_it_has_proper_credentials_and_webhook_are_set(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
@@ -119,7 +122,8 @@ final class PayPalPaymentMethodEnablerTest extends TestCase
         $this->payPalPaymentMethodEnabler->enable($paymentMethod);
     }
 
-    public function testItThrowsExceptionIfPaymentMethodCredentialsAreNotGranted(): void
+    #[Test]
+    public function it_throws_exception_if_payment_method_credentials_are_not_granted(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);

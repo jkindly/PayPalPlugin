@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Model;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Sylius\PayPalPlugin\Model\Report;
 
@@ -26,12 +27,14 @@ final class ReportTest extends TestCase
         $this->report = new Report('content', 'report.csv');
     }
 
-    public function testItHasContent(): void
+    #[Test]
+    public function it_has_content(): void
     {
         self::assertEquals('content', $this->report->content());
     }
 
-    public function testItHasAFileName(): void
+    #[Test]
+    public function it_has_a_file_name(): void
     {
         self::assertEquals('report.csv', $this->report->fileName());
     }

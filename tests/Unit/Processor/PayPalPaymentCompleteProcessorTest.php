@@ -15,6 +15,7 @@ namespace Tests\Sylius\PayPalPlugin\Unit\Processor;
 
 use Payum\Core\GatewayInterface;
 use Payum\Core\Payum;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\PaymentInterface;
@@ -38,12 +39,14 @@ final class PayPalPaymentCompleteProcessorTest extends TestCase
         $this->paypalPaymentCompleteProcessor = new PayPalPaymentCompleteProcessor($this->payum);
     }
 
-    public function testItImplementsPaymentCompleteProcessorInterface(): void
+    #[Test]
+    public function it_implements_payment_complete_processor_interface(): void
     {
         self::assertInstanceOf(PaymentCompleteProcessorInterface::class, $this->paypalPaymentCompleteProcessor);
     }
 
-    public function testItCompletesPaymentInPaypal(): void
+    #[Test]
+    public function it_completes_payment_in_paypal(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
@@ -66,7 +69,8 @@ final class PayPalPaymentCompleteProcessorTest extends TestCase
         $this->paypalPaymentCompleteProcessor->completePayment($payment);
     }
 
-    public function testItDoesNothingIfPaymentHasNoPaypalOrderIdSet(): void
+    #[Test]
+    public function it_does_nothing_if_payment_has_no_paypal_order_id_set(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
 

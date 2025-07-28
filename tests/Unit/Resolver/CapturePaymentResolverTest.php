@@ -16,6 +16,7 @@ namespace Tests\Sylius\PayPalPlugin\Unit\Resolver;
 use Payum\Core\GatewayInterface;
 use Payum\Core\Payum;
 use Payum\Core\Request\Capture;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\PaymentInterface;
@@ -38,12 +39,14 @@ final class CapturePaymentResolverTest extends TestCase
         $this->capturePaymentResolver = new CapturePaymentResolver($this->payum);
     }
 
-    public function testItIsAnCapturePaymentResolver(): void
+    #[Test]
+    public function it_is_an_capture_payment_resolver(): void
     {
         self::assertInstanceOf(CapturePaymentResolverInterface::class, $this->capturePaymentResolver);
     }
 
-    public function testItExecutesCaptureActionOnPayment(): void
+    #[Test]
+    public function it_executes_capture_action_on_payment(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);

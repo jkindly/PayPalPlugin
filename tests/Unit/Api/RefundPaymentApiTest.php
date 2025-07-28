@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Api;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\PayPalPlugin\Api\RefundPaymentApi;
@@ -32,12 +33,14 @@ final class RefundPaymentApiTest extends TestCase
         $this->refundPaymentApi = new RefundPaymentApi($this->client);
     }
 
-    public function testItImplementsRefundOrderApiInterface(): void
+    #[Test]
+    public function it_implements_refund_order_api_interface(): void
     {
         self::assertInstanceOf(RefundPaymentApiInterface::class, $this->refundPaymentApi);
     }
 
-    public function testItRefundsPaypalPaymentWithGivenId(): void
+    #[Test]
+    public function it_refunds_paypal_payment_with_given_id(): void
     {
         $this->client
             ->expects(self::once())

@@ -17,6 +17,7 @@ use Payum\Core\Action\ActionInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Request\Authorize;
 use Payum\Core\Request\Capture;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Sylius\Bundle\PayumBundle\Request\GetStatus;
 use Sylius\Component\Core\Model\PaymentInterface;
@@ -33,12 +34,14 @@ final class AuthorizeActionTest extends TestCase
         $this->authorizeAction = new AuthorizeAction();
     }
 
-    public function testItImplementsActionInterface(): void
+    #[Test]
+    public function it_implements_action_interface(): void
     {
         self::assertInstanceOf(ActionInterface::class, $this->authorizeAction);
     }
 
-    public function testItMarksPaymentAsCreated(): void
+    #[Test]
+    public function it_marks_payment_as_created(): void
     {
         $request = $this->createMock(Authorize::class);
         $payment = $this->createMock(PaymentInterface::class);
@@ -49,7 +52,8 @@ final class AuthorizeActionTest extends TestCase
         $this->authorizeAction->execute($request);
     }
 
-    public function testItThrowsAnExceptionIfRequestTypeIsInvalid(): void
+    #[Test]
+    public function it_throws_an_exception_if_request_type_is_invalid(): void
     {
         $request = $this->createMock(GetStatus::class);
 
@@ -57,7 +61,8 @@ final class AuthorizeActionTest extends TestCase
         $this->authorizeAction->execute($request);
     }
 
-    public function testItSupportsAuthorizeRequestWithPaymentAsFirstModel(): void
+    #[Test]
+    public function it_supports_authorize_request_with_payment_as_first_model(): void
     {
         $request = $this->createMock(Authorize::class);
         $payment = $this->createMock(PaymentInterface::class);
@@ -67,14 +72,16 @@ final class AuthorizeActionTest extends TestCase
         self::assertTrue($this->authorizeAction->supports($request));
     }
 
-    public function testItDoesNotSupportRequestOtherThanAuthorize(): void
+    #[Test]
+    public function it_does_not_support_request_other_than_authorize(): void
     {
         $request = $this->createMock(Capture::class);
 
         self::assertFalse($this->authorizeAction->supports($request));
     }
 
-    public function testItDoesNotSupportRequestWithFirstModelOtherThanPayment(): void
+    #[Test]
+    public function it_does_not_support_request_with_first_model_other_than_payment(): void
     {
         $request = $this->createMock(Authorize::class);
         $request->method('getModel')->willReturn('badObject');

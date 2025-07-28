@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Resolver;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\ChannelInterface;
@@ -46,12 +47,14 @@ final class PayPalDefaultPaymentMethodResolverTest extends TestCase
         );
     }
 
-    public function testItImplementsDefaultPaymentMethodResolverInterface(): void
+    #[Test]
+    public function it_implements_default_payment_method_resolver_interface(): void
     {
         self::assertInstanceOf(DefaultPaymentMethodResolverInterface::class, $this->payPalDefaultPaymentMethodResolver);
     }
 
-    public function testItReturnsPrioritisedPaymentMethodForChannel(): void
+    #[Test]
+    public function it_returns_prioritised_payment_method_for_channel(): void
     {
         $channel = $this->createMock(ChannelInterface::class);
         $firstPayment = $this->createMock(PaymentMethodInterface::class);
@@ -77,7 +80,8 @@ final class PayPalDefaultPaymentMethodResolverTest extends TestCase
         self::assertSame($secondPayment, $result);
     }
 
-    public function testItReturnsFirstAvailablePaymentMethodIfPrioritisedPaymentMethodIsInvalid(): void
+    #[Test]
+    public function it_returns_first_available_payment_method_if_prioritised_payment_method_is_invalid(): void
     {
         $channel = $this->createMock(ChannelInterface::class);
         $firstPayment = $this->createMock(PaymentMethodInterface::class);
@@ -103,7 +107,8 @@ final class PayPalDefaultPaymentMethodResolverTest extends TestCase
         self::assertSame($firstPayment, $result);
     }
 
-    public function testItThrowsErrorIfThereIsNoAvailablePayment(): void
+    #[Test]
+    public function it_throws_error_if_there_is_no_available_payment(): void
     {
         $channel = $this->createMock(ChannelInterface::class);
         $subject = $this->createMock(PaymentInterface::class);

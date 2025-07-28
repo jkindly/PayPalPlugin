@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Processor;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\PaymentInterface;
@@ -35,12 +36,14 @@ final class UiPayPalPaymentRefundProcessorTest extends TestCase
         $this->uiPaypalPaymentRefundProcessor = new UiPayPalPaymentRefundProcessor($this->paymentRefundProcessor);
     }
 
-    public function testItImplementsPaymentRefundProcessorInterface(): void
+    #[Test]
+    public function it_implements_payment_refund_processor_interface(): void
     {
         self::assertInstanceOf(PaymentRefundProcessorInterface::class, $this->uiPaypalPaymentRefundProcessor);
     }
 
-    public function testItThrowsExceptionIfRefundHasFails(): void
+    #[Test]
+    public function it_throws_exception_if_refund_has_fails(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
 
@@ -54,7 +57,8 @@ final class UiPayPalPaymentRefundProcessorTest extends TestCase
         $this->uiPaypalPaymentRefundProcessor->refund($payment);
     }
 
-    public function testItDoesNothingIfRefundWasSuccessful(): void
+    #[Test]
+    public function it_does_nothing_if_refund_was_successful(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
 

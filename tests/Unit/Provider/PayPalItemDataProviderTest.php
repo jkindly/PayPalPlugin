@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tests\Sylius\PayPalPlugin\Unit\Provider;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\OrderInterface;
@@ -35,7 +36,8 @@ final class PayPalItemDataProviderTest extends TestCase
         $this->provider = new PayPalItemDataProvider($this->orderItemNonNeutralTaxesProvider);
     }
 
-    public function testReturnsArrayOfItemsWithTax(): void
+    #[Test]
+    public function returns_array_of_items_with_tax(): void
     {
         $order = $this->createMock(OrderInterface::class);
         $orderItem = $this->createMock(OrderItemInterface::class);
@@ -73,7 +75,8 @@ final class PayPalItemDataProviderTest extends TestCase
         self::assertEquals($expected, $result);
     }
 
-    public function testReturnsArrayOfItemsWithDifferentQuantitiesWithTax(): void
+    #[Test]
+    public function returns_array_of_items_with_different_quantities_with_tax(): void
     {
         $order = $this->createMock(OrderInterface::class);
         $orderItem = $this->createMock(OrderItemInterface::class);
@@ -135,7 +138,8 @@ final class PayPalItemDataProviderTest extends TestCase
         self::assertEquals($expected, $result);
     }
 
-    public function testReturnsArrayOfItemsWithDifferentQuantitiesWithoutTax(): void
+    #[Test]
+    public function returns_array_of_items_with_different_quantities_without_tax(): void
     {
         $order = $this->createMock(OrderInterface::class);
         $orderItem = $this->createMock(OrderItemInterface::class);
@@ -173,7 +177,8 @@ final class PayPalItemDataProviderTest extends TestCase
         self::assertEquals($expected, $result);
     }
 
-    public function testReturnsArrayOfDifferentItemsWithDifferentQuantitiesWithoutTax(): void
+    #[Test]
+    public function returns_array_of_different_items_with_different_quantities_without_tax(): void
     {
         $order = $this->createMock(OrderInterface::class);
         $orderItemOne = $this->createMock(OrderItemInterface::class);
@@ -232,7 +237,8 @@ final class PayPalItemDataProviderTest extends TestCase
         self::assertEquals($expected, $result);
     }
 
-    public function testReturnsArrayOfDifferentItemsWithDifferentQuantitiesWithTax(): void
+    #[Test]
+    public function returns_array_of_different_items_with_different_quantities_with_tax(): void
     {
         $order = $this->createMock(OrderInterface::class);
         $orderItemOne = $this->createMock(OrderItemInterface::class);

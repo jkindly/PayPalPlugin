@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Generator;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Payment\Model\GatewayConfigInterface;
@@ -29,12 +30,14 @@ final class PayPalAuthAssertionGeneratorTest extends TestCase
         $this->payPalAuthAssertionGenerator = new PayPalAuthAssertionGenerator();
     }
 
-    public function testItImplementsPaypalAuthAssertionGeneratorInterface(): void
+    #[Test]
+    public function it_implements_paypal_auth_assertion_generator_interface(): void
     {
         self::assertInstanceOf(PayPalAuthAssertionGeneratorInterface::class, $this->payPalAuthAssertionGenerator);
     }
 
-    public function testItGeneratesAuthAssertionBasedOnPaymentMethodConfig(): void
+    #[Test]
+    public function it_generates_auth_assertion_based_on_payment_method_config(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
@@ -54,7 +57,8 @@ final class PayPalAuthAssertionGeneratorTest extends TestCase
         self::assertEquals('eyJhbGciOiJub25lIn0=.eyJpc3MiOiJDTElFTlRfSUQiLCJwYXllcl9pZCI6Ik1FUkNIQU5UX0lEIn0=.', $result);
     }
 
-    public function testItThrowsAnExceptionIfGatewayConfigDoesNotHaveClientId(): void
+    #[Test]
+    public function it_throws_an_exception_if_gateway_config_does_not_have_client_id(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
@@ -74,7 +78,8 @@ final class PayPalAuthAssertionGeneratorTest extends TestCase
         $this->payPalAuthAssertionGenerator->generate($paymentMethod);
     }
 
-    public function testItThrowsAnExceptionIfGatewayConfigDoesNotHaveMerchantId(): void
+    #[Test]
+    public function it_throws_an_exception_if_gateway_config_does_not_have_merchant_id(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Model;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\AddressInterface;
@@ -45,7 +46,8 @@ final class PayPalPurchaseUnitTest extends TestCase
         );
     }
 
-    public function testItReturnsProperPaypalPurchaseUnit(): void
+    #[Test]
+    public function it_returns_proper_paypal_purchase_unit(): void
     {
         $this->shippingAddress->method('getFullName')->willReturn('Gandalf The Grey');
         $this->shippingAddress->method('getStreet')->willReturn('Hobbit St. 123');
@@ -105,7 +107,8 @@ final class PayPalPurchaseUnitTest extends TestCase
         ], $result);
     }
 
-    public function testItReturnsProperPaypalPurchaseUnitIfShippingIsNotRequired(): void
+    #[Test]
+    public function it_returns_proper_paypal_purchase_unit_if_shipping_is_not_required(): void
     {
         $payPalPurchaseUnit = new PayPalPurchaseUnit(
             'REFERENCE_ID',
@@ -163,7 +166,8 @@ final class PayPalPurchaseUnitTest extends TestCase
         ], $result);
     }
 
-    public function testItReturnsProperPaypalPurchaseUnitIfShippingIsNotSet(): void
+    #[Test]
+    public function it_returns_proper_paypal_purchase_unit_if_shipping_is_not_set(): void
     {
         $payPalPurchaseUnit = new PayPalPurchaseUnit(
             'REFERENCE_ID',

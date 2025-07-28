@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Api;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
@@ -48,7 +49,8 @@ final class WebhookApiTest extends TestCase
         );
     }
 
-    public function testItRegistersWebhook(): void
+    #[Test]
+    public function it_registers_webhook(): void
     {
         $request = $this->createMock(RequestInterface::class);
         $response = $this->createMock(ResponseInterface::class);
@@ -94,7 +96,8 @@ final class WebhookApiTest extends TestCase
         self::assertEquals(['status' => 'CREATED'], $result);
     }
 
-    public function testItRegistersWebhookWithoutHttps(): void
+    #[Test]
+    public function it_registers_webhook_without_https(): void
     {
         $request = $this->createMock(RequestInterface::class);
         $response = $this->createMock(ResponseInterface::class);

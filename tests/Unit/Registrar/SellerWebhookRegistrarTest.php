@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Registrar;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
@@ -48,12 +49,14 @@ final class SellerWebhookRegistrarTest extends TestCase
         );
     }
 
-    public function testItImplementsSellerWebhookRegistrarInterface(): void
+    #[Test]
+    public function it_implements_seller_webhook_registrar_interface(): void
     {
         self::assertInstanceOf(SellerWebhookRegistrarInterface::class, $this->sellerWebhookRegistrar);
     }
 
-    public function testItRegistersSellersWebhook(): void
+    #[Test]
+    public function it_registers_sellers_webhook(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
@@ -80,7 +83,8 @@ final class SellerWebhookRegistrarTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function testItThrowsExceptionIfWebhookCouldNotBeRegistered(): void
+    #[Test]
+    public function it_throws_exception_if_webhook_could_not_be_registered(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);

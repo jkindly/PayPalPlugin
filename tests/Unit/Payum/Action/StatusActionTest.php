@@ -16,6 +16,7 @@ namespace Tests\Sylius\PayPalPlugin\Unit\Payum\Action;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Request\Capture;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Sylius\Bundle\PayumBundle\Request\GetStatus;
 use Sylius\Component\Core\Model\PaymentInterface;
@@ -31,12 +32,14 @@ final class StatusActionTest extends TestCase
         $this->statusAction = new StatusAction();
     }
 
-    public function testItImplementsActionInterface(): void
+    #[Test]
+    public function it_implements_action_interface(): void
     {
         self::assertInstanceOf(ActionInterface::class, $this->statusAction);
     }
 
-    public function testItMarksRequestAsNew(): void
+    #[Test]
+    public function it_marks_request_as_new(): void
     {
         $request = $this->createMock(GetStatus::class);
         $payment = $this->createMock(PaymentInterface::class);
@@ -48,7 +51,8 @@ final class StatusActionTest extends TestCase
         $this->statusAction->execute($request);
     }
 
-    public function testItMarksRequestAsPending(): void
+    #[Test]
+    public function it_marks_request_as_pending(): void
     {
         $request = $this->createMock(GetStatus::class);
         $payment = $this->createMock(PaymentInterface::class);
@@ -60,7 +64,8 @@ final class StatusActionTest extends TestCase
         $this->statusAction->execute($request);
     }
 
-    public function testItMarksRequestAsCaptured(): void
+    #[Test]
+    public function it_marks_request_as_captured(): void
     {
         $request = $this->createMock(GetStatus::class);
         $payment = $this->createMock(PaymentInterface::class);
@@ -72,7 +77,8 @@ final class StatusActionTest extends TestCase
         $this->statusAction->execute($request);
     }
 
-    public function testItThrowsAnExceptionIfRequestIsNotSupported(): void
+    #[Test]
+    public function it_throws_an_exception_if_request_is_not_supported(): void
     {
         $request = $this->createMock(Capture::class);
 
@@ -80,7 +86,8 @@ final class StatusActionTest extends TestCase
         $this->statusAction->execute($request);
     }
 
-    public function testItSupportsGetStatusRequestWithPaymentAsFirstModel(): void
+    #[Test]
+    public function it_supports_get_status_request_with_payment_as_first_model(): void
     {
         $request = $this->createMock(GetStatus::class);
         $payment = $this->createMock(PaymentInterface::class);
@@ -90,14 +97,16 @@ final class StatusActionTest extends TestCase
         self::assertTrue($this->statusAction->supports($request));
     }
 
-    public function testItDoesNotSupportRequestOtherThanGetStatus(): void
+    #[Test]
+    public function it_does_not_support_request_other_than_get_status(): void
     {
         $request = $this->createMock(Capture::class);
 
         self::assertFalse($this->statusAction->supports($request));
     }
 
-    public function testItDoesNotSupportRequestWithFirstModelOtherThanPayment(): void
+    #[Test]
+    public function it_does_not_support_request_with_first_model_other_than_payment(): void
     {
         $request = $this->createMock(GetStatus::class);
         $request->method('getFirstModel')->willReturn('badObject');

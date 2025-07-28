@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Listener;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Bundle\ResourceBundle\Event\ResourceControllerEvent;
@@ -56,7 +57,8 @@ final class PayPalPaymentMethodListenerTest extends TestCase
         );
     }
 
-    public function testItInitiatesOnboardingWhenCreatingASupportedPaymentMethod(): void
+    #[Test]
+    public function it_initiates_onboarding_when_creating_a_supported_payment_method(): void
     {
         $event = $this->createMock(ResourceControllerEvent::class);
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
@@ -104,7 +106,8 @@ final class PayPalPaymentMethodListenerTest extends TestCase
         $this->payPalPaymentMethodListener->initializeCreate($event);
     }
 
-    public function testItThrowsAnExceptionIfSubjectIsNotAPaymentMethod(): void
+    #[Test]
+    public function it_throws_an_exception_if_subject_is_not_a_payment_method(): void
     {
         $event = $this->createMock(ResourceControllerEvent::class);
 
@@ -118,7 +121,8 @@ final class PayPalPaymentMethodListenerTest extends TestCase
         $this->payPalPaymentMethodListener->initializeCreate($event);
     }
 
-    public function testItRedirectsWithErrorIfThePaypalPaymentMethodAlreadyExists(): void
+    #[Test]
+    public function it_redirects_with_error_if_the_paypal_payment_method_already_exists(): void
     {
         $event = $this->createMock(ResourceControllerEvent::class);
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
@@ -182,7 +186,8 @@ final class PayPalPaymentMethodListenerTest extends TestCase
         $this->payPalPaymentMethodListener->initializeCreate($event);
     }
 
-    public function testItDoesNothingWhenCreatingAnUnsupportedPaymentMethod(): void
+    #[Test]
+    public function it_does_nothing_when_creating_an_unsupported_payment_method(): void
     {
         $event = $this->createMock(ResourceControllerEvent::class);
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
@@ -221,7 +226,8 @@ final class PayPalPaymentMethodListenerTest extends TestCase
         $this->payPalPaymentMethodListener->initializeCreate($event);
     }
 
-    public function testItDoesNothingIfPaymentMethodIsNotPaypal(): void
+    #[Test]
+    public function it_does_nothing_if_payment_method_is_not_paypal(): void
     {
         $event = $this->createMock(ResourceControllerEvent::class);
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);

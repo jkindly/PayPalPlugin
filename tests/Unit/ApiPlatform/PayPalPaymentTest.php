@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\ApiPlatform;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sylius\Component\Core\Model\OrderInterface;
@@ -40,7 +41,8 @@ final class PayPalPaymentTest extends TestCase
         $this->payPalPayment = new PayPalPayment($this->router, $this->availableCountriesProvider);
     }
 
-    public function testItSupportsPaypalPaymentMethod(): void
+    #[Test]
+    public function it_supports_paypal_payment_method(): void
     {
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
         $gatewayConfig = $this->createMock(GatewayConfigInterface::class);
@@ -60,7 +62,8 @@ final class PayPalPaymentTest extends TestCase
         self::assertTrue($result);
     }
 
-    public function testItProvidesProperPaypalConfiguration(): void
+    #[Test]
+    public function it_provides_proper_paypal_configuration(): void
     {
         $payment = $this->createMock(PaymentInterface::class);
         $paymentMethod = $this->createMock(PaymentMethodInterface::class);
@@ -102,18 +105,22 @@ final class PayPalPaymentTest extends TestCase
         $this->router
             ->expects($this->exactly(4))
             ->method('generate')
-            ->withConsecutive(
-                ['sylius_paypal_shop_complete_paypal_order', ['token' => 'TOKEN'], UrlGeneratorInterface::ABSOLUTE_URL],
-                ['sylius_paypal_shop_create_paypal_order', ['token' => 'TOKEN'], UrlGeneratorInterface::ABSOLUTE_URL],
-                ['sylius_paypal_shop_cancel_payment', [], UrlGeneratorInterface::ABSOLUTE_URL],
-                ['sylius_paypal_shop_payment_error', [], UrlGeneratorInterface::ABSOLUTE_URL],
-            )
-            ->willReturnOnConsecutiveCalls(
-                'https://path-to-complete/TOKEN',
-                'https://path-to-create/TOKEN',
-                'https://path-to-cancel',
-                'https://path-to-error',
-            );
+            ->willReturnCallback(function ($route, $parameters = [], $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH) {
+                if ($route === 'sylius_paypal_shop_complete_paypal_order' && $parameters === ['token' => 'TOKEN'] && $referenceType === UrlGeneratorInterface::ABSOLUTE_URL) {
+                    return 'https://path-to-complete/TOKEN';
+                }
+                if ($route === 'sylius_paypal_shop_create_paypal_order' && $parameters === ['token' => 'TOKEN'] && $referenceType === UrlGeneratorInterface::ABSOLUTE_URL) {
+                    return 'https://path-to-create/TOKEN';
+                }
+                if ($route === 'sylius_paypal_shop_cancel_payment' && $parameters === [] && $referenceType === UrlGeneratorInterface::ABSOLUTE_URL) {
+                    return 'https://path-to-cancel';
+                }
+                if ($route === 'sylius_paypal_shop_payment_error' && $parameters === [] && $referenceType === UrlGeneratorInterface::ABSOLUTE_URL) {
+                    return 'https://path-to-error';
+                }
+
+                $this->fail("Unexpected call to generate() with route: $route");
+            });
 
         $result = $this->payPalPayment->provideConfiguration($payment);
 
