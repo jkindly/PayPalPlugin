@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Sylius\PayPalPlugin\Controller;
 
-use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Sylius\PayPalPlugin\Provider\FlashBagProvider;
 use Sylius\PayPalPlugin\Provider\PaymentProviderInterface;
@@ -46,19 +45,6 @@ final class CancelPayPalOrderAction
 
     public function __invoke(Request $request): Response
     {
-        /**
-         * @var string $content
-         */
-        $content = $request->getContent();
-
-        $content = (array) json_decode($content, true);
-
-        $payment = $this->paymentProvider->getByPayPalOrderId((string) $content['payPalOrderId']);
-
-        /** @var OrderInterface $order */
-        $order = $payment->getOrder();
-        $this->orderRepository->remove($order);
-
         FlashBagProvider::getFlashBag($this->flashBagOrRequestStack)->add('success', 'sylius.pay_pal.order_cancelled');
 
         return new Response('', Response::HTTP_NO_CONTENT);
