@@ -19,7 +19,6 @@ use Sylius\Abstraction\StateMachine\StateMachineInterface;
 use Sylius\Abstraction\StateMachine\WinzouStateMachineAdapter;
 use Sylius\Component\Core\Factory\AddressFactoryInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
-use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Core\OrderCheckoutTransitions;
@@ -89,10 +88,6 @@ final class ProcessPayPalOrderAction
         $orderId = $request->request->getInt('orderId');
         $order = $this->orderProvider->provideOrderById($orderId);
 
-        if ($order->getState() !== OrderInterface::STATE_NEW) {
-            return new JsonResponse(['orderID' => $orderId]);
-        }
-
         /** @var PaymentInterface|null $payment */
         $payment = $order->getLastPayment(PaymentInterface::STATE_CART);
 
@@ -156,9 +151,6 @@ final class ProcessPayPalOrderAction
 
             return new JsonResponse(['orderID' => $orderId]);
         }
-
-        $this->paymentStateManager->create($payment);
-        $this->paymentStateManager->process($payment);
 
         return new JsonResponse(['orderID' => $orderId]);
     }
