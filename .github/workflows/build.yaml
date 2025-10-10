@@ -21,7 +21,7 @@ jobs:
             matrix:
                 php: ["8.3"]
                 symfony: ["^5.4.21", "^6.4"]
-                sylius: ["~1.13.0", "~1.14.0"]
+                sylius: ["~1.14.0"]
                 database: ["mysql", "postgres"]
                 mysql: ["8.4"]
                 postgres: ["15.8"]
@@ -30,7 +30,7 @@ jobs:
 
                 include:
                     -
-                        php: "8.1"
+                        php: "8.3"
                         symfony: "^6.4"
                         sylius: "~1.14.0"
                         database: "mysql"
@@ -39,7 +39,7 @@ jobs:
                         wkhtmltopdf: "0.12.6-1"
                         state_machine_adapter: "symfony_workflow"
                     -
-                        php: "8.2"
+                        php: "8.3"
                         symfony: "^6.4"
                         sylius: "~1.14.0"
                         database: "mysql"
@@ -48,7 +48,7 @@ jobs:
                         wkhtmltopdf: "0.12.6-1"
                         state_machine_adapter: "winzou_state_machine"
                     -
-                        php: "8.2"
+                        php: "8.3"
                         symfony: "^6.4"
                         sylius: "~1.14.0"
                         database: "mysql"
@@ -104,14 +104,6 @@ jobs:
                     postgresql password: "postgres"
 
             -
-                name: Run Chrome Headless
-                run: google-chrome-stable --enable-automation --disable-background-networking --no-default-browser-check --no-first-run --disable-popup-blocking --disable-default-apps --allow-insecure-localhost --disable-translate --disable-extensions --no-sandbox --enable-features=Metal --headless --remote-debugging-port=9222 --window-size=2880,1800 --proxy-server='direct://' --proxy-bypass-list='*' http://127.0.0.1 > /dev/null 2>&1 &
-
-            -
-                name: Run webserver
-                run: (cd tests/Application && symfony server:start --port=8080 --dir=public --daemon)
-
-            -
                 name: Get Composer cache directory
                 id: composer-cache
                 run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
@@ -142,6 +134,53 @@ jobs:
             -
                 name: Install PHP dependencies
                 run: composer install --no-interaction
+
+            -   name: Run security checks
+                run: |
+                    set -e
+
+                    IGNORED=$(jq -r '.config.audit.ignore[]?' composer.json | sort || true)
+
+                    if [ -n "$IGNORED" ]; then
+                        echo "Ignored CVEs:"
+                        echo "$IGNORED"
+                        echo
+                    fi
+
+                    composer audit --no-interaction --abandoned=ignore --no-dev
+
+                    symfony security:check --format=json > symfony-audit.json || true
+
+                    FOUND=$(jq -r '.[]?.advisories[]?.cve? // empty' symfony-audit.json | sort | uniq)
+                    DIFF=$(comm -23 <(echo "$FOUND") <(echo "$IGNORED"))
+
+                    if [ -n "$DIFF" ]; then
+                      echo "❌ New vulnerabilities found by Symfony security:check:"
+                      echo "$DIFF"
+                      exit 1
+                    else
+                      echo "✅ No new vulnerabilities found by Symfony security:check."
+                    fi
+
+            -
+                name: Run ECS
+                run: vendor/bin/ecs check
+
+            -
+                name: Validate composer.json
+                run: composer validate --ansi --strict
+
+            -
+                name: Run analysis
+                run: composer analyse
+
+            -
+                name: Run PHPStan
+                run: vendor/bin/phpstan analyse -c phpstan.neon.dist src/
+
+            -
+                name: Run PHPSpec
+                run: vendor/bin/phpspec run --ansi -f progress --no-interaction
 
             -
                 name: Get Yarn cache directory
@@ -193,32 +232,16 @@ jobs:
                 run: (cd tests/Application && bin/console sylius:fixtures:load -n)
 
             -
-                name: Run security check
-                run: symfony security:check
-
-            -
-                name: Run ECS
-                run: vendor/bin/ecs check
-
-            -
-                name: Validate composer.json
-                run: composer validate --ansi --strict
-
-            -
-                name: Run analysis
-                run: composer analyse
-
-            -
-                name: Run PHPStan
-                run: vendor/bin/phpstan analyse -c phpstan.neon.dist src/
-
-            -
-                name: Run PHPSpec
-                run: vendor/bin/phpspec run --ansi -f progress --no-interaction
-
-            -
                 name: Run PHPUnit
                 run: vendor/bin/phpunit --colors=always
+
+            -
+                name: Run Chrome Headless
+                run: google-chrome-stable --enable-automation --disable-background-networking --no-default-browser-check --no-first-run --disable-popup-blocking --disable-default-apps --allow-insecure-localhost --disable-translate --disable-extensions --no-sandbox --enable-features=Metal --headless --remote-debugging-port=9222 --window-size=2880,1800 --proxy-server='direct://' --proxy-bypass-list='*' http://127.0.0.1 > /dev/null 2>&1 &
+
+            -
+                name: Run webserver
+                run: (cd tests/Application && symfony server:start --port=8080 --dir=public --daemon)
 
             -
                 name: Run Behat

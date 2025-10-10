@@ -11,6 +11,8 @@ use Sylius\Component\Core\Model\Order as BaseOrder;
  * @ORM\Entity
  * @ORM\Table(name="sylius_order")
  */
+#[ORM\Entity]
+#[ORM\Table(name: 'sylius_order')]
 final class Order extends BaseOrder
 {
     /**
@@ -18,5 +20,6 @@ final class Order extends BaseOrder
      *
      * @ORM\Column(type="string", nullable=true)
      */
+    #[ORM\Column(type: 'string', nullable: true)]
     private $test;
 }

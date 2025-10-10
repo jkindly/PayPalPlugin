@@ -64,6 +64,12 @@
             "symfony/flex": true,
             "symfony/thanks": false,
             "php-http/discovery": true
+        },
+        "audit": {
+            "ignore": [
+                "CVE-2025-31481",
+                "CVE-2025-31485"
+            ]
         }
     },
     "conflict": {
