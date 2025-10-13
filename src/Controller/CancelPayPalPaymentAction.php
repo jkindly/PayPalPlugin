@@ -59,7 +59,6 @@ final class CancelPayPalPaymentAction
          * @var string $content
          */
         $content = $request->getContent();
-
         $content = (array) json_decode($content, true);
 
         $payment = $this->paymentProvider->getByPayPalOrderId((string) $content['payPalOrderId']);
@@ -67,14 +66,17 @@ final class CancelPayPalPaymentAction
         /** @var OrderInterface $order */
         $order = $payment->getOrder();
 
-        $this->getStateMachine()->apply($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_CANCEL);
+        $paymentStateMachine = $this->getStateMachine();
+        if ($paymentStateMachine->can($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_CANCEL)) {
+            $paymentStateMachine->apply($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_CANCEL);
 
-        $this->orderPaymentProcessor->process($order);
-        $this->objectManager->flush();
+            $this->orderPaymentProcessor->process($order);
+            $this->objectManager->flush();
 
-        FlashBagProvider::getFlashBag($this->flashBagOrRequestStack)
-            ->add('success', 'sylius.pay_pal.payment_cancelled')
-        ;
+            FlashBagProvider::getFlashBag($this->flashBagOrRequestStack)
+                ->add('success', 'sylius.pay_pal.payment_cancelled')
+            ;
+        }
 
         return new Response('', Response::HTTP_NO_CONTENT);
     }
