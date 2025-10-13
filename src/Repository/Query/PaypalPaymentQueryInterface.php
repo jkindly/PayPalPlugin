@@ -14,12 +14,16 @@ declare(strict_types=1);
 namespace Sylius\PayPalPlugin\Repository\Query;
 
 use Sylius\Component\Core\Model\PaymentInterface;
+use Sylius\PayPalPlugin\Exception\PaymentNotFoundException;
 
 interface PaypalPaymentQueryInterface
 {
+    /** @throws PaymentNotFoundException */
     public function getForUpdateByOrderId(string $paypalOrderId): ?PaymentInterface;
 
+    /** @throws PaymentNotFoundException */
     public function getForCancellationByOrderId(string $paypalOrderId): ?PaymentInterface;
 
+    /** @throws PaymentNotFoundException */
     public function getForRefundingByOrderId(string $paypalOrderId): ?PaymentInterface;
 }

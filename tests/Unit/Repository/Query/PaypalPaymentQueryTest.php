@@ -23,6 +23,7 @@ use Sylius\Bundle\CoreBundle\Doctrine\ORM\PaymentRepository;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Repository\PaymentRepositoryInterface;
 use Sylius\PayPalPlugin\DependencyInjection\SyliusPayPalExtension;
+use Sylius\PayPalPlugin\Exception\PaymentNotFoundException;
 use Sylius\PayPalPlugin\Repository\Query\PaypalPaymentQuery;
 
 final class PaypalPaymentQueryTest extends TestCase
@@ -101,7 +102,7 @@ final class PaypalPaymentQueryTest extends TestCase
         $this->assertSame($payment, $result);
     }
 
-    public function testGetForUpdateByOrderIdReturnsNullWhenNoPaymentFound(): void
+    public function testGetForUpdateByOrderIdThrowsExceptionWhenNoPaymentFound(): void
     {
         $paypalOrderId = 'PAYPAL123';
 
@@ -121,12 +122,12 @@ final class PaypalPaymentQueryTest extends TestCase
         $configuration->method('getCustomStringFunction')->with('CAST')->willReturn(null);
         $this->entityManager->method('getConfiguration')->willReturn($configuration);
 
-        $result = $this->query->getForUpdateByOrderId($paypalOrderId);
+        $this->expectException(PaymentNotFoundException::class);
 
-        $this->assertNull($result);
+        $this->query->getForUpdateByOrderId($paypalOrderId);
     }
 
-    public function testGetForUpdateByOrderIdReturnsNullWhenPaymentDoesNotMatchOrderId(): void
+    public function testGetForUpdateByOrderIdThrowsExceptionWhenPaymentDoesNotMatchOrderId(): void
     {
         $paypalOrderId = 'PAYPAL123';
         $payment = $this->createMock(PaymentInterface::class);
@@ -148,12 +149,12 @@ final class PaypalPaymentQueryTest extends TestCase
         $configuration->method('getCustomStringFunction')->with('CAST')->willReturn(null);
         $this->entityManager->method('getConfiguration')->willReturn($configuration);
 
-        $result = $this->query->getForUpdateByOrderId($paypalOrderId);
+        $this->expectException(PaymentNotFoundException::class);
 
-        $this->assertNull($result);
+        $this->query->getForUpdateByOrderId($paypalOrderId);
     }
 
-    public function testGetForUpdateByOrderIdReturnsNullWhenDetailsDoNotContainPaypalOrderId(): void
+    public function testGetForUpdateByOrderIdThrowsExceptionWhenDetailsDoNotContainPaypalOrderId(): void
     {
         $paypalOrderId = 'PAYPAL123';
         $payment = $this->createMock(PaymentInterface::class);
@@ -175,9 +176,9 @@ final class PaypalPaymentQueryTest extends TestCase
         $configuration->method('getCustomStringFunction')->with('CAST')->willReturn(null);
         $this->entityManager->method('getConfiguration')->willReturn($configuration);
 
-        $result = $this->query->getForUpdateByOrderId($paypalOrderId);
+        $this->expectException(PaymentNotFoundException::class);
 
-        $this->assertNull($result);
+        $this->query->getForUpdateByOrderId($paypalOrderId);
     }
 
     public function testGetForCancellationByOrderIdReturnsPaymentWithCancellableStates(): void
@@ -234,7 +235,7 @@ final class PaypalPaymentQueryTest extends TestCase
         $this->assertSame($payment, $result);
     }
 
-    public function testGetForCancellationByOrderIdReturnsNullWhenNoPaymentFound(): void
+    public function testGetForCancellationByOrderIdThrowsExceptionWhenNoPaymentFound(): void
     {
         $paypalOrderId = 'PAYPAL123';
 
@@ -254,12 +255,12 @@ final class PaypalPaymentQueryTest extends TestCase
         $configuration->method('getCustomStringFunction')->with('CAST')->willReturn(null);
         $this->entityManager->method('getConfiguration')->willReturn($configuration);
 
-        $result = $this->query->getForCancellationByOrderId($paypalOrderId);
+        $this->expectException(PaymentNotFoundException::class);
 
-        $this->assertNull($result);
+        $this->query->getForCancellationByOrderId($paypalOrderId);
     }
 
-    public function testGetForRefundingByOrderIdReturnsNullWhenNoPaymentFound(): void
+    public function testGetForRefundingByOrderIdThrowsExceptionWhenNoPaymentFound(): void
     {
         $paypalOrderId = 'PAYPAL123';
 
@@ -279,9 +280,9 @@ final class PaypalPaymentQueryTest extends TestCase
         $configuration->method('getCustomStringFunction')->with('CAST')->willReturn(null);
         $this->entityManager->method('getConfiguration')->willReturn($configuration);
 
-        $result = $this->query->getForRefundingByOrderId($paypalOrderId);
+        $this->expectException(PaymentNotFoundException::class);
 
-        $this->assertNull($result);
+        $this->query->getForRefundingByOrderId($paypalOrderId);
     }
 
     public function testGetForUpdateByOrderIdUsesCorrectStates(): void
@@ -316,6 +317,8 @@ final class PaypalPaymentQueryTest extends TestCase
         $configuration = $this->createMock(Configuration::class);
         $configuration->method('getCustomStringFunction')->with('CAST')->willReturn(null);
         $this->entityManager->method('getConfiguration')->willReturn($configuration);
+
+        $this->expectException(PaymentNotFoundException::class);
 
         $this->query->getForUpdateByOrderId($paypalOrderId);
     }
@@ -353,6 +356,8 @@ final class PaypalPaymentQueryTest extends TestCase
         $configuration->method('getCustomStringFunction')->with('CAST')->willReturn(null);
         $this->entityManager->method('getConfiguration')->willReturn($configuration);
 
+        $this->expectException(PaymentNotFoundException::class);
+
         $this->query->getForCancellationByOrderId($paypalOrderId);
     }
 
@@ -385,6 +390,8 @@ final class PaypalPaymentQueryTest extends TestCase
         $configuration = $this->createMock(Configuration::class);
         $configuration->method('getCustomStringFunction')->with('CAST')->willReturn(null);
         $this->entityManager->method('getConfiguration')->willReturn($configuration);
+
+        $this->expectException(PaymentNotFoundException::class);
 
         $this->query->getForRefundingByOrderId($paypalOrderId);
     }

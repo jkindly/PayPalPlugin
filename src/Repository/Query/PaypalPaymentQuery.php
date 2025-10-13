@@ -18,21 +18,22 @@ use Doctrine\ORM\QueryBuilder;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Repository\PaymentRepositoryInterface;
 use Sylius\PayPalPlugin\DependencyInjection\SyliusPayPalExtension;
+use Sylius\PayPalPlugin\Exception\PaymentNotFoundException;
 
 final class PaypalPaymentQuery implements PaypalPaymentQueryInterface
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private PaymentRepositoryInterface $paymentRepository,
-        private array $updatableStates = ['cart', 'new', 'processing'],
-        private array $cancellableStates = ['cart', 'new', 'processing', 'completed'],
-        private array $refundableStates = ['completed'],
+        private readonly EntityManagerInterface $entityManager,
+        private readonly PaymentRepositoryInterface $paymentRepository,
+        private readonly array $updatableStates = ['cart', 'new', 'processing'],
+        private readonly array $cancellableStates = ['cart', 'new', 'processing', 'completed'],
+        private readonly array $refundableStates = ['completed'],
     ) {
     }
 
     public function getForUpdateByOrderId(string $paypalOrderId): ?PaymentInterface
     {
-        $queryBuilder = $this->getPaypalPaymentQueryBuilder('o')
+        $queryBuilder = $this->getPaypalPaymentQueryBuilder()
             ->andWhere('o.state IN (:states)')
             ->setParameter('states', $this->updatableStates)
             ->addOrderBy('o.createdAt', 'DESC')
@@ -43,7 +44,7 @@ final class PaypalPaymentQuery implements PaypalPaymentQueryInterface
 
     public function getForCancellationByOrderId(string $paypalOrderId): ?PaymentInterface
     {
-        $queryBuilder = $this->getPaypalPaymentQueryBuilder('o')
+        $queryBuilder = $this->getPaypalPaymentQueryBuilder()
             ->andWhere('o.state IN (:states)')
             ->setParameter('states', $this->cancellableStates)
             ->addOrderBy('o.createdAt', 'DESC')
@@ -54,7 +55,7 @@ final class PaypalPaymentQuery implements PaypalPaymentQueryInterface
 
     public function getForRefundingByOrderId(string $paypalOrderId): ?PaymentInterface
     {
-        $queryBuilder = $this->getPaypalPaymentQueryBuilder('o')
+        $queryBuilder = $this->getPaypalPaymentQueryBuilder()
             ->andWhere('o.state IN (:states)')
             ->setParameter('states', $this->refundableStates)
             ->addOrderBy('o.updatedAt', 'DESC')
@@ -66,13 +67,18 @@ final class PaypalPaymentQuery implements PaypalPaymentQueryInterface
     private function doGetPayment(QueryBuilder $queryBuilder, string $paypalOrderId): ?PaymentInterface
     {
         if ($this->isCastAvailable()) {
-            return $queryBuilder
+            $payment = $queryBuilder
                 ->andWhere('CAST(o.details AS text) LIKE :orderId')
-                ->setParameter('orderId', '%"paypal_order_id":"' . $paypalOrderId . '"%')
+                ->setParameter('orderId', '%"' . $paypalOrderId . '"%')
                 ->setMaxResults(1)
                 ->getQuery()
                 ->getOneOrNullResult()
             ;
+            if (null !== $payment) {
+                return $payment;
+            }
+
+            throw new PaymentNotFoundException();
         }
 
         $payments = $queryBuilder
@@ -87,14 +93,14 @@ final class PaypalPaymentQuery implements PaypalPaymentQueryInterface
             }
         }
 
-        return null;
+        throw new PaymentNotFoundException();
     }
 
-    private function getPaypalPaymentQueryBuilder(string $alias): QueryBuilder
+    private function getPaypalPaymentQueryBuilder(): QueryBuilder
     {
         return $this->paymentRepository
-            ->createQueryBuilder($alias)
-            ->innerJoin($alias . '.method', 'method')
+            ->createQueryBuilder('o')
+            ->innerJoin('o.method', 'method')
             ->innerJoin('method.gatewayConfig', 'gatewayConfig')
             ->andWhere('gatewayConfig.factoryName = :factoryName')
             ->setParameter('factoryName', SyliusPayPalExtension::PAYPAL_FACTORY_NAME)
