@@ -23,10 +23,30 @@ use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 final class CancelPayPalCheckoutPaymentAction
 {
     public function __construct(
-        private PaymentProviderInterface $paymentProvider,
-        private PaymentStateManagerInterface $paymentStateManager,
-        private ?PaypalPaymentQueryInterface $paypalPaymentQuery = null,
+        private readonly ?PaymentProviderInterface $paymentProvider,
+        private readonly PaymentStateManagerInterface $paymentStateManager,
+        private readonly ?PaypalPaymentQueryInterface $paypalPaymentQuery = null,
     ) {
+        if (null !== $this->paymentProvider) {
+            trigger_deprecation(
+                'sylius/paypal-plugin',
+                '1.7',
+                sprintf(
+                    'Passing an instance of "%s" as the first argument is deprecated and will be prohibited in 3.0',
+                    PaymentProviderInterface::class,
+                ),
+            );
+        }
+        if (null === $this->paypalPaymentQuery) {
+            trigger_deprecation(
+                'sylius/paypal-plugin',
+                '1.7',
+                sprintf(
+                    'Not passing an instance of "%s" is deprecated and will be prohibited in 3.0',
+                    PaypalPaymentQueryInterface::class,
+                ),
+            );
+        }
     }
 
     public function __invoke(Request $request): Response

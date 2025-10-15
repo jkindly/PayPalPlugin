@@ -100,6 +100,7 @@
         >
             <argument type="service" id="sylius.repository.payment" />
             <argument type="service" id="sylius.repository.order" />
+            <deprecated package="sylius/paypal-plugin" version="1.7">The "%service_id%" service is deprecated since 1.7 and will be removed in 3.0.</deprecated>
         </service>
         <service id="sylius_paypal.provider.payment" alias="Sylius\PayPalPlugin\Provider\PaymentProviderInterface" />
 

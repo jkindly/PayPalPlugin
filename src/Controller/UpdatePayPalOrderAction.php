@@ -31,7 +31,7 @@ use Symfony\Component\HttpFoundation\Response;
 final class UpdatePayPalOrderAction
 {
     public function __construct(
-        private readonly PaymentProviderInterface $paymentProvider,
+        private readonly ?PaymentProviderInterface $paymentProvider,
         private readonly CacheAuthorizeClientApiInterface $authorizeClientApi,
         private readonly ?OrderDetailsApiInterface $orderDetailsApi,
         private readonly UpdateOrderApiInterface $updateOrderApi,
@@ -46,6 +46,26 @@ final class UpdatePayPalOrderAction
                 sprintf(
                     'Passing an instance of "%s" as the third argument is deprecated and will be prohibited in 2.0',
                     OrderDetailsApiInterface::class,
+                ),
+            );
+        }
+        if (null !== $this->paymentProvider) {
+            trigger_deprecation(
+                'sylius/paypal-plugin',
+                '1.7',
+                sprintf(
+                    'Passing an instance of "%s" as the first argument is deprecated and will be prohibited in 3.0',
+                    PaymentProviderInterface::class,
+                ),
+            );
+        }
+        if (null === $this->paypalPaymentQuery) {
+            trigger_deprecation(
+                'sylius/paypal-plugin',
+                '1.7',
+                sprintf(
+                    'Not passing an instance of "%s" is deprecated and will be prohibited in 3.0',
+                    PaypalPaymentQueryInterface::class,
                 ),
             );
         }
