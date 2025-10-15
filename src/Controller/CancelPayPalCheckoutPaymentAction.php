@@ -15,34 +15,31 @@ namespace Sylius\PayPalPlugin\Controller;
 
 use Sylius\PayPalPlugin\Manager\PaymentStateManagerInterface;
 use Sylius\PayPalPlugin\Provider\PaymentProviderInterface;
+use Sylius\PayPalPlugin\Repository\Query\PaypalPaymentQueryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
 final class CancelPayPalCheckoutPaymentAction
 {
-    private PaymentProviderInterface $paymentProvider;
-
-    private PaymentStateManagerInterface $paymentStateManager;
-
     public function __construct(
-        PaymentProviderInterface $paymentProvider,
-        PaymentStateManagerInterface $paymentStateManager,
+        private PaymentProviderInterface $paymentProvider,
+        private PaymentStateManagerInterface $paymentStateManager,
+        private ?PaypalPaymentQueryInterface $paypalPaymentQuery = null,
     ) {
-        $this->paymentProvider = $paymentProvider;
-        $this->paymentStateManager = $paymentStateManager;
     }
 
     public function __invoke(Request $request): Response
     {
-        /**
-         * @var string $content
-         */
+        /** @var string $content */
         $content = $request->getContent();
-
         $content = (array) json_decode($content, true);
 
-        $payment = $this->paymentProvider->getByPayPalOrderId((string) $content['payPalOrderId']);
+        if (null !== $this->paypalPaymentQuery) {
+            $payment = $this->paypalPaymentQuery->getForCancellationByOrderId((string) $content['payPalOrderId']);
+        } else {
+            $payment = $this->paymentProvider->getByPayPalOrderId((string) $content['payPalOrderId']);
+        }
 
         /** @var FlashBagInterface $flashBag */
         $flashBag = $request->getSession()->getBag('flashes');

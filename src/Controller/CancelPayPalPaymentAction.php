@@ -22,6 +22,7 @@ use Sylius\Component\Order\Processor\OrderProcessorInterface;
 use Sylius\Component\Payment\PaymentTransitions;
 use Sylius\PayPalPlugin\Provider\FlashBagProvider;
 use Sylius\PayPalPlugin\Provider\PaymentProviderInterface;
+use Sylius\PayPalPlugin\Repository\Query\PaypalPaymentQueryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,6 +36,7 @@ final class CancelPayPalPaymentAction
         private readonly FlashBag|RequestStack $flashBagOrRequestStack,
         private readonly FactoryInterface|StateMachineInterface $stateMachineFactory,
         private readonly OrderProcessorInterface $orderPaymentProcessor,
+        private readonly ?PaypalPaymentQueryInterface $paypalPaymentQuery = null,
     ) {
         if ($flashBagOrRequestStack instanceof FlashBag) {
             trigger_deprecation('sylius/paypal-plugin', '1.5', sprintf('Passing an instance of %s as constructor argument for %s is deprecated as of PayPalPlugin 1.5 and will be removed in 2.0. Pass an instance of %s instead.', FlashBag::class, self::class, RequestStack::class));
@@ -55,13 +57,15 @@ final class CancelPayPalPaymentAction
 
     public function __invoke(Request $request): Response
     {
-        /**
-         * @var string $content
-         */
+        /** @var string $content */
         $content = $request->getContent();
         $content = (array) json_decode($content, true);
 
-        $payment = $this->paymentProvider->getByPayPalOrderId((string) $content['payPalOrderId']);
+        if (null !== $this->paypalPaymentQuery) {
+            $payment = $this->paypalPaymentQuery->getForCancellationByOrderId((string) $content['payPalOrderId']);
+        } else {
+            $payment = $this->paymentProvider->getByPayPalOrderId((string) $content['payPalOrderId']);
+        }
 
         /** @var OrderInterface $order */
         $order = $payment->getOrder();

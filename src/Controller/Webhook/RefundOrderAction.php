@@ -22,6 +22,7 @@ use Sylius\PayPalPlugin\Exception\PaymentNotFoundException;
 use Sylius\PayPalPlugin\Exception\PayPalWrongDataException;
 use Sylius\PayPalPlugin\Provider\PaymentProviderInterface;
 use Sylius\PayPalPlugin\Provider\PayPalRefundDataProviderInterface;
+use Sylius\PayPalPlugin\Repository\Query\PaypalPaymentQueryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,6 +35,7 @@ final class RefundOrderAction
         private readonly PaymentProviderInterface $paymentProvider,
         private readonly ObjectManager $paymentManager,
         private readonly PayPalRefundDataProviderInterface $payPalRefundDataProvider,
+        private readonly ?PaypalPaymentQueryInterface $paypalPaymentQuery = null,
     ) {
         if ($this->stateMachineFactory instanceof FactoryInterface) {
             trigger_deprecation(
@@ -53,7 +55,11 @@ final class RefundOrderAction
         $refundData = $this->payPalRefundDataProvider->provide($this->getPayPalPaymentUrl($request));
 
         try {
-            $payment = $this->paymentProvider->getByPayPalOrderId((string) $refundData['id']);
+            if (null !== $this->paypalPaymentQuery) {
+                $payment = $this->paypalPaymentQuery->getForRefundingByOrderId((string) $refundData['id']);
+            } else {
+                $payment = $this->paymentProvider->getByPayPalOrderId((string) $refundData['id']);
+            }
         } catch (PaymentNotFoundException $exception) {
             return new JsonResponse(['error' => $exception->getMessage()], Response::HTTP_NOT_FOUND);
         }

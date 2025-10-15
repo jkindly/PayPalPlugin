@@ -23,6 +23,7 @@ use Sylius\PayPalPlugin\Api\CacheAuthorizeClientApiInterface;
 use Sylius\PayPalPlugin\Api\OrderDetailsApiInterface;
 use Sylius\PayPalPlugin\Api\UpdateOrderApiInterface;
 use Sylius\PayPalPlugin\Provider\PaymentProviderInterface;
+use Sylius\PayPalPlugin\Repository\Query\PaypalPaymentQueryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,6 +37,7 @@ final class UpdatePayPalOrderAction
         private readonly UpdateOrderApiInterface $updateOrderApi,
         private readonly AddressFactoryInterface $addressFactory,
         private readonly OrderProcessorInterface $orderProcessor,
+        private readonly ?PaypalPaymentQueryInterface $paypalPaymentQuery = null,
     ) {
         if (null !== $this->orderDetailsApi) {
             trigger_deprecation(
@@ -51,7 +53,11 @@ final class UpdatePayPalOrderAction
 
     public function __invoke(Request $request): Response
     {
-        $payment = $this->paymentProvider->getByPayPalOrderId((string) $request->request->get('orderID'));
+        if (null !== $this->paypalPaymentQuery) {
+            $payment = $this->paypalPaymentQuery->getForUpdateByOrderId((string) $request->request->get('orderID'));
+        } else {
+            $payment = $this->paymentProvider->getByPayPalOrderId((string) $request->request->get('orderID'));
+        }
         /** @var OrderInterface $order */
         $order = $payment->getOrder();
 
