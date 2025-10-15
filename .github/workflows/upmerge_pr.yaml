@@ -26,6 +26,9 @@ jobs:
                     -
                         base_branch: "1.7"
                         target_branch: "2.0"
+                    -
+                        base_branch: "2.0"
+                        target_branch: "2.1"
 
         steps:
             -
