@@ -59,13 +59,15 @@ final class PayPalDefaultPaymentMethodResolverSpec extends ObjectBehavior
         $this->getDefaultPaymentMethod($subject, 'prioritised.payment')->shouldReturn($secondPayment);
     }
 
-    function it_returns_first_available_payment_method_if_priotitised_payment_method_is_invalid(
+    function it_delegates_to_decorated_default_payment_method_when_prioritised_payment_is_missing(
+        DefaultPaymentMethodResolverInterface $decoratedDefaultPaymentMethodResolver,
         PaymentMethodRepositoryInterface $paymentMethodRepository,
         ChannelInterface $channel,
         PaymentMethodInterface $firstPayment,
         PaymentMethodInterface $secondPayment,
         GatewayConfigInterface $firstGatewayConfig,
         GatewayConfigInterface $secondGatewayConfig,
+        PaymentMethodInterface $defaultPaymentMethod,
         PaymentInterface $subject,
         OrderInterface $order,
     ): void {
@@ -80,7 +82,9 @@ final class PayPalDefaultPaymentMethodResolverSpec extends ObjectBehavior
         $subject->getOrder()->willReturn($order);
         $order->getChannel()->willReturn($channel);
 
-        $this->getDefaultPaymentMethod($subject, 'prioritised')->shouldReturn($firstPayment);
+        $decoratedDefaultPaymentMethodResolver->getDefaultPaymentMethod($subject)->willReturn($defaultPaymentMethod);
+
+        $this->getDefaultPaymentMethod($subject, 'prioritised')->shouldReturn($defaultPaymentMethod);
     }
 
     function it_throws_error_if_there_is_no_available_payment(
@@ -95,5 +99,18 @@ final class PayPalDefaultPaymentMethodResolverSpec extends ObjectBehavior
         $order->getChannel()->willReturn($channel);
 
         $this->shouldThrow(UnresolvedDefaultPaymentMethodException::class)->during('getDefaultPaymentMethod', [$subject, 'prioritised']);
+    }
+
+    function it_delegates_to_decorated_default_payment_method_when_prioritisation_is_disabled(
+        DefaultPaymentMethodResolverInterface $decoratedDefaultPaymentMethodResolver,
+        PaymentMethodRepositoryInterface $paymentMethodRepository,
+        PaymentInterface $subject,
+        PaymentMethodInterface $decoratedDefaultPaymentMethod,
+    ): void {
+        $this->beConstructedWith($decoratedDefaultPaymentMethodResolver, $paymentMethodRepository, false);
+
+        $decoratedDefaultPaymentMethodResolver->getDefaultPaymentMethod($subject)->willReturn($decoratedDefaultPaymentMethod);
+
+        $this->getDefaultPaymentMethod($subject)->shouldReturn($decoratedDefaultPaymentMethod);
     }
 }
