@@ -32,7 +32,7 @@ final class RefundOrderAction
 {
     public function __construct(
         private readonly FactoryInterface|StateMachineInterface $stateMachineFactory,
-        private readonly PaymentProviderInterface $paymentProvider,
+        private readonly ?PaymentProviderInterface $paymentProvider,
         private readonly ObjectManager $paymentManager,
         private readonly PayPalRefundDataProviderInterface $payPalRefundDataProvider,
         private readonly ?PaypalPaymentQueryInterface $paypalPaymentQuery = null,
@@ -45,6 +45,26 @@ final class RefundOrderAction
                     'Passing an instance of "%s" as the first argument is deprecated and will be prohibited in 2.0. Use "%s" instead.',
                     FactoryInterface::class,
                     StateMachineInterface::class,
+                ),
+            );
+        }
+        if (null !== $this->paymentProvider) {
+            trigger_deprecation(
+                'sylius/paypal-plugin',
+                '1.7',
+                sprintf(
+                    'Passing an instance of "%s" as the second argument is deprecated and will be prohibited in 3.0',
+                    PaymentProviderInterface::class,
+                ),
+            );
+        }
+        if (null === $this->paypalPaymentQuery) {
+            trigger_deprecation(
+                'sylius/paypal-plugin',
+                '1.7',
+                sprintf(
+                    'Not passing an instance of "%s" is deprecated and will be prohibited in 3.0',
+                    PaypalPaymentQueryInterface::class,
                 ),
             );
         }
