@@ -27,8 +27,8 @@ final class PaymentReferenceNumberProviderSpec extends ObjectBehavior
     function it_provides_reference_number_based_on_payment_id_and_creation_date(PaymentInterface $payment): void
     {
         $payment->getId()->willReturn(123);
-        $payment->getCreatedAt()->willReturn(new \DateTime('10-03-2012'));
+        $payment->getCreatedAt()->willReturn(new \DateTime('10-03-2012 15:23:45'));
 
-        $this->provide($payment)->shouldReturn('123-10-03-2012');
+        $this->provide($payment)->shouldReturn('123-10-03-2012-15-23-45');
     }
 }
