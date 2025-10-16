@@ -108,6 +108,8 @@ final class ProcessPayPalOrderAction
 
         $address = $this->addressFactory->createNew();
 
+        $stateMachine = $this->getStateMachine();
+
         if ($order->isShippingRequired()) {
             $name = explode(' ', $purchaseUnit['shipping']['name']['full_name']);
             $address->setLastName(array_pop($name) ?? '');
@@ -117,8 +119,13 @@ final class ProcessPayPalOrderAction
             $address->setPostcode($purchaseUnit['shipping']['address']['postal_code']);
             $address->setCountryCode($purchaseUnit['shipping']['address']['country_code']);
 
-            $this->getStateMachine()->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_ADDRESS);
-            $this->getStateMachine()->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SELECT_SHIPPING);
+            $stateMachine->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_ADDRESS);
+
+            if ($stateMachine->can($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SELECT_SHIPPING)) {
+                $stateMachine->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SELECT_SHIPPING);
+            } elseif ($stateMachine->can($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SKIP_SHIPPING)) {
+                $stateMachine->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SKIP_SHIPPING);
+            }
         } else {
             $address->setFirstName($customer->getFirstName());
             $address->setLastName($customer->getLastName());
@@ -130,13 +137,17 @@ final class ProcessPayPalOrderAction
             $address->setPostcode($defaultAddress ? $defaultAddress->getPostcode() : '');
             $address->setCountryCode($data['payer']['address']['country_code']);
 
-            $this->getStateMachine()->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_ADDRESS);
+            $stateMachine->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_ADDRESS);
         }
 
         $order->setShippingAddress(clone $address);
         $order->setBillingAddress(clone $address);
 
-        $this->getStateMachine()->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SELECT_PAYMENT);
+        if ($stateMachine->can($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SELECT_PAYMENT)) {
+            $stateMachine->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SELECT_PAYMENT);
+        } elseif ($stateMachine->can($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SKIP_PAYMENT)) {
+            $stateMachine->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SKIP_PAYMENT);
+        }
 
         $this->orderManager->flush();
 
