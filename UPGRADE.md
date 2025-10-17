@@ -1,3 +1,9 @@
+### UPGRADE FROM 1.7.5 to 1.7.6
+
+1. Setting sandbox mode and increased logging can be configured via the `SYLIUS_PAYPAL_SANDBOX_ENABLED`
+   and `SYLIUS_PAYPAL_LOGGING_INCREASED` environmental variables.
+   These variables take precedence over configuration nodes.
+
 ### UPGRADE FROM 1.7.2 to 1.7.3
 
 1. #### Removed overwriting of shipping address in `CompleteOrderAction` and introduced shipping address update to PayPal.
