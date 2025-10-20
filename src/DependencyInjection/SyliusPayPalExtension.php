@@ -34,6 +34,8 @@ final class SyliusPayPalExtension extends Extension implements PrependExtensionI
 
         $this->setCommunicationParameters($container, $config);
 
+        $container->setParameter('sylius_paypal.supported_locales', $config['supported_locales']);
+
         $loaderResolver = new LoaderResolver([
             new PhpFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config')),
             new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config')),

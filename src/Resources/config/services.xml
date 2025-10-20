@@ -356,5 +356,13 @@
             <argument type="service" id="sylius.repository.payment_method" />
         </service>
         <service id="Sylius\PayPalPlugin\Resolver\PayPalPaymentMethodsResolverInterface" alias="sylius_paypal.resolver.paypal_payment_methods" />
+
+        <service
+            id="sylius_paypal.resolver.supported_locale"
+            class="Sylius\PayPalPlugin\Resolver\SupportedLocaleResolver"
+        >
+            <argument>%sylius_paypal.supported_locales%</argument>
+        </service>
+        <service id="Sylius\PayPalPlugin\Resolver\SupportedLocaleResolverInterface" alias="sylius_paypal.resolver.supported_locale" />
     </services>
 </container>

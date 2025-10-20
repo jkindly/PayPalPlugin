@@ -13,13 +13,46 @@ declare(strict_types=1);
 
 namespace Sylius\PayPalPlugin\Processor;
 
+use Sylius\PayPalPlugin\Resolver\SupportedLocaleResolverInterface;
 use Symfony\Component\Intl\Locales;
 
 final class LocaleProcessor implements LocaleProcessorInterface
 {
+    private const ALLOWED_LOCALE_PATTERN = '/^[a-z]{2}(_[A-Z]{2})?$/';
+
+    public function __construct(
+        private readonly ?SupportedLocaleResolverInterface $supportedLocaleResolver = null,
+    ) {
+        if (null === $this->supportedLocaleResolver) {
+            trigger_deprecation(
+                'sylius/paypal-plugin',
+                '1.7',
+                sprintf(
+                    'Not passing an instance of "%s" is deprecated and will be prohibited in 3.0',
+                    SupportedLocaleResolverInterface::class,
+                ),
+            );
+        }
+    }
+
     public function process(string $locale): string
     {
-        if ($this->isValidLocale($locale)) {
+        if (null !== $this->supportedLocaleResolver) {
+            $locale = trim($locale);
+
+            if ($this->isValidLocale($locale)) {
+                return $this->supportedLocaleResolver->resolve($locale);
+            }
+
+            throw new \UnexpectedValueException(sprintf('Locale "%s" is not valid.', $locale));
+        }
+
+        return $this->legacyProcess($locale);
+    }
+
+    private function legacyProcess(string $locale): string
+    {
+        if (str_contains($locale, '_')) {
             return $locale;
         }
 
@@ -29,9 +62,9 @@ final class LocaleProcessor implements LocaleProcessorInterface
 
         $locales = array_filter(Locales::getLocales(), function (string $targetLocale) use ($locale): bool {
             return
-                strpos($targetLocale, $locale) === 0 &&
-                strpos($targetLocale, '_') !== false &&
-                strlen($targetLocale) === 5
+                str_starts_with($targetLocale, $locale) &&
+                strlen($targetLocale) === 5 &&
+                $this->isValidLocale($targetLocale)
             ;
         });
 
@@ -39,11 +72,14 @@ final class LocaleProcessor implements LocaleProcessorInterface
             throw new \UnexpectedValueException(sprintf('Locale "%s" is not supported by PayPal.', $locale));
         }
 
-        return $locales[array_key_first($locales)];
+        return array_shift($locales);
     }
 
     private function isValidLocale(string $locale): bool
     {
-        return strpos($locale, '_') !== false;
+        return
+            false === str_contains($locale, ' ') &&
+            1 === preg_match(self::ALLOWED_LOCALE_PATTERN, $locale)
+        ;
     }
 }
