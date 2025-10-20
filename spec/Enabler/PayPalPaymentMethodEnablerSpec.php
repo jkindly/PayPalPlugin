@@ -67,6 +67,7 @@ final class PayPalPaymentMethodEnablerSpec extends ObjectBehavior
             ->createRequest('GET', 'http://base-url.com/seller-permissions/check/123123')
             ->willReturn($request);
         $client->sendRequest($request)->willReturn($response);
+        $response->getStatusCode()->willReturn(200);
         $response->getBody()->willReturn($body);
         $body->getContents()->willReturn('{ "permissionsGranted": true }');
 
@@ -99,6 +100,7 @@ final class PayPalPaymentMethodEnablerSpec extends ObjectBehavior
 
         $client->request('GET', 'http://base-url.com/seller-permissions/check/123123')->willReturn($response);
         $response->getBody()->willReturn($body);
+        $response->getStatusCode()->willReturn(200);
         $body->getContents()->willReturn('{ "permissionsGranted": true }');
 
         $sellerWebhookRegistrar->register($paymentMethod)->shouldBeCalled();
@@ -128,6 +130,7 @@ final class PayPalPaymentMethodEnablerSpec extends ObjectBehavior
             ->willReturn($request);
         $client->sendRequest($request)->willReturn($response);
         $response->getBody()->willReturn($body);
+        $response->getStatusCode()->willReturn(200);
         $body->getContents()->willReturn('{ "permissionsGranted": false }');
 
         $sellerWebhookRegistrar->register($paymentMethod)->shouldNotBeCalled();
@@ -163,6 +166,7 @@ final class PayPalPaymentMethodEnablerSpec extends ObjectBehavior
 
         $client->request('GET', 'http://base-url.com/seller-permissions/check/123123')->willReturn($response);
         $response->getBody()->willReturn($body);
+        $response->getStatusCode()->willReturn(200);
         $body->getContents()->willReturn('{ "permissionsGranted": false }');
 
         $sellerWebhookRegistrar->register($paymentMethod)->shouldNotBeCalled();
