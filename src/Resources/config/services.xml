@@ -189,7 +189,9 @@
         <service
             id="Sylius\PayPalPlugin\Processor\LocaleProcessorInterface"
             class="Sylius\PayPalPlugin\Processor\LocaleProcessor"
-        />
+        >
+            <argument type="service" id="sylius_paypal.resolver.supported_locale" />
+        </service>
         <service id="sylius_paypal.processor.locale" alias="Sylius\PayPalPlugin\Processor\LocaleProcessorInterface" />
 
         <service
