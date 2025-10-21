@@ -47,6 +47,9 @@
         <service id="sylius_paypal.form.extension.payment_method" alias="Sylius\PayPalPlugin\Form\Extension\PaymentMethodTypeExtension" />
 
         <service id="Sylius\PayPalPlugin\Form\Type\PayPalConfigurationType">
+            <argument>%sylius_paypal.sandbox%</argument>
+
+            <tag name="form.type" />
             <tag name="sylius.gateway_configuration_type" type="sylius.pay_pal" label="sylius.pay_pal.label" />
         </service>
         <service id="sylius_paypal.form.type.paypal_configuration" alias="Sylius\PayPalPlugin\Form\Type\PayPalConfigurationType" />
@@ -69,6 +72,7 @@
             <argument type="service" id="router" />
             <argument type="service" id="request_stack" />
             <argument type="service" id="sylius_paypal.provider.paypal_payment_method" />
+            <argument>%sylius_paypal.sandbox%</argument>
             <tag name="kernel.event_listener" event="sylius.payment_method.initialize_create" method="initializeCreate" />
         </service>
         <service id="sylius_paypal.listener.paypal_payment_method" alias="Sylius\PayPalPlugin\Listener\PayPalPaymentMethodListener" />

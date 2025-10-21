@@ -22,6 +22,10 @@ use Symfony\Component\Form\FormEvents;
 
 final class PayPalConfigurationType extends AbstractType
 {
+    private const SANDBOX_ATTRIBUTION_ID = 'sylius-ppcp4p-bn-code';
+
+    private const SANDBOX_SYLIUS_MERCHANT_ID = 'SYLIUS_SANDBOX_MERCHANT_ID';
+
     private const HIDDEN_FIELDS = [
         'merchant_id',
         'sylius_merchant_id',
@@ -29,21 +33,42 @@ final class PayPalConfigurationType extends AbstractType
         'use_authorize',
     ];
 
+    public function __construct(private bool $isSandbox = false)
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $originalData = [];
 
-        $builder
-            ->add('client_id', TextType::class, ['label' => 'sylius.pay_pal.client_id', 'attr' => ['readonly' => true]])
-            ->add('client_secret', TextType::class, ['label' => 'sylius.pay_pal.client_secret', 'attr' => ['readonly' => true]])
-            ->add('merchant_id', HiddenType::class, ['attr' => ['readonly' => true]])
-            ->add('sylius_merchant_id', HiddenType::class, ['attr' => ['readonly' => true]])
-            ->add('partner_attribution_id', HiddenType::class, ['attr' => ['readonly' => true]])
-            // we need to force Sylius Payum integration to postpone creating an order, it's the easiest way
-            ->add('use_authorize', HiddenType::class, ['data' => true, 'attr' => ['readonly' => true]])
-            ->add('reports_sftp_username', TextType::class, ['label' => 'sylius.pay_pal.sftp_username', 'required' => false])
-            ->add('reports_sftp_password', TextType::class, ['label' => 'sylius.pay_pal.sftp_password', 'required' => false])
-        ;
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event): void {
+            $form = $event->getForm();
+
+            if ($this->isSandbox) {
+                $form
+                    ->add('sylius_merchant_id', HiddenType::class, ['data' => self::SANDBOX_SYLIUS_MERCHANT_ID, 'attr' => ['readonly' => true]])
+                    ->add('partner_attribution_id', HiddenType::class, ['data' => self::SANDBOX_ATTRIBUTION_ID, 'attr' => ['readonly' => true]])
+                    ->add('client_id', TextType::class, ['label' => 'sylius.pay_pal.client_id'])
+                    ->add('client_secret', TextType::class, ['label' => 'sylius.pay_pal.client_secret'])
+                    ->add('merchant_id', TextType::class, ['label' => 'sylius.pay_pal.merchant_id'])
+                ;
+            } else {
+                $form
+                    ->add('sylius_merchant_id', HiddenType::class, ['attr' => ['readonly' => true]])
+                    ->add('partner_attribution_id', HiddenType::class, ['attr' => ['readonly' => true]])
+                    ->add('client_id', TextType::class, ['label' => 'sylius.pay_pal.client_id', 'attr' => ['readonly' => true]])
+                    ->add('client_secret', TextType::class, ['label' => 'sylius.pay_pal.client_secret', 'attr' => ['readonly' => true]])
+                    ->add('merchant_id', HiddenType::class, ['attr' => ['readonly' => true]])
+                ;
+            }
+
+            $form
+                // we need to force Sylius Payum integration to postpone creating an order, it's the easiest way
+                ->add('use_authorize', HiddenType::class, ['data' => true, 'attr' => ['readonly' => true]])
+                ->add('reports_sftp_username', TextType::class, ['label' => 'sylius.pay_pal.sftp_username', 'required' => false])
+                ->add('reports_sftp_password', TextType::class, ['label' => 'sylius.pay_pal.sftp_password', 'required' => false])
+            ;
+        });
 
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use (&$originalData): void {
             $data = $event->getData();

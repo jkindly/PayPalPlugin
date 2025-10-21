@@ -84,8 +84,9 @@ final class SyliusPayPalExtension extends Extension implements PrependExtensionI
     {
         $container->setParameter('sylius.paypal.logging.increased', (bool) $config['logging']['increased']);
         $container->setParameter('sylius_paypal.logging.increased', $container->getParameter('sylius.paypal.logging.increased'));
+        $container->setParameter('sylius_paypal.sandbox', (bool) $config['sandbox']);
 
-        if ($config['sandbox']) {
+        if ($container->getParameter('sylius_paypal.sandbox')) {
             $container->setParameter('sylius.pay_pal.facilitator_url', 'https://paypal.sylius.com');
             $container->setParameter('sylius.pay_pal.api_base_url', 'https://api.sandbox.paypal.com/');
             $container->setParameter('sylius.pay_pal.reports_sftp_host', 'reports.sandbox.paypal.com');
