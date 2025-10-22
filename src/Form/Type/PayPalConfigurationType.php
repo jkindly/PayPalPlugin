@@ -48,16 +48,16 @@ final class PayPalConfigurationType extends AbstractType
                 $form
                     ->add('sylius_merchant_id', HiddenType::class, ['data' => self::SANDBOX_SYLIUS_MERCHANT_ID, 'attr' => ['readonly' => true]])
                     ->add('partner_attribution_id', HiddenType::class, ['data' => self::SANDBOX_ATTRIBUTION_ID, 'attr' => ['readonly' => true]])
-                    ->add('client_id', TextType::class, ['label' => 'sylius.pay_pal.client_id'])
-                    ->add('client_secret', TextType::class, ['label' => 'sylius.pay_pal.client_secret'])
-                    ->add('merchant_id', TextType::class, ['label' => 'sylius.pay_pal.merchant_id'])
+                    ->add('client_id', TextType::class, ['label' => 'sylius_paypal.client_id'])
+                    ->add('client_secret', TextType::class, ['label' => 'sylius_paypal.client_secret'])
+                    ->add('merchant_id', TextType::class, ['label' => 'sylius_paypal.merchant_id'])
                 ;
             } else {
                 $form
                     ->add('sylius_merchant_id', HiddenType::class, ['attr' => ['readonly' => true]])
                     ->add('partner_attribution_id', HiddenType::class, ['attr' => ['readonly' => true]])
-                    ->add('client_id', TextType::class, ['label' => 'sylius.pay_pal.client_id', 'attr' => ['readonly' => true]])
-                    ->add('client_secret', TextType::class, ['label' => 'sylius.pay_pal.client_secret', 'attr' => ['readonly' => true]])
+                    ->add('client_id', TextType::class, ['label' => 'sylius_paypal.client_id', 'attr' => ['readonly' => true]])
+                    ->add('client_secret', TextType::class, ['label' => 'sylius_paypal.client_secret', 'attr' => ['readonly' => true]])
                     ->add('merchant_id', HiddenType::class, ['attr' => ['readonly' => true]])
                 ;
             }
@@ -65,8 +65,8 @@ final class PayPalConfigurationType extends AbstractType
             $form
                 // we need to force Sylius Payum integration to postpone creating an order, it's the easiest way
                 ->add('use_authorize', HiddenType::class, ['data' => true, 'attr' => ['readonly' => true]])
-                ->add('reports_sftp_username', TextType::class, ['label' => 'sylius.pay_pal.sftp_username', 'required' => false])
-                ->add('reports_sftp_password', TextType::class, ['label' => 'sylius.pay_pal.sftp_password', 'required' => false])
+                ->add('reports_sftp_username', TextType::class, ['label' => 'sylius_paypal.sftp_username', 'required' => false])
+                ->add('reports_sftp_password', TextType::class, ['label' => 'sylius_paypal.sftp_password', 'required' => false])
             ;
         });
 

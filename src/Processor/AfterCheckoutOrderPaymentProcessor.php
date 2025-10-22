@@ -19,13 +19,10 @@ use Sylius\Component\Order\Model\OrderInterface;
 use Sylius\Component\Order\Processor\OrderProcessorInterface;
 use Webmozart\Assert\Assert;
 
-final class AfterCheckoutOrderPaymentProcessor implements OrderProcessorInterface
+final readonly class AfterCheckoutOrderPaymentProcessor implements OrderProcessorInterface
 {
-    private OrderProcessorInterface $baseAfterCheckoutOrderPaymentProcessor;
-
-    public function __construct(OrderProcessorInterface $baseAfterCheckoutOrderPaymentProcessor)
+    public function __construct(private OrderProcessorInterface $baseAfterCheckoutOrderPaymentProcessor)
     {
-        $this->baseAfterCheckoutOrderPaymentProcessor = $baseAfterCheckoutOrderPaymentProcessor;
     }
 
     /**

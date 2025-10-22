@@ -23,18 +23,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
-final class EnableSellerAction
+final readonly class EnableSellerAction
 {
-    private PaymentMethodRepositoryInterface $paymentMethodRepository;
-
-    private PaymentMethodEnablerInterface $paymentMethodEnabler;
-
     public function __construct(
-        PaymentMethodRepositoryInterface $paymentMethodRepository,
-        PaymentMethodEnablerInterface $paymentMethodEnabler,
+        private PaymentMethodRepositoryInterface $paymentMethodRepository,
+        private PaymentMethodEnablerInterface $paymentMethodEnabler,
     ) {
-        $this->paymentMethodRepository = $paymentMethodRepository;
-        $this->paymentMethodEnabler = $paymentMethodEnabler;
     }
 
     public function __invoke(Request $request): Response
@@ -47,16 +41,16 @@ final class EnableSellerAction
         try {
             $this->paymentMethodEnabler->enable($paymentMethod);
         } catch (PaymentMethodCouldNotBeEnabledException $exception) {
-            $flashBag->add('error', 'sylius.pay_pal.payment_not_enabled');
+            $flashBag->add('error', 'sylius_paypal.payment_not_enabled');
 
             return new RedirectResponse((string) $request->headers->get('referer'));
         } catch (PayPalWebhookUrlNotValidException $exception) {
-            $flashBag->add('error', 'sylius.pay_pal.webhook_url_not_valid');
+            $flashBag->add('error', 'sylius_paypal.webhook_url_not_valid');
 
             return new RedirectResponse((string) $request->headers->get('referer'));
         }
 
-        $flashBag->add('success', 'sylius.pay_pal.payment_enabled');
+        $flashBag->add('success', 'sylius_paypal.payment_enabled');
 
         return new RedirectResponse((string) $request->headers->get('referer'));
     }

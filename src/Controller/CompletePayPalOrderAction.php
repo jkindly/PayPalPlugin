@@ -21,22 +21,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-final class CompletePayPalOrderAction
+final readonly class CompletePayPalOrderAction
 {
-    private PaymentStateManagerInterface $paymentStateManager;
-
-    private UrlGeneratorInterface $router;
-
-    private OrderProviderInterface $orderProvider;
-
     public function __construct(
-        PaymentStateManagerInterface $paymentStateManager,
-        UrlGeneratorInterface $router,
-        OrderProviderInterface $orderProvider,
+        private PaymentStateManagerInterface $paymentStateManager,
+        private UrlGeneratorInterface $router,
+        private OrderProviderInterface $orderProvider,
     ) {
-        $this->paymentStateManager = $paymentStateManager;
-        $this->router = $router;
-        $this->orderProvider = $orderProvider;
     }
 
     public function __invoke(Request $request): Response

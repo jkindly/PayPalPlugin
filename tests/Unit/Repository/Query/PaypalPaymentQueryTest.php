@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Tests\Sylius\PayPalPlugin\Unit\Repository\Query;
 
-use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -53,7 +53,7 @@ final class PaypalPaymentQueryTest extends TestCase
         $paypalOrderId = 'PAYPAL123';
         $payment = $this->createMock(PaymentInterface::class);
 
-        $query = $this->createMock(AbstractQuery::class);
+        $query = $this->createMock(Query::class);
         $query->method('getOneOrNullResult')->willReturn($payment);
 
         $queryBuilder = $this->createMock(QueryBuilder::class);
@@ -81,7 +81,7 @@ final class PaypalPaymentQueryTest extends TestCase
         $payment = $this->createMock(PaymentInterface::class);
         $payment->method('getDetails')->willReturn(['paypal_order_id' => 'PAYPAL123']);
 
-        $query = $this->createMock(AbstractQuery::class);
+        $query = $this->createMock(Query::class);
         $query->method('toIterable')->willReturn([$payment]);
 
         $queryBuilder = $this->createMock(QueryBuilder::class);
@@ -106,7 +106,7 @@ final class PaypalPaymentQueryTest extends TestCase
     {
         $paypalOrderId = 'PAYPAL123';
 
-        $query = $this->createMock(AbstractQuery::class);
+        $query = $this->createMock(Query::class);
         $query->method('toIterable')->willReturn([]);
 
         $queryBuilder = $this->createMock(QueryBuilder::class);
@@ -133,7 +133,7 @@ final class PaypalPaymentQueryTest extends TestCase
         $payment = $this->createMock(PaymentInterface::class);
         $payment->method('getDetails')->willReturn(['paypal_order_id' => 'DIFFERENT_ID']);
 
-        $query = $this->createMock(AbstractQuery::class);
+        $query = $this->createMock(Query::class);
         $query->method('toIterable')->willReturn([$payment]);
 
         $queryBuilder = $this->createMock(QueryBuilder::class);
@@ -160,7 +160,7 @@ final class PaypalPaymentQueryTest extends TestCase
         $payment = $this->createMock(PaymentInterface::class);
         $payment->method('getDetails')->willReturn(['other_field' => 'value']);
 
-        $query = $this->createMock(AbstractQuery::class);
+        $query = $this->createMock(Query::class);
         $query->method('toIterable')->willReturn([$payment]);
 
         $queryBuilder = $this->createMock(QueryBuilder::class);
@@ -186,7 +186,7 @@ final class PaypalPaymentQueryTest extends TestCase
         $paypalOrderId = 'PAYPAL123';
         $payment = $this->createMock(PaymentInterface::class);
 
-        $query = $this->createMock(AbstractQuery::class);
+        $query = $this->createMock(Query::class);
         $query->method('getOneOrNullResult')->willReturn($payment);
 
         $queryBuilder = $this->createMock(QueryBuilder::class);
@@ -213,7 +213,7 @@ final class PaypalPaymentQueryTest extends TestCase
         $paypalOrderId = 'PAYPAL123';
         $payment = $this->createMock(PaymentInterface::class);
 
-        $query = $this->createMock(AbstractQuery::class);
+        $query = $this->createMock(Query::class);
         $query->method('getOneOrNullResult')->willReturn($payment);
 
         $queryBuilder = $this->createMock(QueryBuilder::class);
@@ -239,7 +239,7 @@ final class PaypalPaymentQueryTest extends TestCase
     {
         $paypalOrderId = 'PAYPAL123';
 
-        $query = $this->createMock(AbstractQuery::class);
+        $query = $this->createMock(Query::class);
         $query->method('toIterable')->willReturn([]);
 
         $queryBuilder = $this->createMock(QueryBuilder::class);
@@ -264,7 +264,7 @@ final class PaypalPaymentQueryTest extends TestCase
     {
         $paypalOrderId = 'PAYPAL123';
 
-        $query = $this->createMock(AbstractQuery::class);
+        $query = $this->createMock(Query::class);
         $query->method('toIterable')->willReturn([]);
 
         $queryBuilder = $this->createMock(QueryBuilder::class);
@@ -289,7 +289,7 @@ final class PaypalPaymentQueryTest extends TestCase
     {
         $paypalOrderId = 'PAYPAL123';
 
-        $query = $this->createMock(AbstractQuery::class);
+        $query = $this->createMock(Query::class);
         $query->method('toIterable')->willReturn([]);
 
         $queryBuilder = $this->createMock(QueryBuilder::class);
@@ -327,7 +327,7 @@ final class PaypalPaymentQueryTest extends TestCase
     {
         $paypalOrderId = 'PAYPAL123';
 
-        $query = $this->createMock(AbstractQuery::class);
+        $query = $this->createMock(Query::class);
         $query->method('toIterable')->willReturn([]);
 
         $queryBuilder = $this->createMock(QueryBuilder::class);
@@ -365,7 +365,7 @@ final class PaypalPaymentQueryTest extends TestCase
     {
         $paypalOrderId = 'PAYPAL123';
 
-        $query = $this->createMock(AbstractQuery::class);
+        $query = $this->createMock(Query::class);
         $query->method('toIterable')->willReturn([]);
 
         $queryBuilder = $this->createMock(QueryBuilder::class);

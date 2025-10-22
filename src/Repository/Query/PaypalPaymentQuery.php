@@ -15,6 +15,7 @@ namespace Sylius\PayPalPlugin\Repository\Query;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Repository\PaymentRepositoryInterface;
 use Sylius\PayPalPlugin\DependencyInjection\SyliusPayPalExtension;
@@ -24,7 +25,7 @@ final class PaypalPaymentQuery implements PaypalPaymentQueryInterface
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly PaymentRepositoryInterface $paymentRepository,
+        private readonly PaymentRepositoryInterface&EntityRepository $paymentRepository,
         private readonly array $updatableStates = ['cart', 'new', 'processing'],
         private readonly array $cancellableStates = ['cart', 'new', 'processing', 'completed'],
         private readonly array $refundableStates = ['completed'],

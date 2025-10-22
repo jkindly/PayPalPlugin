@@ -57,22 +57,22 @@ final class PayPalPayment
         return [
             'clientId' => $gatewayConfig->getConfig()['client_id'],
             'completePayPalOrderFromPaymentPageUrl' => $this->router->generate(
-                'sylius_paypal_plugin_complete_paypal_order',
+                'sylius_paypal_shop_complete_paypal_order',
                 ['token' => $order->getTokenValue()],
                 UrlGeneratorInterface::ABSOLUTE_URL,
             ),
             'createPayPalOrderFromPaymentPageUrl' => $this->router->generate(
-                'sylius_paypal_plugin_create_paypal_order',
+                'sylius_paypal_shop_create_paypal_order',
                 ['token' => $order->getTokenValue()],
                 UrlGeneratorInterface::ABSOLUTE_URL,
             ),
-            'cancelPayPalPaymentUrl' => $this->router->generate('sylius_paypal_plugin_cancel_payment', [], UrlGeneratorInterface::ABSOLUTE_URL),
+            'cancelPayPalPaymentUrl' => $this->router->generate('sylius_paypal_shop_cancel_payment', [], UrlGeneratorInterface::ABSOLUTE_URL),
             'partnerAttributionId' => $gatewayConfig->getConfig()['partner_attribution_id'],
             'locale' => $order->getLocaleCode(),
             'orderId' => $order->getId(),
             'currency' => $order->getCurrencyCode(),
             'orderToken' => $order->getTokenValue(),
-            'errorPayPalPaymentUrl' => $this->router->generate('sylius_paypal_plugin_payment_error', [], UrlGeneratorInterface::ABSOLUTE_URL),
+            'errorPayPalPaymentUrl' => $this->router->generate('sylius_paypal_shop_payment_error', [], UrlGeneratorInterface::ABSOLUTE_URL),
             'available_countries' => $this->availableCountriesProvider->provide(),
         ];
     }

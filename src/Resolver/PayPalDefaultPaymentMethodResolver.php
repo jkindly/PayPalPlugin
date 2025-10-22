@@ -34,7 +34,7 @@ trigger_deprecation(
 );
 
 /** @deprecated since Sylius/PayPalPlugin 1.7 and will be removed in Sylius/PayPalPlugin 3.0. */
-final class PayPalDefaultPaymentMethodResolver implements DefaultPaymentMethodResolverInterface
+final readonly class PayPalDefaultPaymentMethodResolver implements DefaultPaymentMethodResolverInterface
 {
     public function __construct(
         private DefaultPaymentMethodResolverInterface $decoratedDefaultPaymentMethodResolver,

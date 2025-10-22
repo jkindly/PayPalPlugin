@@ -1,0 +1,7 @@
+{% set payment = hookable_metadata.context.payment %}
+
+{% if payment.amount != payment.order.total and payment.state == 'processing' %}
+    <div>
+        <i>{{ 'sylius_paypal.different_amount'|trans }}</i>
+    </div>
+{% endif %}
