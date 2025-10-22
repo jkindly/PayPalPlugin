@@ -20,6 +20,7 @@ use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Core\Repository\PaymentRepositoryInterface;
 use Sylius\PayPalPlugin\Api\CacheAuthorizeClientApiInterface;
 use Sylius\PayPalPlugin\Api\IdentityApiInterface;
+use Sylius\PayPalPlugin\Processor\LocaleProcessorInterface;
 use Sylius\PayPalPlugin\Provider\AvailableCountriesProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,12 +44,23 @@ final class PayWithPayPalFormAction
         AvailableCountriesProviderInterface $countriesProvider,
         CacheAuthorizeClientApiInterface $authorizeClientApi,
         IdentityApiInterface $identityApi,
+        private ?LocaleProcessorInterface $localeProcessor = null,
     ) {
         $this->twig = $twig;
         $this->paymentRepository = $paymentRepository;
         $this->countriesProvider = $countriesProvider;
         $this->authorizeClientApi = $authorizeClientApi;
         $this->identityApi = $identityApi;
+
+        if (null === $this->localeProcessor) {
+            trigger_deprecation(
+                'SyliusPayPalPlugin',
+                '1.7',
+                'Not passing an instance of %s to %s constructor is deprecated and will be required in 3.0.',
+                LocaleProcessorInterface::class,
+                self::class,
+            );
+        }
     }
 
     public function __invoke(Request $request): Response
@@ -73,6 +85,7 @@ final class PayWithPayPalFormAction
 
         $token = $this->authorizeClientApi->authorize($paymentMethod);
         $clientToken = $this->identityApi->generateToken($token);
+        $locale = $request->getLocale();
 
         return new Response($this->twig->render('@SyliusPayPalPlugin/payWithPaypal.html.twig', [
             'available_countries' => $this->countriesProvider->provide(),
@@ -80,7 +93,7 @@ final class PayWithPayPalFormAction
             'client_id' => $clientId,
             'client_token' => $clientToken,
             'currency' => $order->getCurrencyCode(),
-            'locale' => $request->getLocale(),
+            'locale' => null !== $this->localeProcessor ? $this->localeProcessor->process($locale) : $locale,
             'merchant_id' => $gatewayConfig->getConfig()['merchant_id'],
             'order_token' => $order->getTokenValue(),
             'partner_attribution_id' => $partnerAttributionId,
