@@ -29,28 +29,16 @@ use Webmozart\Assert\Assert;
 
 final class PayPalPaymentMethodListener
 {
-    private OnboardingInitiatorInterface $onboardingInitiator;
-
-    private UrlGeneratorInterface $urlGenerator;
-
-    private FlashBagInterface|RequestStack $flashBagOrRequestStack;
-
-    private PayPalPaymentMethodProviderInterface $payPalPaymentMethodProvider;
-
     public function __construct(
-        OnboardingInitiatorInterface $onboardingInitiator,
-        UrlGeneratorInterface $urlGenerator,
-        FlashBagInterface|RequestStack $flashBagOrRequestStack,
-        PayPalPaymentMethodProviderInterface $payPalPaymentMethodProvider,
+        private OnboardingInitiatorInterface $onboardingInitiator,
+        private UrlGeneratorInterface $urlGenerator,
+        private FlashBagInterface|RequestStack $flashBagOrRequestStack,
+        private PayPalPaymentMethodProviderInterface $payPalPaymentMethodProvider,
+        private bool $isSandbox = false,
     ) {
         if ($flashBagOrRequestStack instanceof FlashBagInterface) {
             trigger_deprecation('sylius/paypal-plugin', '1.5', sprintf('Passing an instance of %s as constructor argument for %s is deprecated as of PayPalPlugin 1.5 and will be removed in 2.0. Pass an instance of %s instead.', FlashBagInterface::class, self::class, RequestStack::class));
         }
-
-        $this->onboardingInitiator = $onboardingInitiator;
-        $this->urlGenerator = $urlGenerator;
-        $this->flashBagOrRequestStack = $flashBagOrRequestStack;
-        $this->payPalPaymentMethodProvider = $payPalPaymentMethodProvider;
     }
 
     public function initializeCreate(ResourceControllerEvent $event): void
@@ -74,7 +62,7 @@ final class PayPalPaymentMethodListener
             return;
         }
 
-        if (!$this->onboardingInitiator->supports($paymentMethod)) {
+        if ($this->isSandbox || !$this->onboardingInitiator->supports($paymentMethod)) {
             return;
         }
 
