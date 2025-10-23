@@ -17,7 +17,6 @@ use Doctrine\Persistence\ObjectManager;
 use Sylius\Abstraction\StateMachine\StateMachineInterface;
 use Sylius\Component\Core\Factory\AddressFactoryInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
-use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Core\OrderCheckoutTransitions;
@@ -64,10 +63,6 @@ final readonly class ProcessPayPalOrderAction
         $orderId = $request->request->getInt('orderId');
         $order = $this->orderProvider->provideOrderById($orderId);
 
-        if ($order->getState() !== OrderInterface::STATE_NEW) {
-            return new JsonResponse(['orderID' => $orderId]);
-        }
-
         /** @var PaymentInterface|null $payment */
         $payment = $order->getLastPayment(PaymentInterface::STATE_CART);
 
@@ -98,7 +93,12 @@ final readonly class ProcessPayPalOrderAction
             $address->setCountryCode($purchaseUnit['shipping']['address']['country_code']);
 
             $this->stateMachineFactory->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_ADDRESS);
-            $this->stateMachineFactory->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SELECT_SHIPPING);
+
+            if ($this->stateMachineFactory->can($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SELECT_SHIPPING)) {
+                $this->stateMachineFactory->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SELECT_SHIPPING);
+            } elseif ($this->stateMachineFactory->can($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SKIP_SHIPPING)) {
+                $this->stateMachineFactory->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SKIP_SHIPPING);
+            }
         } else {
             $address->setFirstName($customer->getFirstName());
             $address->setLastName($customer->getLastName());
@@ -116,7 +116,11 @@ final readonly class ProcessPayPalOrderAction
         $order->setShippingAddress(clone $address);
         $order->setBillingAddress(clone $address);
 
-        $this->stateMachineFactory->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SELECT_PAYMENT);
+        if ($this->stateMachineFactory->can($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SELECT_PAYMENT)) {
+            $this->stateMachineFactory->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SELECT_PAYMENT);
+        } elseif ($this->stateMachineFactory->can($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SKIP_PAYMENT)) {
+            $this->stateMachineFactory->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SKIP_PAYMENT);
+        }
 
         $this->orderManager->flush();
 
@@ -131,9 +135,6 @@ final readonly class ProcessPayPalOrderAction
 
             return new JsonResponse(['orderID' => $orderId]);
         }
-
-        $this->paymentStateManager->create($payment);
-        $this->paymentStateManager->process($payment);
 
         return new JsonResponse(['orderID' => $orderId]);
     }

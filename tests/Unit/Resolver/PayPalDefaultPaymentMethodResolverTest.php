@@ -24,6 +24,7 @@ use Sylius\Component\Core\Repository\PaymentMethodRepositoryInterface;
 use Sylius\Component\Payment\Exception\UnresolvedDefaultPaymentMethodException;
 use Sylius\Component\Payment\Model\GatewayConfigInterface;
 use Sylius\Component\Payment\Resolver\DefaultPaymentMethodResolverInterface;
+use Sylius\PayPalPlugin\DependencyInjection\SyliusPayPalExtension;
 use Sylius\PayPalPlugin\Resolver\PayPalDefaultPaymentMethodResolver;
 
 final class PayPalDefaultPaymentMethodResolverTest extends TestCase
@@ -81,33 +82,6 @@ final class PayPalDefaultPaymentMethodResolverTest extends TestCase
     }
 
     #[Test]
-    public function it_returns_first_available_payment_method_if_prioritised_payment_method_is_invalid(): void
-    {
-        $channel = $this->createMock(ChannelInterface::class);
-        $firstPayment = $this->createMock(PaymentMethodInterface::class);
-        $secondPayment = $this->createMock(PaymentMethodInterface::class);
-        $firstGatewayConfig = $this->createMock(GatewayConfigInterface::class);
-        $secondGatewayConfig = $this->createMock(GatewayConfigInterface::class);
-        $subject = $this->createMock(PaymentInterface::class);
-        $order = $this->createMock(OrderInterface::class);
-
-        $firstPayment->method('getGatewayConfig')->willReturn($firstGatewayConfig);
-        $firstGatewayConfig->method('getFactoryName')->willReturn('payment1');
-
-        $secondPayment->method('getGatewayConfig')->willReturn($secondGatewayConfig);
-        $secondGatewayConfig->method('getFactoryName')->willReturn('payment2');
-
-        $this->paymentMethodRepository->method('findEnabledForChannel')->with($channel)->willReturn([$firstPayment, $secondPayment]);
-
-        $subject->method('getOrder')->willReturn($order);
-        $order->method('getChannel')->willReturn($channel);
-
-        $result = $this->payPalDefaultPaymentMethodResolver->getDefaultPaymentMethod($subject, 'prioritised');
-
-        self::assertSame($firstPayment, $result);
-    }
-
-    #[Test]
     public function it_throws_error_if_there_is_no_available_payment(): void
     {
         $channel = $this->createMock(ChannelInterface::class);
@@ -122,5 +96,113 @@ final class PayPalDefaultPaymentMethodResolverTest extends TestCase
         $this->expectException(UnresolvedDefaultPaymentMethodException::class);
 
         $this->payPalDefaultPaymentMethodResolver->getDefaultPaymentMethod($subject, 'prioritised');
+    }
+
+    #[Test]
+    public function it_delegates_to_decorated_default_payment_method_when_prioritisation_is_disabled(): void
+    {
+        $subject = $this->createMock(PaymentInterface::class);
+        $decoratedDefaultPaymentMethod = $this->createMock(PaymentMethodInterface::class);
+
+        $this->decoratedDefaultPaymentMethodResolver->method('getDefaultPaymentMethod')->with($subject)->willReturn($decoratedDefaultPaymentMethod);
+
+        $payPalDefaultPaymentMethodResolver = new PayPalDefaultPaymentMethodResolver(
+            $this->decoratedDefaultPaymentMethodResolver,
+            $this->paymentMethodRepository,
+            false,
+        );
+
+        $result = $payPalDefaultPaymentMethodResolver->getDefaultPaymentMethod($subject);
+
+        self::assertSame($decoratedDefaultPaymentMethod, $result);
+    }
+
+    #[Test]
+    public function it_delegates_to_decorated_resolver_when_prioritised_payment_not_found(): void
+    {
+        $channel = $this->createMock(ChannelInterface::class);
+        $firstPayment = $this->createMock(PaymentMethodInterface::class);
+        $secondPayment = $this->createMock(PaymentMethodInterface::class);
+        $firstGatewayConfig = $this->createMock(GatewayConfigInterface::class);
+        $secondGatewayConfig = $this->createMock(GatewayConfigInterface::class);
+        $subject = $this->createMock(PaymentInterface::class);
+        $order = $this->createMock(OrderInterface::class);
+        $decoratedDefaultPaymentMethod = $this->createMock(PaymentMethodInterface::class);
+
+        $firstPayment->method('getGatewayConfig')->willReturn($firstGatewayConfig);
+        $firstGatewayConfig->method('getFactoryName')->willReturn('payment.method.one');
+
+        $secondPayment->method('getGatewayConfig')->willReturn($secondGatewayConfig);
+        $secondGatewayConfig->method('getFactoryName')->willReturn('payment.method.two');
+
+        $this->paymentMethodRepository->method('findEnabledForChannel')->with($channel)->willReturn([$firstPayment, $secondPayment]);
+
+        $subject->method('getOrder')->willReturn($order);
+        $order->method('getChannel')->willReturn($channel);
+
+        $this->decoratedDefaultPaymentMethodResolver->method('getDefaultPaymentMethod')->with($subject)->willReturn($decoratedDefaultPaymentMethod);
+
+        $result = $this->payPalDefaultPaymentMethodResolver->getDefaultPaymentMethod($subject, 'non.existent.payment');
+
+        self::assertSame($decoratedDefaultPaymentMethod, $result);
+    }
+
+    #[Test]
+    public function it_uses_default_prioritised_payment_parameter(): void
+    {
+        $channel = $this->createMock(ChannelInterface::class);
+        $paypalPayment = $this->createMock(PaymentMethodInterface::class);
+        $otherPayment = $this->createMock(PaymentMethodInterface::class);
+        $paypalGatewayConfig = $this->createMock(GatewayConfigInterface::class);
+        $otherGatewayConfig = $this->createMock(GatewayConfigInterface::class);
+        $subject = $this->createMock(PaymentInterface::class);
+        $order = $this->createMock(OrderInterface::class);
+
+        $otherPayment->method('getGatewayConfig')->willReturn($otherGatewayConfig);
+        $otherGatewayConfig->method('getFactoryName')->willReturn('other.payment');
+
+        $paypalPayment->method('getGatewayConfig')->willReturn($paypalGatewayConfig);
+        $paypalGatewayConfig->method('getFactoryName')->willReturn(SyliusPayPalExtension::PAYPAL_FACTORY_NAME);
+
+        $this->paymentMethodRepository->method('findEnabledForChannel')->with($channel)->willReturn([$otherPayment, $paypalPayment]);
+
+        $subject->method('getOrder')->willReturn($order);
+        $order->method('getChannel')->willReturn($channel);
+
+        $result = $this->payPalDefaultPaymentMethodResolver->getDefaultPaymentMethod($subject);
+
+        self::assertSame($paypalPayment, $result);
+    }
+
+    #[Test]
+    public function it_returns_first_matching_prioritised_payment_method(): void
+    {
+        $channel = $this->createMock(ChannelInterface::class);
+        $firstPayment = $this->createMock(PaymentMethodInterface::class);
+        $secondPayment = $this->createMock(PaymentMethodInterface::class);
+        $thirdPayment = $this->createMock(PaymentMethodInterface::class);
+        $firstGatewayConfig = $this->createMock(GatewayConfigInterface::class);
+        $secondGatewayConfig = $this->createMock(GatewayConfigInterface::class);
+        $thirdGatewayConfig = $this->createMock(GatewayConfigInterface::class);
+        $subject = $this->createMock(PaymentInterface::class);
+        $order = $this->createMock(OrderInterface::class);
+
+        $firstPayment->method('getGatewayConfig')->willReturn($firstGatewayConfig);
+        $firstGatewayConfig->method('getFactoryName')->willReturn('prioritised.payment');
+
+        $secondPayment->method('getGatewayConfig')->willReturn($secondGatewayConfig);
+        $secondGatewayConfig->method('getFactoryName')->willReturn('prioritised.payment');
+
+        $thirdPayment->method('getGatewayConfig')->willReturn($thirdGatewayConfig);
+        $thirdGatewayConfig->method('getFactoryName')->willReturn('other.payment');
+
+        $this->paymentMethodRepository->method('findEnabledForChannel')->with($channel)->willReturn([$firstPayment, $secondPayment, $thirdPayment]);
+
+        $subject->method('getOrder')->willReturn($order);
+        $order->method('getChannel')->willReturn($channel);
+
+        $result = $this->payPalDefaultPaymentMethodResolver->getDefaultPaymentMethod($subject, 'prioritised.payment');
+
+        self::assertSame($firstPayment, $result);
     }
 }

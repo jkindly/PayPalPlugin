@@ -45,8 +45,12 @@ final readonly class PayPalPaymentMethodEnabler implements PaymentMethodEnablerI
             ),
         );
 
+        if ($response->getStatusCode() >= 299) {
+            throw new PaymentMethodCouldNotBeEnabledException();
+        }
+
         $content = (array) json_decode($response->getBody()->getContents(), true);
-        if (!((bool) $content['permissionsGranted'])) {
+        if (!((bool) ($content['permissionsGranted'] ?? false))) {
             throw new PaymentMethodCouldNotBeEnabledException();
         }
 

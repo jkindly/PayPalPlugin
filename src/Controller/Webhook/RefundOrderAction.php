@@ -20,6 +20,7 @@ use Sylius\PayPalPlugin\Exception\PaymentNotFoundException;
 use Sylius\PayPalPlugin\Exception\PayPalWrongDataException;
 use Sylius\PayPalPlugin\Provider\PaymentProviderInterface;
 use Sylius\PayPalPlugin\Provider\PayPalRefundDataProviderInterface;
+use Sylius\PayPalPlugin\Repository\Query\PaypalPaymentQueryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,10 +30,31 @@ final readonly class RefundOrderAction
 {
     public function __construct(
         private StateMachineInterface $stateMachineFactory,
-        private PaymentProviderInterface $paymentProvider,
+        private ?PaymentProviderInterface $paymentProvider,
         private ObjectManager $paymentManager,
         private PayPalRefundDataProviderInterface $payPalRefundDataProvider,
+        private ?PaypalPaymentQueryInterface $paypalPaymentQuery = null,
     ) {
+        if (null !== $this->paymentProvider) {
+            trigger_deprecation(
+                'sylius/paypal-plugin',
+                '1.7',
+                sprintf(
+                    'Passing an instance of "%s" as the second argument is deprecated and will be prohibited in 3.0',
+                    PaymentProviderInterface::class,
+                ),
+            );
+        }
+        if (null === $this->paypalPaymentQuery) {
+            trigger_deprecation(
+                'sylius/paypal-plugin',
+                '1.7',
+                sprintf(
+                    'Not passing an instance of "%s" is deprecated and will be prohibited in 3.0',
+                    PaypalPaymentQueryInterface::class,
+                ),
+            );
+        }
     }
 
     public function __invoke(Request $request): Response
@@ -40,7 +62,11 @@ final readonly class RefundOrderAction
         $refundData = $this->payPalRefundDataProvider->provide($this->getPayPalPaymentUrl($request));
 
         try {
-            $payment = $this->paymentProvider->getByPayPalOrderId((string) $refundData['id']);
+            if (null !== $this->paypalPaymentQuery) {
+                $payment = $this->paypalPaymentQuery->getForRefundingByOrderId((string) $refundData['id']);
+            } else {
+                $payment = $this->paymentProvider->getByPayPalOrderId((string) $refundData['id']);
+            }
         } catch (PaymentNotFoundException $exception) {
             return new JsonResponse(['error' => $exception->getMessage()], Response::HTTP_NOT_FOUND);
         }

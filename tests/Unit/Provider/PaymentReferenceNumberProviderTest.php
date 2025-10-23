@@ -40,10 +40,10 @@ final class PaymentReferenceNumberProviderTest extends TestCase
     {
         $payment = $this->createMock(PaymentInterface::class);
         $payment->method('getId')->willReturn(123);
-        $payment->method('getCreatedAt')->willReturn(new \DateTime('10-03-2012'));
+        $payment->method('getCreatedAt')->willReturn(new \DateTime('10-03-2012 15:23:45'));
 
         $result = $this->provider->provide($payment);
 
-        self::assertEquals('123-10-03-2012', $result);
+        self::assertEquals('123-10-03-2012-15-23-45', $result);
     }
 }

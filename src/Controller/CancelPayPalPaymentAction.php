@@ -20,6 +20,7 @@ use Sylius\Component\Order\Processor\OrderProcessorInterface;
 use Sylius\Component\Payment\PaymentTransitions;
 use Sylius\PayPalPlugin\Provider\FlashBagProvider;
 use Sylius\PayPalPlugin\Provider\PaymentProviderInterface;
+use Sylius\PayPalPlugin\Repository\Query\PaypalPaymentQueryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,36 +28,60 @@ use Symfony\Component\HttpFoundation\Response;
 final readonly class CancelPayPalPaymentAction
 {
     public function __construct(
-        private PaymentProviderInterface $paymentProvider,
+        private ?PaymentProviderInterface $paymentProvider,
         private ObjectManager $objectManager,
         private RequestStack $flashBagOrRequestStack,
         private StateMachineInterface $stateMachineFactory,
         private OrderProcessorInterface $orderPaymentProcessor,
+        private ?PaypalPaymentQueryInterface $paypalPaymentQuery = null,
     ) {
+        if (null !== $this->paymentProvider) {
+            trigger_deprecation(
+                'sylius/paypal-plugin',
+                '1.7',
+                sprintf(
+                    'Passing an instance of "%s" as the first argument is deprecated and will be prohibited in 3.0',
+                    PaymentProviderInterface::class,
+                ),
+            );
+        }
+        if (null === $this->paypalPaymentQuery) {
+            trigger_deprecation(
+                'sylius/paypal-plugin',
+                '1.7',
+                sprintf(
+                    'Not passing an instance of "%s" is deprecated and will be prohibited in 3.0',
+                    PaypalPaymentQueryInterface::class,
+                ),
+            );
+        }
     }
 
     public function __invoke(Request $request): Response
     {
-        /**
-         * @var string $content
-         */
+        /** @var string $content */
         $content = $request->getContent();
-
         $content = (array) json_decode($content, true);
 
-        $payment = $this->paymentProvider->getByPayPalOrderId((string) $content['payPalOrderId']);
+        if (null !== $this->paypalPaymentQuery) {
+            $payment = $this->paypalPaymentQuery->getForCancellationByOrderId((string) $content['payPalOrderId']);
+        } else {
+            $payment = $this->paymentProvider->getByPayPalOrderId((string) $content['payPalOrderId']);
+        }
 
         /** @var OrderInterface $order */
         $order = $payment->getOrder();
 
-        $this->stateMachineFactory->apply($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_CANCEL);
+        if ($this->stateMachineFactory->can($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_CANCEL)) {
+            $this->stateMachineFactory->apply($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_CANCEL);
 
-        $this->orderPaymentProcessor->process($order);
-        $this->objectManager->flush();
+            $this->orderPaymentProcessor->process($order);
+            $this->objectManager->flush();
 
-        FlashBagProvider::getFlashBag($this->flashBagOrRequestStack)
-            ->add('success', 'sylius_paypal.payment_cancelled')
-        ;
+            FlashBagProvider::getFlashBag($this->flashBagOrRequestStack)
+                ->add('success', 'sylius_paypal.payment_cancelled')
+            ;
+        }
 
         return new Response('', Response::HTTP_NO_CONTENT);
     }

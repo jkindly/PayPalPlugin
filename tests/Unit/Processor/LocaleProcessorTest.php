@@ -16,36 +16,81 @@ namespace Tests\Sylius\PayPalPlugin\Unit\Processor;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Sylius\PayPalPlugin\Processor\LocaleProcessor;
+use Sylius\PayPalPlugin\Resolver\SupportedLocaleResolverInterface;
 
 final class LocaleProcessorTest extends TestCase
 {
-    private LocaleProcessor $localeProcessor;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->localeProcessor = new LocaleProcessor();
-    }
-
     #[Test]
     public function it_always_processes_locale_to_version_with_region(): void
     {
-        self::assertEquals('et_EE', $this->localeProcessor->process('et'));
-        self::assertEquals('pl_PL', $this->localeProcessor->process('pl'));
-        self::assertEquals('ja_JP', $this->localeProcessor->process('ja'));
+        $supportedLocaleResolver = $this->createMock(SupportedLocaleResolverInterface::class);
+        $supportedLocaleResolver->method('resolve')->willReturnMap([
+            ['et', 'et_EE'],
+            ['pl', 'pl_PL'],
+            ['ja', 'ja_JP'],
+        ]);
+
+        $localeProcessor = new LocaleProcessor($supportedLocaleResolver);
+
+        self::assertEquals('et_EE', $localeProcessor->process('et'));
+        self::assertEquals('pl_PL', $localeProcessor->process('pl'));
+        self::assertEquals('ja_JP', $localeProcessor->process('ja'));
     }
 
     #[Test]
     public function it_returns_same_locale_if_it_is_valid(): void
     {
-        self::assertEquals('it_IT', $this->localeProcessor->process('it_IT'));
-        self::assertEquals('ja_JP_TRADITIONAL', $this->localeProcessor->process('ja_JP_TRADITIONAL'));
-        self::assertEquals('sd_Arab_PK', $this->localeProcessor->process('sd_Arab_PK'));
+        $supportedLocaleResolver = $this->createMock(SupportedLocaleResolverInterface::class);
+        $supportedLocaleResolver->method('resolve')->willReturnMap([
+            ['it_IT', 'it_IT'],
+            ['de_DE', 'de_DE'],
+        ]);
+
+        $localeProcessor = new LocaleProcessor($supportedLocaleResolver);
+
+        self::assertEquals('it_IT', $localeProcessor->process('it_IT'));
+        self::assertEquals('de_DE', $localeProcessor->process('de_DE'));
     }
 
     #[Test]
     public function it_returns_correct_locale_for_en_locale(): void
     {
-        self::assertEquals('en_US', $this->localeProcessor->process('en'));
+        $supportedLocaleResolver = $this->createMock(SupportedLocaleResolverInterface::class);
+        $supportedLocaleResolver->method('resolve')->willReturnMap([
+            ['en', 'en_US'],
+        ]);
+
+        $localeProcessor = new LocaleProcessor($supportedLocaleResolver);
+
+        self::assertEquals('en_US', $localeProcessor->process('en'));
+    }
+
+    #[Test]
+    public function it_always_processes_locale_to_version_with_region_using_legacy_mode(): void
+    {
+        $localeProcessor = new LocaleProcessor();
+
+        self::assertEquals('et_EE', $localeProcessor->process('et'));
+        self::assertEquals('pl_PL', $localeProcessor->process('pl'));
+        self::assertEquals('ja_JP', $localeProcessor->process('ja'));
+    }
+
+    #[Test]
+    public function it_returns_same_locale_if_it_is_valid_using_legacy_mode(): void
+    {
+        $localeProcessor = new LocaleProcessor();
+
+        self::assertEquals('it_IT', $localeProcessor->process('it_IT'));
+        self::assertEquals('de_DE', $localeProcessor->process('de_DE'));
+        self::assertEquals('ja_JP_TRADITIONAL', $localeProcessor->process('ja_JP_TRADITIONAL'));
+        self::assertEquals('sd_Arab_PK', $localeProcessor->process('sd_Arab_PK'));
+    }
+
+    #[Test]
+    public function it_returns_correct_locale_for_en_locale_using_legacy_mode(): void
+    {
+        $localeProcessor = new LocaleProcessor();
+
+        self::assertEquals('en_US', $localeProcessor->process('en'));
     }
 }

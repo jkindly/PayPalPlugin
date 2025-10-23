@@ -26,16 +26,29 @@ use Sylius\Component\Payment\Resolver\DefaultPaymentMethodResolverInterface;
 use Sylius\PayPalPlugin\DependencyInjection\SyliusPayPalExtension;
 use Webmozart\Assert\Assert;
 
+trigger_deprecation(
+    'sylius/paypal-plugin',
+    '1.7',
+    'The "%s" class is deprecated and will be removed in Sylius/PayPalPlugin 3.0.',
+    PayPalDefaultPaymentMethodResolver::class,
+);
+
+/** @deprecated since Sylius/PayPalPlugin 1.7 and will be removed in Sylius/PayPalPlugin 3.0. */
 final readonly class PayPalDefaultPaymentMethodResolver implements DefaultPaymentMethodResolverInterface
 {
     public function __construct(
         private DefaultPaymentMethodResolverInterface $decoratedDefaultPaymentMethodResolver,
         private PaymentMethodRepositoryInterface $paymentMethodRepository,
+        private bool $prioritizePayPal = true,
     ) {
     }
 
     public function getDefaultPaymentMethod(BasePaymentInterface $payment, string $prioritisedPayment = SyliusPayPalExtension::PAYPAL_FACTORY_NAME): PaymentMethodInterface
     {
+        if (!$this->prioritizePayPal) {
+            return $this->decoratedDefaultPaymentMethodResolver->getDefaultPaymentMethod($payment);
+        }
+
         /** @var PaymentInterface $payment */
         Assert::isInstanceOf($payment, PaymentInterface::class);
 
@@ -45,14 +58,13 @@ final readonly class PayPalDefaultPaymentMethodResolver implements DefaultPaymen
         /** @var ChannelInterface $channel */
         $channel = $order->getChannel();
 
-        return $this->getFirstPrioritisedPaymentForChannel($channel, $prioritisedPayment);
+        return $this->getFirstPrioritisedPaymentForChannel($payment, $channel, $prioritisedPayment);
     }
 
-    private function getFirstPrioritisedPaymentForChannel(ChannelInterface $channel, string $prioritisedPayment): PaymentMethodInterface
+    private function getFirstPrioritisedPaymentForChannel(PaymentInterface $payment, ChannelInterface $channel, string $prioritisedPayment): PaymentMethodInterface
     {
         /** @var array<CorePaymentMethodInterface> $paymentMethods */
         $paymentMethods = $this->paymentMethodRepository->findEnabledForChannel($channel);
-
         if (empty($paymentMethods)) {
             throw new UnresolvedDefaultPaymentMethodException();
         }
@@ -66,6 +78,6 @@ final readonly class PayPalDefaultPaymentMethodResolver implements DefaultPaymen
             }
         }
 
-        return $paymentMethods[0];
+        return $this->decoratedDefaultPaymentMethodResolver->getDefaultPaymentMethod($payment);
     }
 }
