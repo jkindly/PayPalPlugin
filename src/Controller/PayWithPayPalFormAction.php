@@ -28,6 +28,7 @@ use Twig\Environment;
 
 final readonly class PayWithPayPalFormAction
 {
+    /** @param PaymentRepositoryInterface<PaymentInterface> $paymentRepository */
     public function __construct(
         private Environment $twig,
         private PaymentRepositoryInterface $paymentRepository,

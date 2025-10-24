@@ -23,6 +23,7 @@ use Sylius\PayPalPlugin\Exception\PaymentNotFoundException;
 
 final class PaypalPaymentQuery implements PaypalPaymentQueryInterface
 {
+    /** @param PaymentRepositoryInterface<PaymentInterface>&EntityRepository $paymentRepository */
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly PaymentRepositoryInterface&EntityRepository $paymentRepository,

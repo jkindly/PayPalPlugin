@@ -70,16 +70,16 @@ final readonly class BasicOnboardingProcessor implements OnboardingProcessorInte
             'partner_attribution_id' => $response['partner_attribution_id'],
         ]);
 
-        $permissionsGranted = $request->query->get('permissionsGranted') === null ? true : (bool) $request->query->get('permissionsGranted');
+        $permissionsGranted = $request->query->get('permissionsGranted') === null || (bool) $request->query->get('permissionsGranted');
         if (!$permissionsGranted) {
             $paymentMethod->setEnabled(false);
         }
 
         try {
             $this->sellerWebhookRegistrar->register($paymentMethod);
-        } catch (PayPalWebhookUrlNotValidException $exception) {
+        } catch (PayPalWebhookUrlNotValidException) {
             $paymentMethod->setEnabled(false);
-        } catch (PayPalWebhookAlreadyRegisteredException $exception) {
+        } catch (PayPalWebhookAlreadyRegisteredException) {
             $paymentMethod->setEnabled(true);
         }
 

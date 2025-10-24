@@ -22,6 +22,7 @@ use Sylius\PayPalPlugin\Provider\UuidProviderInterface;
 
 final readonly class CacheAuthorizeClientApi implements CacheAuthorizeClientApiInterface
 {
+    /** @param ObjectRepository<PayPalCredentialsInterface> $payPalCredentialsRepository */
     public function __construct(
         private ObjectManager $payPalCredentialsManager,
         private ObjectRepository $payPalCredentialsRepository,
@@ -32,7 +33,6 @@ final readonly class CacheAuthorizeClientApi implements CacheAuthorizeClientApiI
 
     public function authorize(PaymentMethodInterface $paymentMethod): string
     {
-        /** @var PayPalCredentialsInterface|null $payPalCredentials */
         $payPalCredentials = $this->payPalCredentialsRepository->findOneBy(['paymentMethod' => $paymentMethod]);
         if ($payPalCredentials !== null && !$payPalCredentials->isExpired()) {
             return $payPalCredentials->accessToken();

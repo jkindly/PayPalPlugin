@@ -40,7 +40,6 @@ final readonly class PayPalPaymentMethodListener
     {
         /** @var object $paymentMethod */
         $paymentMethod = $event->getSubject();
-        /** @var PaymentMethodInterface $paymentMethod */
         Assert::isInstanceOf($paymentMethod, PaymentMethodInterface::class);
 
         if (!$this->isNewPaymentMethodPayPal($paymentMethod)) {

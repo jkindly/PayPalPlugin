@@ -26,7 +26,6 @@ final class RefundPaymentListener
 
     public function __invoke(TransitionEvent $event): void
     {
-        /** @var PaymentInterface $payment */
         $payment = $event->getSubject();
         Assert::isInstanceOf($payment, PaymentInterface::class);
 

@@ -19,6 +19,7 @@ use Sylius\PayPalPlugin\Exception\OrderNotFoundException;
 
 final readonly class OrderProvider implements OrderProviderInterface
 {
+    /** @param OrderRepositoryInterface<OrderInterface> $orderRepository */
     public function __construct(private OrderRepositoryInterface $orderRepository)
     {
     }

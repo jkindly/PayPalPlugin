@@ -25,6 +25,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 final readonly class CancelLastPayPalPaymentAction
 {
+    /** @param OrderRepositoryInterface<OrderInterface> $orderRepository */
     public function __construct(
         private ObjectManager $objectManager,
         private StateMachineInterface $stateMachineFactory,

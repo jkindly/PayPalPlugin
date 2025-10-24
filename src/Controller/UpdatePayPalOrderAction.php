@@ -29,6 +29,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 final readonly class UpdatePayPalOrderAction
 {
+    /** @param AddressFactoryInterface<AddressInterface> $addressFactory */
     public function __construct(
         private ?PaymentProviderInterface $paymentProvider,
         private CacheAuthorizeClientApiInterface $authorizeClientApi,
