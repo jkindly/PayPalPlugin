@@ -28,6 +28,7 @@ trigger_deprecation(
 /** @deprecated since Sylius/PayPalPlugin 1.7 and will be removed in Sylius/PayPalPlugin 3.0. */
 final readonly class PaymentProvider implements PaymentProviderInterface
 {
+    /** @param PaymentRepositoryInterface<PaymentInterface> $paymentRepository */
     public function __construct(private PaymentRepositoryInterface $paymentRepository)
     {
     }

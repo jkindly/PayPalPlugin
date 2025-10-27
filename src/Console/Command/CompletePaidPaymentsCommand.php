@@ -35,6 +35,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 )]
 final class CompletePaidPaymentsCommand extends Command
 {
+    /** @param PaymentRepositoryInterface<PaymentInterface> $paymentRepository */
     public function __construct(
         private readonly PaymentRepositoryInterface $paymentRepository,
         private readonly ObjectManager $paymentManager,

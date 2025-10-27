@@ -25,13 +25,9 @@ final readonly class AfterCheckoutOrderPaymentProcessor implements OrderProcesso
     {
     }
 
-    /**
-     * @param CoreOrderInterface $order
-     */
     public function process(OrderInterface $order): void
     {
         Assert::isInstanceOf($order, CoreOrderInterface::class);
-
         if ($order->getCheckoutState() !== OrderCheckoutStates::STATE_COMPLETED) {
             return;
         }

@@ -22,6 +22,7 @@ use Webmozart\Assert\Assert;
 
 final readonly class DownloadPayoutsReportAction
 {
+    /** @param PaymentMethodRepositoryInterface<PaymentMethodInterface> $paymentMethodRepository */
     public function __construct(
         private PayoutsReportDownloaderInterface $payoutsReportDownloader,
         private PaymentMethodRepositoryInterface $paymentMethodRepository,
@@ -30,7 +31,6 @@ final readonly class DownloadPayoutsReportAction
 
     public function __invoke(Request $request): Response
     {
-        /** @var PaymentMethodInterface|null $paymentMethod */
         $paymentMethod = $this->paymentMethodRepository->find($request->attributes->getInt('id'));
         Assert::notNull($paymentMethod);
 

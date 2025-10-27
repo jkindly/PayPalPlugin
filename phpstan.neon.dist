@@ -3,18 +3,16 @@ includes:
     - vendor/phpstan/phpstan-webmozart-assert/extension.neon
 
 parameters:
-    level: 3
-
-    reportUnmatchedIgnoredErrors: false
+    level: 6
 
     paths:
-        - 'src/'
+        - src
 
     excludePaths:
         # Makes PHPStan crash
         - 'src/DependencyInjection/Configuration.php'
-        - 'src/DependencyInjection/SyliusPayPalExtension.php'
 
-        # Test dependencies
-        - 'tests/Application/app/**.php'
-        - 'tests/Application/src/**.php'
+    ignoreErrors:
+        - identifier: missingType.iterableValue
+
+        - '/Dead catch - Sylius\\PayPalPlugin\\Exception\\PayPalWebhookUrlNotValidException is never thrown in the try block\./' # architectural smell

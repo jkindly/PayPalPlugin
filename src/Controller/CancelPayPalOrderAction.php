@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Sylius\PayPalPlugin\Controller;
 
+use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Sylius\PayPalPlugin\Provider\FlashBagProvider;
 use Sylius\PayPalPlugin\Provider\PaymentProviderInterface;
@@ -22,6 +23,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 final readonly class CancelPayPalOrderAction
 {
+    /** @param OrderRepositoryInterface<OrderInterface>|null $orderRepository */
     public function __construct(
         private ?PaymentProviderInterface $paymentProvider,
         private ?OrderRepositoryInterface $orderRepository,

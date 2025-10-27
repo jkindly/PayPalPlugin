@@ -16,24 +16,30 @@ namespace Sylius\PayPalPlugin\Controller;
 use Doctrine\Persistence\ObjectManager;
 use Sylius\Abstraction\StateMachine\StateMachineInterface;
 use Sylius\Component\Core\Factory\AddressFactoryInterface;
+use Sylius\Component\Core\Model\AddressInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Core\OrderCheckoutTransitions;
 use Sylius\Component\Core\Repository\CustomerRepositoryInterface;
-use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\PayPalPlugin\Api\CacheAuthorizeClientApiInterface;
 use Sylius\PayPalPlugin\Api\OrderDetailsApiInterface;
 use Sylius\PayPalPlugin\Exception\PaymentAmountMismatchException;
 use Sylius\PayPalPlugin\Manager\PaymentStateManagerInterface;
 use Sylius\PayPalPlugin\Provider\OrderProviderInterface;
 use Sylius\PayPalPlugin\Verifier\PaymentAmountVerifierInterface;
+use Sylius\Resource\Factory\FactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 final readonly class ProcessPayPalOrderAction
 {
+    /**
+     * @param CustomerRepositoryInterface<CustomerInterface> $customerRepository
+     * @param FactoryInterface<CustomerInterface> $customerFactory
+     * @param AddressFactoryInterface<AddressInterface> $addressFactory
+     */
     public function __construct(
         private CustomerRepositoryInterface $customerRepository,
         private FactoryInterface $customerFactory,
@@ -85,6 +91,7 @@ final readonly class ProcessPayPalOrderAction
 
         if ($order->isShippingRequired()) {
             $name = explode(' ', $purchaseUnit['shipping']['name']['full_name']);
+            /** @phpstan-ignore-next-line false positive */
             $address->setLastName(array_pop($name) ?? '');
             $address->setFirstName(implode(' ', $name));
             $address->setStreet($purchaseUnit['shipping']['address']['address_line_1']);
