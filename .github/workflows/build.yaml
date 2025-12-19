@@ -228,6 +228,10 @@ jobs:
                 run: (cd tests/Application && bin/console cache:warmup -vvv)
 
             -
+                name: Validate container
+                run: (cd tests/Application && bin/console lint:container -vvv)
+
+            -
                 name: Load fixtures in test application
                 run: (cd tests/Application && bin/console sylius:fixtures:load -n)
 
