@@ -252,7 +252,7 @@
         />
         <service id="sylius_paypal.provider.uuid" alias="Sylius\PayPalPlugin\Provider\UuidProviderInterface" />
 
-        <service id="sylius.paypal.client.sftp" class="phpseclib\Net\SFTP">
+        <service id="sylius.paypal.client.sftp" class="phpseclib3\Net\SFTP">
             <argument>%sylius_paypal.reports_sftp_host%</argument>
         </service>
         <service id="sylius_paypal.client.sftp" alias="sylius.paypal.client.sftp" />
