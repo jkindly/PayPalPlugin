@@ -25,6 +25,7 @@ use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
 final readonly class EnableSellerAction
 {
+    /** @param PaymentMethodRepositoryInterface<PaymentMethodInterface> $paymentMethodRepository */
     public function __construct(
         private PaymentMethodRepositoryInterface $paymentMethodRepository,
         private PaymentMethodEnablerInterface $paymentMethodEnabler,
@@ -33,7 +34,6 @@ final readonly class EnableSellerAction
 
     public function __invoke(Request $request): Response
     {
-        /** @var PaymentMethodInterface $paymentMethod */
         $paymentMethod = $this->paymentMethodRepository->find($request->attributes->getInt('id'));
         /** @var FlashBagInterface $flashBag */
         $flashBag = $request->getSession()->getBag('flashes');

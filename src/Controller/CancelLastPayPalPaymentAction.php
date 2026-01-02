@@ -25,6 +25,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 final readonly class CancelLastPayPalPaymentAction
 {
+    /** @param OrderRepositoryInterface<OrderInterface> $orderRepository */
     public function __construct(
         private ObjectManager $objectManager,
         private StateMachineInterface $stateMachineFactory,
@@ -40,6 +41,10 @@ final readonly class CancelLastPayPalPaymentAction
 
         /** @var PaymentInterface $payment */
         $payment = $order->getLastPayment();
+
+        if (!$this->stateMachineFactory->can($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_CANCEL)) {
+            return new Response('', Response::HTTP_NO_CONTENT);
+        }
 
         $this->stateMachineFactory->apply($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_CANCEL);
 

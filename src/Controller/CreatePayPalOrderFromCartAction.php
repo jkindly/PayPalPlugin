@@ -23,6 +23,7 @@ use Sylius\Component\Order\Processor\OrderProcessorInterface;
 use Sylius\PayPalPlugin\DependencyInjection\SyliusPayPalExtension;
 use Sylius\PayPalPlugin\Provider\OrderProviderInterface;
 use Sylius\PayPalPlugin\Resolver\CapturePaymentResolverInterface;
+use Sylius\PayPalPlugin\Resolver\PayPalPaymentMethodsResolverInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,6 +37,7 @@ final readonly class CreatePayPalOrderFromCartAction
         private CapturePaymentResolverInterface $capturePaymentResolver,
         private ?OrderPaymentsRemoverInterface $orderPaymentsRemover = null,
         private ?OrderProcessorInterface $orderProcessor = null,
+        private ?PayPalPaymentMethodsResolverInterface $payPalMethodsResolver = null,
     ) {
         if (null === $this->orderPaymentsRemover) {
             trigger_deprecation(
@@ -50,6 +52,14 @@ final readonly class CreatePayPalOrderFromCartAction
                 'sylius/paypal-plugin',
                 '1.6',
                 'Not passing an $orderProcessor to %s constructor is deprecated and will be prohibited in 3.0',
+                self::class,
+            );
+        }
+        if (null === $this->payPalMethodsResolver) {
+            trigger_deprecation(
+                'sylius/paypal-plugin',
+                '1.7',
+                'Not passing a $payPalMethodsResolver to %s constructor is deprecated and will be prohibited in 3.0',
                 self::class,
             );
         }
@@ -99,6 +109,14 @@ final readonly class CreatePayPalOrderFromCartAction
         $this->orderPaymentsRemover->removePayments($order);
         $this->orderProcessor->process($order);
 
-        return $order->getLastPayment(PaymentInterface::STATE_CART);
+        $payment = $order->getLastPayment(PaymentInterface::STATE_CART);
+        if ($order->getChannel() !== null && $this->payPalMethodsResolver !== null) {
+            $paypalMethods = $this->payPalMethodsResolver->getInChannel($order->getChannel());
+            if ([] !== $paypalMethods) {
+                $payment->setMethod($paypalMethods[0]);
+            }
+        }
+
+        return $payment;
     }
 }

@@ -46,6 +46,6 @@ final class OrderItemNonNeutralTaxesProvider implements OrderItemNonNeutralTaxes
             }
         }
 
-        return (empty($taxes)) ? [0] : $taxes;
+        return $taxes;
     }
 }

@@ -100,31 +100,7 @@ final class PayPalItemDataProviderTest extends TestCase
                         'value' => '20.00',
                         'currency_code' => 'PLN',
                     ],
-                    'quantity' => 1,
-                    'tax' => [
-                        'value' => '2.00',
-                        'currency_code' => 'PLN',
-                    ],
-                ],
-                [
-                    'name' => 'PRODUCT_ONE',
-                    'unit_amount' => [
-                        'value' => '20.00',
-                        'currency_code' => 'PLN',
-                    ],
-                    'quantity' => 1,
-                    'tax' => [
-                        'value' => '2.00',
-                        'currency_code' => 'PLN',
-                    ],
-                ],
-                [
-                    'name' => 'PRODUCT_ONE',
-                    'unit_amount' => [
-                        'value' => '20.00',
-                        'currency_code' => 'PLN',
-                    ],
-                    'quantity' => 1,
+                    'quantity' => 3,
                     'tax' => [
                         'value' => '2.00',
                         'currency_code' => 'PLN',
@@ -271,31 +247,7 @@ final class PayPalItemDataProviderTest extends TestCase
                         'value' => '20.00',
                         'currency_code' => 'PLN',
                     ],
-                    'quantity' => 1,
-                    'tax' => [
-                        'value' => '1.00',
-                        'currency_code' => 'PLN',
-                    ],
-                ],
-                [
-                    'name' => 'PRODUCT_ONE',
-                    'unit_amount' => [
-                        'value' => '20.00',
-                        'currency_code' => 'PLN',
-                    ],
-                    'quantity' => 1,
-                    'tax' => [
-                        'value' => '1.00',
-                        'currency_code' => 'PLN',
-                    ],
-                ],
-                [
-                    'name' => 'PRODUCT_ONE',
-                    'unit_amount' => [
-                        'value' => '20.00',
-                        'currency_code' => 'PLN',
-                    ],
-                    'quantity' => 1,
+                    'quantity' => 3,
                     'tax' => [
                         'value' => '1.00',
                         'currency_code' => 'PLN',
@@ -307,27 +259,193 @@ final class PayPalItemDataProviderTest extends TestCase
                         'value' => '10.00',
                         'currency_code' => 'PLN',
                     ],
-                    'quantity' => 1,
+                    'quantity' => 2,
                     'tax' => [
-                        'value' => '2.00',
-                        'currency_code' => 'PLN',
-                    ],
-                ],
-                [
-                    'name' => 'PRODUCT_TWO',
-                    'unit_amount' => [
-                        'value' => '10.00',
-                        'currency_code' => 'PLN',
-                    ],
-                    'quantity' => 1,
-                    'tax' => [
-                        'value' => '1.00',
+                        'value' => '1.50',
                         'currency_code' => 'PLN',
                     ],
                 ],
             ],
             'total_item_value' => '80.00',
             'total_tax' => '6.00',
+        ];
+
+        self::assertEquals($expected, $result);
+    }
+
+    #[Test]
+    public function splits_items_when_tax_is_not_evenly_divisible(): void
+    {
+        $order = $this->createMock(OrderInterface::class);
+        $orderItem = $this->createMock(OrderItemInterface::class);
+
+        $order->method('getItems')->willReturn(new ArrayCollection([$orderItem]));
+        $orderItem->method('getProductName')->willReturn('PRODUCT_WITH_NON_DIVISIBLE_TAX');
+        $order->method('getCurrencyCode')->willReturn('USD');
+
+        $orderItem->method('getUnitPrice')->willReturn(1500);
+        $orderItem->method('getQuantity')->willReturn(3);
+
+        $this->orderItemNonNeutralTaxesProvider->method('provide')->with($orderItem)->willReturn([166, 167, 167]);
+
+        $result = $this->provider->provide($order);
+
+        $expected = [
+            'items' => [
+                [
+                    'name' => 'PRODUCT_WITH_NON_DIVISIBLE_TAX',
+                    'unit_amount' => [
+                        'value' => '15.00',
+                        'currency_code' => 'USD',
+                    ],
+                    'quantity' => 2,
+                    'tax' => [
+                        'value' => '1.66',
+                        'currency_code' => 'USD',
+                    ],
+                ],
+                [
+                    'name' => 'PRODUCT_WITH_NON_DIVISIBLE_TAX',
+                    'unit_amount' => [
+                        'value' => '15.00',
+                        'currency_code' => 'USD',
+                    ],
+                    'quantity' => 1,
+                    'tax' => [
+                        'value' => '1.68',
+                        'currency_code' => 'USD',
+                    ],
+                ],
+            ],
+            'total_item_value' => '45.00',
+            'total_tax' => '5.00',
+        ];
+
+        self::assertEquals($expected, $result);
+    }
+
+    #[Test]
+    public function handles_complex_non_divisible_tax_scenario_with_multiple_items(): void
+    {
+        $order = $this->createMock(OrderInterface::class);
+        $orderItemOne = $this->createMock(OrderItemInterface::class);
+        $orderItemTwo = $this->createMock(OrderItemInterface::class);
+
+        $order->method('getItems')->willReturn(new ArrayCollection([
+            $orderItemOne,
+            $orderItemTwo,
+        ]));
+
+        $orderItemOne->method('getProductName')->willReturn('PRODUCT_ONE');
+        $orderItemOne->method('getUnitPrice')->willReturn(2000);
+        $orderItemOne->method('getQuantity')->willReturn(3);
+
+        $orderItemTwo->method('getProductName')->willReturn('PRODUCT_TWO');
+        $orderItemTwo->method('getUnitPrice')->willReturn(1000);
+        $orderItemTwo->method('getQuantity')->willReturn(3);
+
+        $order->method('getCurrencyCode')->willReturn('EUR');
+
+        $this->orderItemNonNeutralTaxesProvider->method('provide')
+            ->willReturnMap([
+                [$orderItemOne, [100, 100, 100]],
+                [$orderItemTwo, [166, 167, 167]],
+            ]);
+
+        $result = $this->provider->provide($order);
+
+        $expected = [
+            'items' => [
+                [
+                    'name' => 'PRODUCT_ONE',
+                    'unit_amount' => [
+                        'value' => '20.00',
+                        'currency_code' => 'EUR',
+                    ],
+                    'quantity' => 3,
+                    'tax' => [
+                        'value' => '1.00',
+                        'currency_code' => 'EUR',
+                    ],
+                ],
+                [
+                    'name' => 'PRODUCT_TWO',
+                    'unit_amount' => [
+                        'value' => '10.00',
+                        'currency_code' => 'EUR',
+                    ],
+                    'quantity' => 2,
+                    'tax' => [
+                        'value' => '1.66',
+                        'currency_code' => 'EUR',
+                    ],
+                ],
+                [
+                    'name' => 'PRODUCT_TWO',
+                    'unit_amount' => [
+                        'value' => '10.00',
+                        'currency_code' => 'EUR',
+                    ],
+                    'quantity' => 1,
+                    'tax' => [
+                        'value' => '1.68',
+                        'currency_code' => 'EUR',
+                    ],
+                ],
+            ],
+            'total_item_value' => '90.00',
+            'total_tax' => '8.00',
+        ];
+
+        self::assertEquals($expected, $result);
+    }
+
+    #[Test]
+    public function handles_single_cent_remainder_distribution(): void
+    {
+        $order = $this->createMock(OrderInterface::class);
+        $orderItem = $this->createMock(OrderItemInterface::class);
+
+        $order->method('getItems')->willReturn(new ArrayCollection([$orderItem]));
+        $orderItem->method('getProductName')->willReturn('PRODUCT');
+        $order->method('getCurrencyCode')->willReturn('GBP');
+
+        $orderItem->method('getUnitPrice')->willReturn(1000);
+        $orderItem->method('getQuantity')->willReturn(2);
+
+        $this->orderItemNonNeutralTaxesProvider->method('provide')->with($orderItem)->willReturn([50, 51]);
+
+        $result = $this->provider->provide($order);
+
+        $expected = [
+            'items' => [
+                [
+                    'name' => 'PRODUCT',
+                    'unit_amount' => [
+                        'value' => '10.00',
+                        'currency_code' => 'GBP',
+                    ],
+                    'quantity' => 1,
+                    'tax' => [
+                        'value' => '0.50',
+                        'currency_code' => 'GBP',
+                    ],
+                ],
+                [
+                    'name' => 'PRODUCT',
+                    'unit_amount' => [
+                        'value' => '10.00',
+                        'currency_code' => 'GBP',
+                    ],
+                    'quantity' => 1,
+                    'tax' => [
+                        'value' => '0.51',
+                        'currency_code' => 'GBP',
+                    ],
+                ],
+            ],
+            'total_item_value' => '20.00',
+            'total_tax' => '1.01',
         ];
 
         self::assertEquals($expected, $result);

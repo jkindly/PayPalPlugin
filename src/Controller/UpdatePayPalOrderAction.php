@@ -22,24 +22,52 @@ use Sylius\Component\Order\Processor\OrderProcessorInterface;
 use Sylius\PayPalPlugin\Api\CacheAuthorizeClientApiInterface;
 use Sylius\PayPalPlugin\Api\UpdateOrderApiInterface;
 use Sylius\PayPalPlugin\Provider\PaymentProviderInterface;
+use Sylius\PayPalPlugin\Repository\Query\PaypalPaymentQueryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 final readonly class UpdatePayPalOrderAction
 {
+    /** @param AddressFactoryInterface<AddressInterface> $addressFactory */
     public function __construct(
-        private PaymentProviderInterface $paymentProvider,
+        private ?PaymentProviderInterface $paymentProvider,
         private CacheAuthorizeClientApiInterface $authorizeClientApi,
         private UpdateOrderApiInterface $updateOrderApi,
         private AddressFactoryInterface $addressFactory,
         private OrderProcessorInterface $orderProcessor,
+        private ?PaypalPaymentQueryInterface $paypalPaymentQuery = null,
     ) {
+        if (null !== $this->paymentProvider) {
+            trigger_deprecation(
+                'sylius/paypal-plugin',
+                '1.7',
+                sprintf(
+                    'Passing an instance of "%s" as the first argument is deprecated and will be prohibited in 3.0',
+                    PaymentProviderInterface::class,
+                ),
+            );
+        }
+        if (null === $this->paypalPaymentQuery) {
+            trigger_deprecation(
+                'sylius/paypal-plugin',
+                '1.7',
+                sprintf(
+                    'Not passing an instance of "%s" is deprecated and will be prohibited in 3.0',
+                    PaypalPaymentQueryInterface::class,
+                ),
+            );
+        }
     }
 
     public function __invoke(Request $request): Response
     {
-        $payment = $this->paymentProvider->getByPayPalOrderId((string) $request->request->get('orderID'));
+        if (null !== $this->paypalPaymentQuery) {
+            $payment = $this->paypalPaymentQuery->getForUpdateByOrderId((string) $request->request->get('orderID'));
+        } else {
+            $payment = $this->paymentProvider->getByPayPalOrderId((string) $request->request->get('orderID'));
+        }
+
         /** @var OrderInterface $order */
         $order = $payment->getOrder();
 
@@ -47,7 +75,6 @@ final readonly class UpdatePayPalOrderAction
         $paymentMethod = $payment->getMethod();
         $token = $this->authorizeClientApi->authorize($paymentMethod);
 
-        /** @var array $shippingAddress */
         $shippingAddress = $request->request->all('shipping_address');
 
         /** @var AddressInterface $address */

@@ -32,6 +32,7 @@ final readonly class PayPalPaymentMethodListener
         private UrlGeneratorInterface $urlGenerator,
         private RequestStack $flashBagOrRequestStack,
         private PayPalPaymentMethodProviderInterface $payPalPaymentMethodProvider,
+        private bool $isSandbox = false,
     ) {
     }
 
@@ -39,7 +40,6 @@ final readonly class PayPalPaymentMethodListener
     {
         /** @var object $paymentMethod */
         $paymentMethod = $event->getSubject();
-        /** @var PaymentMethodInterface $paymentMethod */
         Assert::isInstanceOf($paymentMethod, PaymentMethodInterface::class);
 
         if (!$this->isNewPaymentMethodPayPal($paymentMethod)) {
@@ -56,7 +56,7 @@ final readonly class PayPalPaymentMethodListener
             return;
         }
 
-        if (!$this->onboardingInitiator->supports($paymentMethod)) {
+        if ($this->isSandbox || !$this->onboardingInitiator->supports($paymentMethod)) {
             return;
         }
 

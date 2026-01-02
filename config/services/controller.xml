@@ -24,11 +24,12 @@
             <argument type="service" id="sylius_paypal.provider.payment" />
             <argument type="service" id="sylius.manager.payment" />
             <argument type="service" id="sylius_paypal.provider.paypal_refund_data" />
+            <argument type="service" id="sylius_paypal.repository.query.paypal_payment" />
         </service>
 
         <service id="sylius_paypal.controller.cancel_paypal_order" class="Sylius\PayPalPlugin\Controller\CancelPayPalOrderAction">
-            <argument type="service" id="sylius_paypal.provider.payment" />
-            <argument type="service" id="sylius.repository.order" />
+            <argument>null</argument>
+            <argument>null</argument>
             <argument type="service" id="request_stack" />
         </service>
 
@@ -38,6 +39,7 @@
             <argument type="service" id="request_stack" />
             <argument type="service" id="sylius_abstraction.state_machine" />
             <argument type="service" id="sylius.order_processing.order_payment_processor.checkout" />
+            <argument type="service" id="sylius_paypal.repository.query.paypal_payment" />
         </service>
 
         <service id="sylius_paypal.controller.cancel_last_paypal_payment" class="Sylius\PayPalPlugin\Controller\CancelLastPayPalPaymentAction">
@@ -50,6 +52,7 @@
         <service id="sylius_paypal.controller.cancel_paypal_checkout_payment" class="Sylius\PayPalPlugin\Controller\CancelPayPalCheckoutPaymentAction">
             <argument type="service" id="sylius_paypal.provider.payment" />
             <argument type="service" id="sylius_paypal.manager.payment_state" />
+            <argument type="service" id="sylius_paypal.repository.query.paypal_payment" />
         </service>
 
         <service id="sylius_paypal.controller.complete_paypal_order" class="Sylius\PayPalPlugin\Controller\CompletePayPalOrderAction">
@@ -89,6 +92,7 @@
             <argument type="service" id="sylius_paypal.resolver.capture_payment" />
             <argument type="service" id="sylius.remover.payment.order" />
             <argument type="service" id="sylius.order_processing.order_processor" />
+            <argument type="service" id="sylius_paypal.resolver.paypal_payment_methods" />
         </service>
 
         <service id="sylius_paypal.controller.paypal_buttons" class="Sylius\PayPalPlugin\Controller\PayPalButtonsController">
@@ -108,6 +112,7 @@
             <argument type="service" id="sylius_paypal.provider.available_countries" />
             <argument type="service" id="sylius_paypal.api.cache_authorize_client" />
             <argument type="service" id="sylius_paypal.api.identity" />
+            <argument type="service" id="sylius_paypal.processor.locale" />
         </service>
 
         <service id="sylius_paypal.controller.process_paypal_order" class="Sylius\PayPalPlugin\Controller\ProcessPayPalOrderAction">
@@ -129,6 +134,7 @@
             <argument type="service" id="sylius_paypal.api.update_order" />
             <argument type="service" id="sylius.factory.address" />
             <argument type="service" id="sylius.order_processing.order_processor" />
+            <argument type="service" id="sylius_paypal.repository.query.paypal_payment" />
         </service>
 
         <service id="sylius_paypal.controller.complete_paypal_order_from_payment_page" class="Sylius\PayPalPlugin\Controller\CompletePayPalOrderFromPaymentPageAction">

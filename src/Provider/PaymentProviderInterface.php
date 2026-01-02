@@ -15,7 +15,16 @@ namespace Sylius\PayPalPlugin\Provider;
 
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\PayPalPlugin\Exception\PaymentNotFoundException;
+use Sylius\PayPalPlugin\Repository\Query\PaypalPaymentQueryInterface;
 
+trigger_deprecation(
+    'sylius/paypal-plugin',
+    '1.7',
+    'The "%s" interface is deprecated and will be removed in Sylius/PayPalPlugin 3.0. Use "%s" instead.',
+    PaymentProviderInterface::class,
+    PaypalPaymentQueryInterface::class,
+);
+/** @deprecated since Sylius/PayPalPlugin 1.7 and will be removed in Sylius/PayPalPlugin 3.0. */
 interface PaymentProviderInterface
 {
     /** @throws PaymentNotFoundException */

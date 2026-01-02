@@ -4,6 +4,7 @@ on:
     push:
         branches-ignore:
             - 'dependabot/**'
+            - 'upmerge/**'
     pull_request: ~
     release:
         types: [ created ]
@@ -31,12 +32,12 @@ jobs:
                 database: ["mysql", "postgres"]
                 mysql: ["8.4"]
                 postgres: ["15.8"]
-                node: ["20.x"]
+                node: ["22.x"]
                 state_machine_adapter: ["symfony_workflow"]
 
                 include:
                     -   php: "8.3"
-                        symfony: "~7.2.0"
+                        symfony: "~7.3.0"
                         sylius: "~2.1.0"
                         node: "24.x"
                         database: "mysql"
@@ -101,10 +102,6 @@ jobs:
             -
                 name: Output PHP version for Symfony CLI
                 run: php -v | head -n 1 | awk '{ print $2 }' > .php-version
-
-            -
-                name: Install certificates
-                run: symfony server:ca:install
 
             -
                 name: Get Composer cache directory
@@ -188,8 +185,12 @@ jobs:
                     vendor/bin/console doctrine:migrations:migrate -n -vvv -q
 
             -
+                name: Setup messenger transports
+                run: vendor/bin/console messenger:setup-transports -vvv
+
+            -
                 name: Validate database schema
-                run: vendor/bin/console doctrine:schema:validate
+                run: vendor/bin/console doctrine:schema:validate -vvv
 
             -
                 name: Prepare test application assets
@@ -202,8 +203,8 @@ jobs:
                 run: vendor/bin/console cache:warmup -vvv
 
             -
-                name: Load fixtures in test application
-                run: vendor/bin/console sylius:fixtures:load -n
+                name: Validate container
+                run: vendor/bin/console lint:container -vvv
 
             -   name: Run security check
                 run: symfony security:check
@@ -213,8 +214,8 @@ jobs:
                 run: composer validate --ansi --strict
 
             -
-                name: Validate container
-                run: vendor/bin/console lint:container
+                name: Load fixtures in test application
+                run: vendor/bin/console sylius:fixtures:load -n
 
             -
                 name: Run Non-unit PHPUnit tests

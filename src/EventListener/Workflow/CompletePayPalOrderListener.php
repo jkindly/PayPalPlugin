@@ -26,7 +26,6 @@ final class CompletePayPalOrderListener
 
     public function __invoke(CompletedEvent $event): void
     {
-        /** @var OrderInterface $order */
         $order = $event->getSubject();
         Assert::isInstanceOf($order, OrderInterface::class);
 

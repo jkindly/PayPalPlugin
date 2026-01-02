@@ -34,25 +34,18 @@ final class SyliusPayPalExtension extends Extension implements PrependExtensionI
 
     public function load(array $configs, ContainerBuilder $container): void
     {
+        $configs = $this->processEnvConfig($configs);
         $config = $this->processConfiguration($this->getConfiguration([], $container), $configs);
+
+        $this->setCommunicationParameters($container, $config);
+
+        $container->setParameter('sylius_paypal.supported_locales', $config['supported_locales']);
+
         $loaderResolver = new LoaderResolver([
             new PhpFileLoader($container, new FileLocator(__DIR__ . '/../../config')),
             new XmlFileLoader($container, new FileLocator(__DIR__ . '/../../config')),
         ]);
         $delegatingLoader = new DelegatingLoader($loaderResolver);
-
-        $container->setParameter('sylius_paypal.logging.increased', (bool) $config['logging']['increased']);
-        $container->setParameter('sylius_paypal.prioritized_factory_name', self::PAYPAL_FACTORY_NAME);
-
-        if ($config['sandbox']) {
-            $container->setParameter('sylius_paypal.facilitator_url', 'https://paypal.sylius.com');
-            $container->setParameter('sylius_paypal.api_base_url', 'https://api.sandbox.paypal.com/');
-            $container->setParameter('sylius_paypal.reports_sftp_host', 'reports.sandbox.paypal.com');
-        } else {
-            $container->setParameter('sylius_paypal.facilitator_url', 'https://prod.paypal.sylius.com');
-            $container->setParameter('sylius_paypal.api_base_url', 'https://api.paypal.com/');
-            $container->setParameter('sylius_paypal.reports_sftp_host', 'reports.paypal.com');
-        }
 
         $delegatingLoader->load('services.xml');
     }
@@ -92,5 +85,43 @@ final class SyliusPayPalExtension extends Extension implements PrependExtensionI
                 'Sylius\PayPalPlugin\Migrations' => ['Sylius\Bundle\CoreBundle\Migrations'],
             ],
         ]);
+    }
+
+    private function setCommunicationParameters(ContainerBuilder $container, array $config): void
+    {
+        $container->setParameter('sylius_paypal.logging.increased', (bool) $config['logging']['increased']);
+        $container->setParameter('sylius_paypal.sandbox', (bool) $config['sandbox']);
+        $container->setParameter('sylius_paypal.prioritized_factory_name', self::PAYPAL_FACTORY_NAME);
+
+        if ($container->getParameter('sylius_paypal.sandbox')) {
+            $container->setParameter('sylius_paypal.facilitator_url', 'https://paypal.sylius.com');
+            $container->setParameter('sylius_paypal.api_base_url', 'https://api.sandbox.paypal.com/');
+            $container->setParameter('sylius_paypal.reports_sftp_host', 'reports.sandbox.paypal.com');
+        } else {
+            $container->setParameter('sylius_paypal.facilitator_url', 'https://prod.paypal.sylius.com');
+            $container->setParameter('sylius_paypal.api_base_url', 'https://api.paypal.com/');
+            $container->setParameter('sylius_paypal.reports_sftp_host', 'reports.paypal.com');
+        }
+    }
+
+    private function processEnvConfig(array $configs): array
+    {
+        $envConfig = [];
+
+        $sandboxEnv = $_ENV['SYLIUS_PAYPAL_SANDBOX_ENABLED'] ?? null;
+        if ($sandboxEnv !== null) {
+            $envConfig['sandbox'] = filter_var($sandboxEnv, \FILTER_VALIDATE_BOOLEAN, \FILTER_NULL_ON_FAILURE) ?? false;
+        }
+
+        $loggingEnv = $_ENV['SYLIUS_PAYPAL_LOGGING_INCREASED'] ?? null;
+        if ($loggingEnv !== null) {
+            $envConfig['logging'] = ['increased' => filter_var($loggingEnv, \FILTER_VALIDATE_BOOLEAN, \FILTER_NULL_ON_FAILURE) ?? false];
+        }
+
+        if ([] !== $envConfig) {
+            $configs[] = $envConfig;
+        }
+
+        return $configs;
     }
 }

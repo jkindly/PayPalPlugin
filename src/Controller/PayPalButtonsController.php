@@ -28,6 +28,7 @@ use Twig\Environment;
 
 final readonly class PayPalButtonsController
 {
+    /** @param OrderRepositoryInterface<OrderInterface> $orderRepository */
     public function __construct(
         private Environment $twig,
         private UrlGeneratorInterface $router,

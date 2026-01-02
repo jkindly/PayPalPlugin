@@ -23,29 +23,23 @@ use Symfony\Component\HttpFoundation\Response;
 
 final readonly class CancelPayPalOrderAction
 {
+    /** @param OrderRepositoryInterface<OrderInterface>|null $orderRepository */
     public function __construct(
-        private PaymentProviderInterface $paymentProvider,
-        private OrderRepositoryInterface $orderRepository,
+        private ?PaymentProviderInterface $paymentProvider,
+        private ?OrderRepositoryInterface $orderRepository,
         private RequestStack $flashBagOrRequestStack,
     ) {
+        if (null !== $this->paymentProvider) {
+            trigger_deprecation('sylius/paypal-plugin', '1.7', sprintf('Passing an instance of %s as the first argument is deprecated and will be prohibited in 3.0', PaymentProviderInterface::class));
+        }
+        if (null !== $this->orderRepository) {
+            trigger_deprecation('sylius/paypal-plugin', '1.7', sprintf('Passing an instance of %s as the second argument is deprecated and will be prohibited in 3.0', OrderRepositoryInterface::class));
+        }
     }
 
     public function __invoke(Request $request): Response
     {
-        /**
-         * @var string $content
-         */
-        $content = $request->getContent();
-
-        $content = (array) json_decode($content, true);
-
-        $payment = $this->paymentProvider->getByPayPalOrderId((string) $content['payPalOrderId']);
-
-        /** @var OrderInterface $order */
-        $order = $payment->getOrder();
-        $this->orderRepository->remove($order);
-
-        FlashBagProvider::getFlashBag($this->flashBagOrRequestStack)->add('success', 'sylius_paypal.order_cancelled');
+        FlashBagProvider::getFlashBag($this->flashBagOrRequestStack)->add('success', 'sylius.pay_pal.order_cancelled');
 
         return new Response('', Response::HTTP_NO_CONTENT);
     }
