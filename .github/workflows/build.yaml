@@ -4,6 +4,7 @@ on:
     push:
         branches-ignore:
             - 'dependabot/**'
+            - 'upmerge/**'
     pull_request: ~
     release:
         types: [ created ]
@@ -202,8 +203,8 @@ jobs:
                 run: vendor/bin/console cache:warmup -vvv
 
             -
-                name: Load fixtures in test application
-                run: vendor/bin/console sylius:fixtures:load -n
+                name: Validate container
+                run: vendor/bin/console lint:container -vvv
 
             -   name: Run security check
                 run: symfony security:check
@@ -213,8 +214,8 @@ jobs:
                 run: composer validate --ansi --strict
 
             -
-                name: Validate container
-                run: vendor/bin/console lint:container
+                name: Load fixtures in test application
+                run: vendor/bin/console sylius:fixtures:load -n
 
             -
                 name: Run Non-unit PHPUnit tests

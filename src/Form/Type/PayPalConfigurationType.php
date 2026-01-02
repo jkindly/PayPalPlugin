@@ -19,6 +19,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 final class PayPalConfigurationType extends AbstractType
 {
@@ -48,9 +49,18 @@ final class PayPalConfigurationType extends AbstractType
                 $form
                     ->add('sylius_merchant_id', HiddenType::class, ['data' => self::SANDBOX_SYLIUS_MERCHANT_ID, 'attr' => ['readonly' => true]])
                     ->add('partner_attribution_id', HiddenType::class, ['data' => self::SANDBOX_ATTRIBUTION_ID, 'attr' => ['readonly' => true]])
-                    ->add('client_id', TextType::class, ['label' => 'sylius_paypal.client_id'])
-                    ->add('client_secret', TextType::class, ['label' => 'sylius_paypal.client_secret'])
-                    ->add('merchant_id', TextType::class, ['label' => 'sylius_paypal.merchant_id'])
+                    ->add('client_id', TextType::class, [
+                        'label' => 'sylius_paypal.client_id',
+                        'constraints' => [new NotBlank(['groups' => 'sylius'])],
+                    ])
+                    ->add('client_secret', TextType::class, [
+                        'label' => 'sylius_paypal.client_secret',
+                        'constraints' => [new NotBlank(['groups' => 'sylius'])],
+                    ])
+                    ->add('merchant_id', TextType::class, [
+                        'label' => 'sylius_paypal.merchant_id',
+                        'constraints' => [new NotBlank(['groups' => 'sylius'])],
+                    ])
                 ;
             } else {
                 $form

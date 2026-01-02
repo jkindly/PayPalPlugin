@@ -99,12 +99,13 @@ final readonly class ProcessPayPalOrderAction
             $address->setPostcode($purchaseUnit['shipping']['address']['postal_code']);
             $address->setCountryCode($purchaseUnit['shipping']['address']['country_code']);
 
+            $order->setShippingAddress(clone $address);
+            $order->setBillingAddress(clone $address);
+
             $this->stateMachineFactory->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_ADDRESS);
 
             if ($this->stateMachineFactory->can($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SELECT_SHIPPING)) {
                 $this->stateMachineFactory->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SELECT_SHIPPING);
-            } elseif ($this->stateMachineFactory->can($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SKIP_SHIPPING)) {
-                $this->stateMachineFactory->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SKIP_SHIPPING);
             }
         } else {
             $address->setFirstName($customer->getFirstName());
@@ -117,16 +118,14 @@ final readonly class ProcessPayPalOrderAction
             $address->setPostcode($defaultAddress ? $defaultAddress->getPostcode() : '');
             $address->setCountryCode($data['payer']['address']['country_code']);
 
+            $order->setShippingAddress(clone $address);
+            $order->setBillingAddress(clone $address);
+
             $this->stateMachineFactory->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_ADDRESS);
         }
 
-        $order->setShippingAddress(clone $address);
-        $order->setBillingAddress(clone $address);
-
         if ($this->stateMachineFactory->can($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SELECT_PAYMENT)) {
             $this->stateMachineFactory->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SELECT_PAYMENT);
-        } elseif ($this->stateMachineFactory->can($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SKIP_PAYMENT)) {
-            $this->stateMachineFactory->apply($order, OrderCheckoutTransitions::GRAPH, OrderCheckoutTransitions::TRANSITION_SKIP_PAYMENT);
         }
 
         $this->orderManager->flush();
