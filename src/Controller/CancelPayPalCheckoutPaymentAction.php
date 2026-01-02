@@ -20,12 +20,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
-final class CancelPayPalCheckoutPaymentAction
+final readonly class CancelPayPalCheckoutPaymentAction
 {
     public function __construct(
-        private readonly ?PaymentProviderInterface $paymentProvider,
-        private readonly PaymentStateManagerInterface $paymentStateManager,
-        private readonly ?PaypalPaymentQueryInterface $paypalPaymentQuery = null,
+        private ?PaymentProviderInterface $paymentProvider,
+        private PaymentStateManagerInterface $paymentStateManager,
+        private ?PaypalPaymentQueryInterface $paypalPaymentQuery = null,
     ) {
         if (null !== $this->paymentProvider) {
             trigger_deprecation(
@@ -63,7 +63,7 @@ final class CancelPayPalCheckoutPaymentAction
 
         /** @var FlashBagInterface $flashBag */
         $flashBag = $request->getSession()->getBag('flashes');
-        $flashBag->add('error', 'sylius.pay_pal.something_went_wrong');
+        $flashBag->add('error', 'sylius_paypal.something_went_wrong');
 
         $this->paymentStateManager->cancel($payment);
 

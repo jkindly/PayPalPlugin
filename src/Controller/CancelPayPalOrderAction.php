@@ -13,24 +13,22 @@ declare(strict_types=1);
 
 namespace Sylius\PayPalPlugin\Controller;
 
+use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Sylius\PayPalPlugin\Provider\FlashBagProvider;
 use Sylius\PayPalPlugin\Provider\PaymentProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 
-final class CancelPayPalOrderAction
+final readonly class CancelPayPalOrderAction
 {
+    /** @param OrderRepositoryInterface<OrderInterface>|null $orderRepository */
     public function __construct(
-        private readonly ?PaymentProviderInterface $paymentProvider,
-        private readonly ?OrderRepositoryInterface $orderRepository,
-        private readonly FlashBag|RequestStack $flashBagOrRequestStack,
+        private ?PaymentProviderInterface $paymentProvider,
+        private ?OrderRepositoryInterface $orderRepository,
+        private RequestStack $flashBagOrRequestStack,
     ) {
-        if ($flashBagOrRequestStack instanceof FlashBag) {
-            trigger_deprecation('sylius/paypal-plugin', '1.5', sprintf('Passing an instance of %s as constructor argument for %s is deprecated as of PayPalPlugin 1.5 and will be removed in 2.0. Pass an instance of %s instead.', FlashBag::class, self::class, RequestStack::class));
-        }
         if (null !== $this->paymentProvider) {
             trigger_deprecation('sylius/paypal-plugin', '1.7', sprintf('Passing an instance of %s as the first argument is deprecated and will be prohibited in 3.0', PaymentProviderInterface::class));
         }

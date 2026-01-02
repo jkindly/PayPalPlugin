@@ -1,0 +1,51 @@
+imports:
+    - { resource: "@SyliusPayPalPlugin/config/integrations/winzou_state_machine/config.php" }
+    - { resource: '@SyliusPayPalPlugin/config/app/twig_hooks/**/*.yaml' }
+
+sylius_admin:
+    twig:
+        payment_method:
+            excluded_gateways:
+                - !php/const Sylius\PayPalPlugin\DependencyInjection\SyliusPayPalExtension::PAYPAL_FACTORY_NAME
+
+sylius_core:
+    checkout:
+        payment:
+            allowed_states:
+                - new
+                - cart
+                - processing
+
+sylius_grid:
+    templates:
+        action:
+            download_report: "@SyliusPayPalPlugin/admin/payment_method/grid/action/download_report.html.twig"
+            enable_paypal: "@SyliusPayPalPlugin/admin/payment_method/grid/action/enable_paypal.html.twig"
+            enable_seller: "@SyliusPayPalPlugin/admin/payment_method/grid/action/enable_seller.html.twig"
+    grids:
+        sylius_admin_payment_method:
+            actions:
+                item:
+                    enable_seller:
+                        type: enable_seller
+                    download_report:
+                        type: download_report
+                        label: sylius_paypal.report
+                        icon: tabler:download
+                        options:
+                            link:
+                                route: sylius_paypal_admin_download_payouts_report
+                                parameters:
+                                    id: resource.id
+                main:
+                    enable_paypal:
+                        type: enable_paypal
+
+monolog:
+    channels: ['paypal']
+    handlers:
+        paypal:
+            level: debug
+            type: stream
+            path: '%kernel.logs_dir%/paypal.log'
+            channels: [paypal]

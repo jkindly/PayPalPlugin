@@ -20,7 +20,6 @@ use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Order\Processor\OrderProcessorInterface;
 use Sylius\PayPalPlugin\Api\CacheAuthorizeClientApiInterface;
-use Sylius\PayPalPlugin\Api\OrderDetailsApiInterface;
 use Sylius\PayPalPlugin\Api\UpdateOrderApiInterface;
 use Sylius\PayPalPlugin\Provider\PaymentProviderInterface;
 use Sylius\PayPalPlugin\Repository\Query\PaypalPaymentQueryInterface;
@@ -28,27 +27,17 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class UpdatePayPalOrderAction
+final readonly class UpdatePayPalOrderAction
 {
+    /** @param AddressFactoryInterface<AddressInterface> $addressFactory */
     public function __construct(
-        private readonly ?PaymentProviderInterface $paymentProvider,
-        private readonly CacheAuthorizeClientApiInterface $authorizeClientApi,
-        private readonly ?OrderDetailsApiInterface $orderDetailsApi,
-        private readonly UpdateOrderApiInterface $updateOrderApi,
-        private readonly AddressFactoryInterface $addressFactory,
-        private readonly OrderProcessorInterface $orderProcessor,
-        private readonly ?PaypalPaymentQueryInterface $paypalPaymentQuery = null,
+        private ?PaymentProviderInterface $paymentProvider,
+        private CacheAuthorizeClientApiInterface $authorizeClientApi,
+        private UpdateOrderApiInterface $updateOrderApi,
+        private AddressFactoryInterface $addressFactory,
+        private OrderProcessorInterface $orderProcessor,
+        private ?PaypalPaymentQueryInterface $paypalPaymentQuery = null,
     ) {
-        if (null !== $this->orderDetailsApi) {
-            trigger_deprecation(
-                'sylius/paypal-plugin',
-                '1.7',
-                sprintf(
-                    'Passing an instance of "%s" as the third argument is deprecated and will be prohibited in 2.0',
-                    OrderDetailsApiInterface::class,
-                ),
-            );
-        }
         if (null !== $this->paymentProvider) {
             trigger_deprecation(
                 'sylius/paypal-plugin',
@@ -78,6 +67,7 @@ final class UpdatePayPalOrderAction
         } else {
             $payment = $this->paymentProvider->getByPayPalOrderId((string) $request->request->get('orderID'));
         }
+
         /** @var OrderInterface $order */
         $order = $payment->getOrder();
 

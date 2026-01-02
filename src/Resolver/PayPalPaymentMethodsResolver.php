@@ -20,6 +20,7 @@ use Sylius\PayPalPlugin\DependencyInjection\SyliusPayPalExtension;
 
 final class PayPalPaymentMethodsResolver implements PayPalPaymentMethodsResolverInterface
 {
+    /** @param PaymentMethodRepositoryInterface<PaymentMethodInterface> $paymentMethodRepository */
     public function __construct(
         private readonly PaymentMethodRepositoryInterface $paymentMethodRepository,
     ) {

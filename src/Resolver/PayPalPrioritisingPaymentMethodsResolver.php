@@ -17,16 +17,12 @@ use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Payment\Model\PaymentInterface as BasePaymentInterface;
 use Sylius\Component\Payment\Resolver\PaymentMethodsResolverInterface;
 
-final class PayPalPrioritisingPaymentMethodsResolver implements PaymentMethodsResolverInterface
+final readonly class PayPalPrioritisingPaymentMethodsResolver implements PaymentMethodsResolverInterface
 {
-    private PaymentMethodsResolverInterface $decoratedPaymentMethodsResolver;
-
-    private string $firstPaymentMethodFactoryName;
-
-    public function __construct(PaymentMethodsResolverInterface $decoratedPaymentMethodsResolver, string $firstPaymentMethodFactoryName)
-    {
-        $this->decoratedPaymentMethodsResolver = $decoratedPaymentMethodsResolver;
-        $this->firstPaymentMethodFactoryName = $firstPaymentMethodFactoryName;
+    public function __construct(
+        private PaymentMethodsResolverInterface $decoratedPaymentMethodsResolver,
+        private string $firstPaymentMethodFactoryName,
+    ) {
     }
 
     public function getSupportedMethods(BasePaymentInterface $subject): array

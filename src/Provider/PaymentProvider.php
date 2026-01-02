@@ -26,13 +26,11 @@ trigger_deprecation(
     PaypalPaymentQuery::class,
 );
 /** @deprecated since Sylius/PayPalPlugin 1.7 and will be removed in Sylius/PayPalPlugin 3.0. */
-final class PaymentProvider implements PaymentProviderInterface
+final readonly class PaymentProvider implements PaymentProviderInterface
 {
-    private PaymentRepositoryInterface $paymentRepository;
-
-    public function __construct(PaymentRepositoryInterface $paymentRepository)
+    /** @param PaymentRepositoryInterface<PaymentInterface> $paymentRepository */
+    public function __construct(private PaymentRepositoryInterface $paymentRepository)
     {
-        $this->paymentRepository = $paymentRepository;
     }
 
     public function getByPayPalOrderId(string $orderId): PaymentInterface

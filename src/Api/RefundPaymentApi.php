@@ -15,13 +15,10 @@ namespace Sylius\PayPalPlugin\Api;
 
 use Sylius\PayPalPlugin\Client\PayPalClientInterface;
 
-final class RefundPaymentApi implements RefundPaymentApiInterface
+final readonly class RefundPaymentApi implements RefundPaymentApiInterface
 {
-    private PayPalClientInterface $client;
-
-    public function __construct(PayPalClientInterface $client)
+    public function __construct(private PayPalClientInterface $client)
     {
-        $this->client = $client;
     }
 
     public function refund(

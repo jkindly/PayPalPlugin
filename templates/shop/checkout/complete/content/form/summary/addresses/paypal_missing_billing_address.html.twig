@@ -1,0 +1,15 @@
+{% if sylius_is_billing_address_missing(hookable_metadata.context.order) %}
+    <div class="col-12">
+        <div class="alert alert-secondary" role="alert">
+            <div class="d-flex">
+                <div>
+                    {{ ux_icon('tabler:id') }}
+                </div>
+                <div>
+                    <h4 class="alert-title">{{ 'sylius_paypal.missing_billing_address_header'|trans }}</h4>
+                    <div class="text-secondary">{{ 'sylius_paypal.missing_billing_address_content'|trans }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

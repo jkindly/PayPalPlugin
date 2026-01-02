@@ -1,0 +1,6 @@
+sylius_twig_hooks:
+    hooks:
+        'sylius_shop.cart.index.content.form.sections.general#right':
+            paypal_checkout:
+                template: '@SyliusPayPalPlugin/shop/cart/index/content/form/sections/general/paypal_checkout.html.twig'
+                priority: -100

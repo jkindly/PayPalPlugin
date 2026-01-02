@@ -20,7 +20,7 @@ final class DownloadPayPalReportElement extends Element implements DownloadPayPa
     public function downloadReport(string $paymentMethod): void
     {
         $row = $this->getDocument()->find('css', sprintf('tbody tr:contains("%s")', $paymentMethod));
-        $row->clickLink('Report');
+        $row->find('css', '[data-test-action="Report"]')->press();
     }
 
     public function isCsvReportDownloaded(): bool

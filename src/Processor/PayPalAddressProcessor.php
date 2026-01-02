@@ -25,13 +25,10 @@ trigger_deprecation(
 );
 
 /** @deprecated since Sylius/PayPalPlugin 1.7 and will be removed in Sylius/PayPalPlugin 3.0. */
-final class PayPalAddressProcessor implements PayPalAddressProcessorInterface
+final readonly class PayPalAddressProcessor implements PayPalAddressProcessorInterface
 {
-    private ObjectManager $objectManager;
-
-    public function __construct(ObjectManager $objectManager)
+    public function __construct(private ObjectManager $objectManager)
     {
-        $this->objectManager = $objectManager;
     }
 
     /**

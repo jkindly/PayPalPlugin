@@ -1,0 +1,21 @@
+services:
+    sylius_paypal.downloader.report:
+        class: Tests\Sylius\PayPalPlugin\Service\DummyPayoutsReportDownloader
+
+    sylius_paypal.processor.payment_complete:
+        class: Tests\Sylius\PayPalPlugin\Service\VoidPayPalPaymentCompleteProcessor
+
+    sylius_paypal.api.authorize_client:
+        class: Tests\Sylius\PayPalPlugin\Service\DummyAuthorizeClientApi
+
+    sylius_paypal.api.order_details:
+        class: Tests\Sylius\PayPalPlugin\Service\DummyOrderDetailsApi
+
+    sylius_paypal.api.refund_payment:
+        class: Tests\Sylius\PayPalPlugin\Service\DummyRefundPaymentApi
+
+    sylius_paypal.provider.paypal_refund_data:
+        class: Tests\Sylius\PayPalPlugin\Service\DummyPayPalRefundDataProvider
+
+    sylius_paypal.api.create_order:
+        class: Tests\Sylius\PayPalPlugin\Service\FakeCreateOrderApi

@@ -11,7 +11,6 @@ use Symplify\EasyCodingStandard\Config\ECSConfig;
 return static function (ECSConfig $config): void {
     $config->paths([
         'src',
-        'spec',
         'tests/Behat',
         'tests/Functional',
         'tests/Service',
@@ -37,7 +36,6 @@ TEXT
     );
 
     $config->skip([
-        VisibilityRequiredFixer::class => ['*Spec.php'],
         InlineDocCommentDeclarationSniff::class . '.MissingVariable',
     ]);
 };
