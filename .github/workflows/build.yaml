@@ -103,10 +103,6 @@ jobs:
                 run: php -v | head -n 1 | awk '{ print $2 }' > .php-version
 
             -
-                name: Install certificates
-                run: symfony server:ca:install
-
-            -
                 name: Get Composer cache directory
                 id: composer-cache
                 run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
@@ -188,8 +184,12 @@ jobs:
                     vendor/bin/console doctrine:migrations:migrate -n -vvv -q
 
             -
+                name: Setup messenger transports
+                run: vendor/bin/console messenger:setup-transports -vvv
+
+            -
                 name: Validate database schema
-                run: vendor/bin/console doctrine:schema:validate
+                run: vendor/bin/console doctrine:schema:validate -vvv
 
             -
                 name: Prepare test application assets
