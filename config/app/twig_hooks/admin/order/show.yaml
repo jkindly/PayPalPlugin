@@ -1,0 +1,6 @@
+sylius_twig_hooks:
+    hooks:
+        'sylius_admin.order.show.content.sections.payments.item':
+            refunded_paypal:
+                template: '@SyliusPayPalPlugin/admin/order/show/content/sections/payments/item/refunded_paypal.html.twig'
+                priority: 150

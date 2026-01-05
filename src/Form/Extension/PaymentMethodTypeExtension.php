@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Sylius\PayPalPlugin\Form\Extension;
 
-use Sylius\Bundle\PaymentBundle\Form\Type\PaymentMethodType;
-use Sylius\Bundle\PayumBundle\Model\GatewayConfigInterface;
+use Sylius\Bundle\AdminBundle\Form\Type\PaymentMethodType;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\Component\Payment\Model\GatewayConfigInterface;
 use Sylius\PayPalPlugin\DependencyInjection\SyliusPayPalExtension;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;

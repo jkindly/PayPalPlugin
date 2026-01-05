@@ -1,11 +1,11 @@
 /.github                        export-ignore
 /etc                            export-ignore
 /spec                           export-ignore
-/tests/Application              export-ignore
 /tests/DataFixtures             export-ignore
 /tests/DependencyInjection      export-ignore
 /tests/Integration              export-ignore
 /tests/Service                  export-ignore
+/tests/TestApplication          export-ignore
 /tests/Unit                     export-ignore
 .editorconfig                   export-ignore
 .gitattributes                  export-ignore
@@ -13,7 +13,6 @@
 behat.yml.dist                  export-ignore
 ecs.php                         export-ignore
 node_modules                    export-ignore
-phpspec.yml.dist                export-ignore
 phpstan.neon.dist               export-ignore
 phpunit.xml.dist                export-ignore
 rector.php                      export-ignore

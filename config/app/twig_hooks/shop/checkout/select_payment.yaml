@@ -1,0 +1,6 @@
+sylius_twig_hooks:
+    hooks:
+        'sylius_shop.checkout.select_payment.content.form.select_payment.payment.choice.details':
+            paypal:
+                template: '@SyliusPayPalPlugin/shop/checkout/select_payment/content/form/select_payment/payment/choice/details/paypal.html.twig'
+                priority: -100

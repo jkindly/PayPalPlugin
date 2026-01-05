@@ -14,9 +14,7 @@ declare(strict_types=1);
 namespace Sylius\PayPalPlugin\Controller;
 
 use Doctrine\Persistence\ObjectManager;
-use SM\Factory\FactoryInterface;
 use Sylius\Abstraction\StateMachine\StateMachineInterface;
-use Sylius\Abstraction\StateMachine\WinzouStateMachineAdapter;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
@@ -25,25 +23,15 @@ use Sylius\Component\Payment\PaymentTransitions;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class CancelLastPayPalPaymentAction
+final readonly class CancelLastPayPalPaymentAction
 {
+    /** @param OrderRepositoryInterface<OrderInterface> $orderRepository */
     public function __construct(
-        private readonly ObjectManager $objectManager,
-        private readonly FactoryInterface|StateMachineInterface $stateMachineFactory,
-        private readonly OrderProcessorInterface $orderPaymentProcessor,
-        private readonly OrderRepositoryInterface $orderRepository,
+        private ObjectManager $objectManager,
+        private StateMachineInterface $stateMachineFactory,
+        private OrderProcessorInterface $orderPaymentProcessor,
+        private OrderRepositoryInterface $orderRepository,
     ) {
-        if ($this->stateMachineFactory instanceof FactoryInterface) {
-            trigger_deprecation(
-                'sylius/paypal-plugin',
-                '1.6',
-                sprintf(
-                    'Passing an instance of "%s" as the second argument is deprecated and will be prohibited in 2.0. Use "%s" instead.',
-                    FactoryInterface::class,
-                    StateMachineInterface::class,
-                ),
-            );
-        }
     }
 
     public function __invoke(Request $request): Response
@@ -54,12 +42,11 @@ final class CancelLastPayPalPaymentAction
         /** @var PaymentInterface $payment */
         $payment = $order->getLastPayment();
 
-        $stateMachine = $this->getStateMachine();
-        if (!$stateMachine->can($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_CANCEL)) {
+        if (!$this->stateMachineFactory->can($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_CANCEL)) {
             return new Response('', Response::HTTP_NO_CONTENT);
         }
 
-        $stateMachine->apply($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_CANCEL);
+        $this->stateMachineFactory->apply($payment, PaymentTransitions::GRAPH, PaymentTransitions::TRANSITION_CANCEL);
 
         /** @var PaymentInterface $lastPayment */
         $lastPayment = $order->getLastPayment();
@@ -73,14 +60,5 @@ final class CancelLastPayPalPaymentAction
         $this->objectManager->flush();
 
         return new Response('', Response::HTTP_NO_CONTENT);
-    }
-
-    private function getStateMachine(): StateMachineInterface
-    {
-        if ($this->stateMachineFactory instanceof FactoryInterface) {
-            return new WinzouStateMachineAdapter($this->stateMachineFactory);
-        }
-
-        return $this->stateMachineFactory;
     }
 }

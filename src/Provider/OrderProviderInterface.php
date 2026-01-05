@@ -18,13 +18,9 @@ use Sylius\PayPalPlugin\Exception\OrderNotFoundException;
 
 interface OrderProviderInterface
 {
-    /**
-     * @throws OrderNotFoundException
-     */
+    /** @throws OrderNotFoundException */
     public function provideOrderById(int $id): OrderInterface;
 
-    /**
-     * @throws OrderNotFoundException
-     */
+    /** @throws OrderNotFoundException */
     public function provideOrderByToken(string $token): OrderInterface;
 }

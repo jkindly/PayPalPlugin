@@ -34,8 +34,9 @@ trigger_deprecation(
 );
 
 /** @deprecated since Sylius/PayPalPlugin 1.7 and will be removed in Sylius/PayPalPlugin 3.0. */
-final class PayPalDefaultPaymentMethodResolver implements DefaultPaymentMethodResolverInterface
+final readonly class PayPalDefaultPaymentMethodResolver implements DefaultPaymentMethodResolverInterface
 {
+    /** @param PaymentMethodRepositoryInterface<CorePaymentMethodInterface> $paymentMethodRepository */
     public function __construct(
         private DefaultPaymentMethodResolverInterface $decoratedDefaultPaymentMethodResolver,
         private PaymentMethodRepositoryInterface $paymentMethodRepository,
@@ -49,7 +50,6 @@ final class PayPalDefaultPaymentMethodResolver implements DefaultPaymentMethodRe
             return $this->decoratedDefaultPaymentMethodResolver->getDefaultPaymentMethod($payment);
         }
 
-        /** @var PaymentInterface $payment */
         Assert::isInstanceOf($payment, PaymentInterface::class);
 
         /** @var OrderInterface $order */
@@ -63,7 +63,6 @@ final class PayPalDefaultPaymentMethodResolver implements DefaultPaymentMethodRe
 
     private function getFirstPrioritisedPaymentForChannel(PaymentInterface $payment, ChannelInterface $channel, string $prioritisedPayment): PaymentMethodInterface
     {
-        /** @var array<CorePaymentMethodInterface> $paymentMethods */
         $paymentMethods = $this->paymentMethodRepository->findEnabledForChannel($channel);
         if (empty($paymentMethods)) {
             throw new UnresolvedDefaultPaymentMethodException();

@@ -32,6 +32,7 @@ default:
                 - sylius.behat.context.setup.channel
                 - sylius.behat.context.setup.currency
                 - sylius.behat.context.setup.customer
+                - sylius.behat.context.setup.cart
                 - sylius.behat.context.setup.exchange_rate
                 - sylius.behat.context.setup.geographical
                 - sylius.behat.context.setup.locale
@@ -102,13 +103,13 @@ default:
                 tags: "@managing_payment_methods&&@ui"
         ui_managing_orders:
             contexts:
-                - Sylius\Calendar\Tests\Behat\Context\Hook\CalendarContext
+                - sylius.behat.context.hook.calendar
                 - sylius.behat.context.hook.doctrine_orm
                 - sylius.behat.context.hook.mailer
 
                 - sylius.behat.context.setup.admin_security
                 - sylius.behat.context.setup.admin_user
-                - Sylius\Calendar\Tests\Behat\Context\Setup\CalendarContext
+                - sylius.behat.context.setup.calendar
                 - sylius.behat.context.setup.channel
                 - sylius.behat.context.setup.currency
                 - sylius.behat.context.setup.customer

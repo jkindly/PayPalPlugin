@@ -17,13 +17,10 @@ use Doctrine\Common\Collections\Collection;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\OrderItemInterface;
 
-final class PayPalItemDataProvider implements PayPalItemDataProviderInterface
+final readonly class PayPalItemDataProvider implements PayPalItemDataProviderInterface
 {
-    private OrderItemNonNeutralTaxesProviderInterface $orderItemNonNeutralTaxesProvider;
-
-    public function __construct(OrderItemNonNeutralTaxesProviderInterface $orderItemNonNeutralTaxesProvider)
+    public function __construct(private OrderItemNonNeutralTaxesProviderInterface $orderItemNonNeutralTaxesProvider)
     {
-        $this->orderItemNonNeutralTaxesProvider = $orderItemNonNeutralTaxesProvider;
     }
 
     public function provide(OrderInterface $order): array
