@@ -8,7 +8,6 @@
 
 /.phpunit.result.cache
 /behat.yml
-/phpspec.yml
 /phpunit.xml
 
 /tests/TestApplication/.env.local
