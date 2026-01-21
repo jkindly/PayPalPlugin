@@ -21,11 +21,21 @@ use Twig\TwigFunction;
 
 final class PayPalExtension extends AbstractExtension
 {
+    public function __construct(private readonly bool $sandbox)
+    {
+    }
+
     public function getFunctions(): array
     {
         return [
             new TwigFunction('sylius_is_paypal_enabled', [$this, 'isPayPalEnabled']),
+            new TwigFunction('sylius_is_paypal_sandbox', [$this, 'isSandbox']),
         ];
+    }
+
+    public function isSandbox(): bool
+    {
+        return $this->sandbox;
     }
 
     public function isPayPalEnabled(iterable $paymentMethods): bool
