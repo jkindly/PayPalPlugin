@@ -50,6 +50,10 @@
             <tag name="sylius.gateway_configuration_type" type="sylius_paypal" label="sylius_paypal.label" />
         </service>
 
+        <service id="sylius_paypal.form.type.paypal_sandbox_credentials" class="Sylius\PayPalPlugin\Form\Type\PayPalSandboxCredentialsType">
+            <tag name="form.type" />
+        </service>
+
         <service
             id="sylius_paypal.generator.paypal_auth_assertion"
             class="Sylius\PayPalPlugin\Generator\PayPalAuthAssertionGenerator"
@@ -307,12 +311,35 @@
         </service>
         <service id="Sylius\PayPalPlugin\Registrar\SellerWebhookRegistrarInterface" alias="sylius_paypal.registrar.seller_webhook" />
 
+        <service id="sylius_paypal.creator.sandbox_payment_method" class="Sylius\PayPalPlugin\Creator\PayPalSandboxPaymentMethodCreator">
+            <argument type="service" id="sylius.factory.gateway_config" />
+            <argument type="service" id="sylius.factory.payment_method" />
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+
         <service id="sylius_paypal.twig.extension.paypal" class="Sylius\PayPalPlugin\Twig\PayPalExtension">
             <tag name="twig.extension" />
         </service>
 
         <service id="sylius_paypal.twig.extension.order_address" class="Sylius\PayPalPlugin\Twig\OrderAddressExtension">
             <tag name="twig.extension" />
+        </service>
+
+        <service
+                id="sylius_paypal.twig.component.paypal_sandbox_modal"
+                class="Sylius\PayPalPlugin\Twig\Component\PayPalSandboxModalComponent"
+        >
+            <argument type="service" id="form.factory" />
+            <argument type="service" id="sylius_paypal.creator.sandbox_payment_method" />
+            <argument type="service" id="request_stack" />
+            <argument type="service" id="logger" />
+            <argument type="service" id="router" />
+
+            <tag
+                    name="sylius.live_component.admin"
+                    key="sylius_paypal:create_sandbox_modal"
+                    template="@SyliusPayPalPlugin/admin/shared/components/paypal_sandbox_modal.html.twig"
+            />
         </service>
 
         <service id="sylius_paypal.verifier.payment_amount" class="Sylius\PayPalPlugin\Verifier\PaymentAmountVerifier" />
