@@ -318,6 +318,7 @@
         </service>
 
         <service id="sylius_paypal.twig.extension.paypal" class="Sylius\PayPalPlugin\Twig\PayPalExtension">
+            <argument>%sylius_paypal.sandbox%</argument>
             <tag name="twig.extension" />
         </service>
 
