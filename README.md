@@ -54,3 +54,8 @@ Sylius Core Team’s plugin for [PayPal Commerce Platform](https://www.paypal.co
 * `1.5` (v1.5.*) - security fixes
 * `1.6` (v1.6.*) - bug fixes, improvements
 * `1.7` (v1.7.*) - new features
+
+## Telemetry
+
+This plugin enforces telemetry data collection when used with Sylius.
+Details are described in [TELEMETRY_POLICY.md](./TELEMETRY_POLICY.md).
