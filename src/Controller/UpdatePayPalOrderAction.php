@@ -62,9 +62,9 @@ final readonly class UpdatePayPalOrderAction
 
     public function __invoke(Request $request): Response
     {
-        $data = json_decode($request->getContent(), true);
+        $payload = $request->getPayload();
+        $orderId = $payload->getString('orderID');
 
-        $orderId = (string) ($data['orderID'] ?? null);
         if (null !== $this->paypalPaymentQuery) {
             $payment = $this->paypalPaymentQuery->getForUpdateByOrderId($orderId);
         } else {
@@ -78,7 +78,7 @@ final readonly class UpdatePayPalOrderAction
         $paymentMethod = $payment->getMethod();
         $token = $this->authorizeClientApi->authorize($paymentMethod);
 
-        $shippingAddress = $data['shipping_address'];
+        $shippingAddress = $payload->all('shipping_address');
 
         /** @var AddressInterface $address */
         $address = $this->addressFactory->createNew();
