@@ -62,10 +62,13 @@ final readonly class UpdatePayPalOrderAction
 
     public function __invoke(Request $request): Response
     {
+        $data = json_decode($request->getContent(), true);
+
+        $orderId = (string) ($data['orderID'] ?? null);
         if (null !== $this->paypalPaymentQuery) {
-            $payment = $this->paypalPaymentQuery->getForUpdateByOrderId((string) $request->request->get('orderID'));
+            $payment = $this->paypalPaymentQuery->getForUpdateByOrderId($orderId);
         } else {
-            $payment = $this->paymentProvider->getByPayPalOrderId((string) $request->request->get('orderID'));
+            $payment = $this->paymentProvider->getByPayPalOrderId($orderId);
         }
 
         /** @var OrderInterface $order */
@@ -75,7 +78,7 @@ final readonly class UpdatePayPalOrderAction
         $paymentMethod = $payment->getMethod();
         $token = $this->authorizeClientApi->authorize($paymentMethod);
 
-        $shippingAddress = $request->request->all('shipping_address');
+        $shippingAddress = $data['shipping_address'];
 
         /** @var AddressInterface $address */
         $address = $this->addressFactory->createNew();
@@ -95,7 +98,7 @@ final readonly class UpdatePayPalOrderAction
 
         $response = $this->updateOrderApi->update(
             $token,
-            (string) $request->request->get('orderID'),
+            $orderId,
             $payment,
             $payment->getDetails()['reference_id'],
             $gatewayConfig->getConfig()['merchant_id'],
