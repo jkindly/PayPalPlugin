@@ -66,7 +66,9 @@ final readonly class ProcessPayPalOrderAction
 
     public function __invoke(Request $request): Response
     {
-        $orderId = $request->request->getInt('orderId');
+        $payload = $request->getPayload();
+        $orderId = $payload->getInt('orderId');
+
         $order = $this->orderProvider->provideOrderById($orderId);
 
         /** @var PaymentInterface|null $payment */
@@ -76,7 +78,7 @@ final readonly class ProcessPayPalOrderAction
             return new JsonResponse(['orderID' => $orderId]);
         }
 
-        $data = $this->getOrderDetails((string) $request->request->get('payPalOrderId'), $payment);
+        $data = $this->getOrderDetails($payload->getString('payPalOrderId'), $payment);
 
         /** @var CustomerInterface|null $customer */
         $customer = $order->getCustomer();
