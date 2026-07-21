@@ -1,3 +1,74 @@
+### UPGRADE FROM 2.0.10 to 2.0.11
+
+1. #### The refund webhook is now authenticated with PayPal's signature verification.
+
+   `Sylius\PayPalPlugin\Controller\Webhook\RefundOrderAction` (route `sylius_paypal_webhook_refund_order`,
+   `POST /paypal-webhook/api/`) now verifies that the incoming request was genuinely sent by PayPal before
+   processing the refund. Requests without a valid PayPal signature (e.g. missing the `PAYPAL-TRANSMISSION-*`
+   headers, or a signature that PayPal does not confirm) receive `404 Not Found` and are not processed.
+
+   The webhook id required for verification is resolved from PayPal on the first authenticated request and
+   then stored in the payment method's gateway config under `webhook_id`, so subsequent requests do not call
+   PayPal again.
+
+1. #### New optional parameter `sylius_paypal.webhook_base_url`.
+
+   When resolving the webhook id, `WebhookIdProvider` builds the webhook URL from the current request context
+   (`UrlGeneratorInterface::ABSOLUTE_URL`) by default. As this resolution happens while handling the incoming
+   webhook request from PayPal, behind a reverse proxy or load balancer the generated URL can differ from the
+   URL actually registered with PayPal (rewritten host, added/duplicated path prefix, ...), which would prevent
+   the incoming webhook from being matched and, in turn, refunds from being processed.
+
+   If that happens, set the public base URL of your store explicitly. The path is still taken from the route,
+   so pass only scheme + host (optionally with a path prefix):
+
+   ```yaml
+   # config/services.yaml
+   parameters:
+       sylius_paypal.webhook_base_url: 'https://my-shop.example.com'
+   ```
+
+   or bind it to an environment variable:
+
+   ```yaml
+   parameters:
+       sylius_paypal.webhook_base_url: '%env(default::PAYPAL_WEBHOOK_BASE_URL)%'
+   ```
+
+   Leave it empty (the default) to keep the previous behavior. A differing scheme (`http`/`https`), a trailing
+   slash and an explicit port are already tolerated when matching the registered webhook, so those alone do
+   not require this parameter.
+
+1. #### New optional parameter `sylius_paypal.webhook_id_refresh_cooldown`.
+
+   The resolved webhook id is cached on the payment method's gateway config. If it becomes stale (the webhook was
+   re-registered, or the store's domain/account changed) signature verification fails, so the plugin re-resolves
+   the id from PayPal once and retries. That re-resolution is rate-limited by a cache-based cooldown (in seconds,
+   default `300`) to avoid a request flood forcing repeated PayPal calls. Tune it if needed:
+
+   ```yaml
+   # config/services.yaml
+   parameters:
+       sylius_paypal.webhook_id_refresh_cooldown: 300
+   ```
+
+1. The following constructor signatures have been changed:
+
+`Sylius\PayPalPlugin\Controller\Webhook\RefundOrderAction`:
+```diff
+public function __construct(
+    private StateMachineInterface $stateMachineFactory,
+    private ?PaymentProviderInterface $paymentProvider,
+    private ObjectManager $paymentManager,
+    private PayPalRefundDataProviderInterface $payPalRefundDataProvider,
++   private PayPalPaymentMethodProviderInterface $payPalPaymentMethodProvider,
++   private CacheAuthorizeClientApiInterface $authorizeClientApi,
++   private WebhookSignatureVerifierInterface $webhookSignatureVerifier,
++   private WebhookIdProviderInterface $webhookIdProvider,
+    private ?PaypalPaymentQueryInterface $paypalPaymentQuery = null,
+)
+```
+
 ### UPGRADE FROM 2.0.2 to 2.0.3
 
 1. #### Removed overwriting of shipping address in `CompleteOrderAction` and introduced shipping address update to PayPal.

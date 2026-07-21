@@ -18,6 +18,8 @@
 >
     <parameters>
         <parameter key="sylius_paypal.request_trials_limit">5</parameter>
+        <parameter key="sylius_paypal.webhook_base_url"></parameter>
+        <parameter key="sylius_paypal.webhook_id_refresh_cooldown">300</parameter>
     </parameters>
     <services>
         <service
@@ -117,6 +119,40 @@
             <argument type="service" id="Psr\Http\Message\StreamFactoryInterface" />
         </service>
         <service id="Sylius\PayPalPlugin\Api\WebhookApiInterface" alias="sylius_paypal.api.webhook" />
+
+        <service
+            id="sylius_paypal.api.webhook_signature_verifier"
+            class="Sylius\PayPalPlugin\Api\WebhookSignatureVerifier"
+        >
+            <argument type="service" id="sylius.http_client" />
+            <argument>%sylius_paypal.api_base_url%</argument>
+            <argument type="service" id="Psr\Http\Message\RequestFactoryInterface" />
+            <argument type="service" id="Psr\Http\Message\StreamFactoryInterface" />
+        </service>
+        <service id="Sylius\PayPalPlugin\Api\WebhookSignatureVerifierInterface" alias="sylius_paypal.api.webhook_signature_verifier" />
+
+        <service
+            id="sylius_paypal.provider.webhook_id"
+            class="Sylius\PayPalPlugin\Provider\WebhookIdProvider"
+        >
+            <argument type="service" id="sylius_paypal.api.generic" />
+            <argument type="service" id="sylius_paypal.api.cache_authorize_client" />
+            <argument type="service" id="router" />
+            <argument>%sylius_paypal.api_base_url%</argument>
+            <argument>%sylius_paypal.webhook_base_url%</argument>
+        </service>
+
+        <service
+            id="sylius_paypal.provider.webhook_id.persisting"
+            class="Sylius\PayPalPlugin\Provider\PersistingWebhookIdProvider"
+            decorates="sylius_paypal.provider.webhook_id"
+        >
+            <argument type="service" id=".inner" />
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="cache.app" />
+            <argument>%sylius_paypal.webhook_id_refresh_cooldown%</argument>
+        </service>
+        <service id="Sylius\PayPalPlugin\Provider\WebhookIdProviderInterface" alias="sylius_paypal.provider.webhook_id" />
 
         <service
             id="sylius_paypal.api.update_order"
