@@ -18,10 +18,14 @@ use SM\Factory\FactoryInterface;
 use Sylius\Abstraction\StateMachine\StateMachineInterface;
 use Sylius\Abstraction\StateMachine\WinzouStateMachineAdapter;
 use Sylius\Component\Payment\PaymentTransitions;
+use Sylius\PayPalPlugin\Api\CacheAuthorizeClientApiInterface;
+use Sylius\PayPalPlugin\Api\WebhookSignatureVerifierInterface;
 use Sylius\PayPalPlugin\Exception\PaymentNotFoundException;
 use Sylius\PayPalPlugin\Exception\PayPalWrongDataException;
 use Sylius\PayPalPlugin\Provider\PaymentProviderInterface;
+use Sylius\PayPalPlugin\Provider\PayPalPaymentMethodProviderInterface;
 use Sylius\PayPalPlugin\Provider\PayPalRefundDataProviderInterface;
+use Sylius\PayPalPlugin\Provider\WebhookIdProviderInterface;
 use Sylius\PayPalPlugin\Repository\Query\PaypalPaymentQueryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,6 +39,10 @@ final class RefundOrderAction
         private readonly ?PaymentProviderInterface $paymentProvider,
         private readonly ObjectManager $paymentManager,
         private readonly PayPalRefundDataProviderInterface $payPalRefundDataProvider,
+        private readonly PayPalPaymentMethodProviderInterface $payPalPaymentMethodProvider,
+        private readonly CacheAuthorizeClientApiInterface $authorizeClientApi,
+        private readonly WebhookSignatureVerifierInterface $webhookSignatureVerifier,
+        private readonly WebhookIdProviderInterface $webhookIdProvider,
         private readonly ?PaypalPaymentQueryInterface $paypalPaymentQuery = null,
     ) {
         if ($this->stateMachineFactory instanceof FactoryInterface) {
@@ -72,6 +80,27 @@ final class RefundOrderAction
 
     public function __invoke(Request $request): Response
     {
+        try {
+            $paymentMethod = $this->payPalPaymentMethodProvider->provide();
+            $webhookId = $this->webhookIdProvider->provide($paymentMethod);
+            $token = $this->authorizeClientApi->authorize($paymentMethod);
+
+            $verified = null !== $webhookId && $this->webhookSignatureVerifier->verify($request, $webhookId, $token);
+
+            if (!$verified) {
+                $freshWebhookId = $this->webhookIdProvider->refresh($paymentMethod);
+                if (null !== $freshWebhookId && $freshWebhookId !== $webhookId) {
+                    $verified = $this->webhookSignatureVerifier->verify($request, $freshWebhookId, $token);
+                }
+            }
+        } catch (\Throwable) {
+            $verified = false;
+        }
+
+        if (!$verified) {
+            return new JsonResponse(['error' => 'Not found'], Response::HTTP_NOT_FOUND);
+        }
+
         $refundData = $this->payPalRefundDataProvider->provide($this->getPayPalPaymentUrl($request));
 
         try {
