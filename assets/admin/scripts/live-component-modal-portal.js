@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-const SANDBOX_MODAL_COMPONENT_NAME = 'sylius_paypal_sandbox_modal';
+const SANDBOX_MODAL_COMPONENT_NAME = 'sylius_paypal:create_sandbox_modal';
 
 function getSandboxModalWrapper(modal) {
     const parent = modal.parentElement;

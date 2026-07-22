@@ -1,7 +1,10 @@
 {
     "name": "sylius/paypal-plugin",
     "type": "sylius-plugin",
-    "keywords": ["sylius", "sylius-plugin"],
+    "keywords": [
+        "sylius",
+        "sylius-plugin"
+    ],
     "description": "PayPal plugin for Sylius.",
     "license": "MIT",
     "require": {
@@ -12,6 +15,7 @@
         "psr/http-client": "^1.0",
         "sylius-labs/doctrine-migrations-extra-bundle": "^0.2",
         "sylius/sylius": "^2.0.1",
+        "sylius/telemetry": "^1.0",
         "symfony/mailer": "^6.4 || ^7.1"
     },
     "require-dev": {
