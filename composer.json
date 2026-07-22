@@ -10,7 +10,6 @@
     "require": {
         "php": "^8.2",
         "doctrine/doctrine-migrations-bundle": "^3.3",
-        "friendsofsymfony/rest-bundle": "^3.7",
         "php-http/discovery": "^1.20",
         "phpseclib/phpseclib": "^3.0",
         "psr/http-client": "^1.0",
@@ -77,7 +76,7 @@
             "dev-master": "2.0-dev"
         },
         "symfony": {
-            "require": "^6.4"
+            "require": "^7.4"
         },
         "public-dir": "vendor/sylius/test-application/public"
     },

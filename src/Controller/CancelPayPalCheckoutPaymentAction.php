@@ -51,14 +51,13 @@ final readonly class CancelPayPalCheckoutPaymentAction
 
     public function __invoke(Request $request): Response
     {
-        /** @var string $content */
-        $content = $request->getContent();
-        $content = (array) json_decode($content, true);
+        $payload = $request->getPayload();
+        $paypalOrderId = $payload->getString('payPalOrderId');
 
         if (null !== $this->paypalPaymentQuery) {
-            $payment = $this->paypalPaymentQuery->getForCancellationByOrderId((string) $content['payPalOrderId']);
+            $payment = $this->paypalPaymentQuery->getForCancellationByOrderId($paypalOrderId);
         } else {
-            $payment = $this->paymentProvider->getByPayPalOrderId((string) $content['payPalOrderId']);
+            $payment = $this->paymentProvider->getByPayPalOrderId($paypalOrderId);
         }
 
         /** @var FlashBagInterface $flashBag */
