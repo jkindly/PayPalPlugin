@@ -18,27 +18,6 @@
 >
     <services>
         <service
-            id="sylius_paypal.onboarding.initiator"
-            class="Sylius\PayPalPlugin\Onboarding\Initiator\OnboardingInitiator"
-        >
-            <argument type="service" id="router" />
-            <argument type="service" id="security.helper" />
-            <argument>%sylius_paypal.facilitator_url%</argument>
-        </service>
-        <service id="Sylius\PayPalPlugin\Onboarding\Initiator\OnboardingInitiatorInterface" alias="sylius_paypal.onboarding.initiator" />
-
-        <service
-            id="sylius_paypal.onboarding.processor.basic"
-            class="Sylius\PayPalPlugin\Onboarding\Processor\BasicOnboardingProcessor"
-        >
-            <argument type="service" id="sylius.http_client" />
-            <argument type="service" id="sylius_paypal.registrar.seller_webhook" />
-            <argument>%sylius_paypal.facilitator_url%</argument>
-            <argument type="service" id="Psr\Http\Message\RequestFactoryInterface" />
-        </service>
-        <service id="Sylius\PayPalPlugin\Onboarding\Processor\OnboardingProcessorInterface" alias="sylius_paypal.onboarding.processor.basic" />
-
-        <service
             id="sylius_paypal.provider.seller_nonce"
             class="Sylius\PayPalPlugin\Provider\SellerNonceProvider"
         >

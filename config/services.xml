@@ -83,11 +83,6 @@
         </service>
         <service id="Sylius\PayPalPlugin\Manager\PaymentStateManagerInterface" alias="sylius_paypal.manager.payment_state" />
 
-        <service id="sylius_paypal.factory.paypal_payment_method_new_resource" class="Sylius\PayPalPlugin\Factory\PayPalPaymentMethodNewResourceFactory" decorates="sylius.resource_controller.new_resource_factory">
-            <argument type="service" id=".inner" />
-            <argument type="service" id="sylius_paypal.onboarding.processor.basic" />
-        </service>
-
         <service id="sylius_paypal.provider.order" class="Sylius\PayPalPlugin\Provider\OrderProvider">
             <argument type="service" id="sylius.repository.order" />
         </service>
@@ -270,11 +265,11 @@
             id="sylius_paypal.enabler.payment_method"
             class="Sylius\PayPalPlugin\Enabler\PayPalPaymentMethodEnabler"
         >
-            <argument type="service" id="sylius.http_client" />
-            <argument>%sylius_paypal.facilitator_url%</argument>
+            <argument type="service" id="sylius_paypal.api.authorize_client" />
+            <argument type="service" id="sylius_paypal.api.merchant_onboarding_status" />
             <argument type="service" id="sylius.manager.payment_method" />
             <argument type="service" id="sylius_paypal.registrar.seller_webhook" />
-            <argument type="service" id="Psr\Http\Message\RequestFactoryInterface" />
+            <argument>%sylius_paypal.partner_id%</argument>
         </service>
         <service id="Sylius\PayPalPlugin\Enabler\PaymentMethodEnablerInterface" alias="sylius_paypal.enabler.payment_method" />
 
