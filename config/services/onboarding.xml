@@ -37,5 +37,25 @@
             <argument type="service" id="Psr\Http\Message\RequestFactoryInterface" />
         </service>
         <service id="Sylius\PayPalPlugin\Onboarding\Processor\OnboardingProcessorInterface" alias="sylius_paypal.onboarding.processor.basic" />
+
+        <service
+            id="sylius_paypal.provider.seller_nonce"
+            class="Sylius\PayPalPlugin\Provider\SellerNonceProvider"
+        >
+            <argument type="service" id="request_stack" />
+        </service>
+        <service id="Sylius\PayPalPlugin\Provider\SellerNonceProviderInterface" alias="sylius_paypal.provider.seller_nonce" />
+
+        <service
+            id="sylius_paypal.provider.onboarding_url"
+            class="Sylius\PayPalPlugin\Provider\PayPalOnboardingUrlProvider"
+        >
+            <argument>%sylius_paypal.web_url%</argument>
+            <argument>%sylius_paypal.partner_id%</argument>
+            <argument>%sylius_paypal.partner_client_id%</argument>
+            <argument>%sylius_paypal.partner_logo_url%</argument>
+            <argument type="service" id="router" />
+        </service>
+        <service id="Sylius\PayPalPlugin\Provider\PayPalOnboardingUrlProviderInterface" alias="sylius_paypal.provider.onboarding_url" />
     </services>
 </container>

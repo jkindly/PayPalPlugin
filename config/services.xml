@@ -67,11 +67,9 @@
         </service>
 
         <service id="sylius_paypal.listener.paypal_payment_method" class="Sylius\PayPalPlugin\Listener\PayPalPaymentMethodListener">
-            <argument type="service" id="sylius_paypal.onboarding.initiator" />
             <argument type="service" id="router" />
             <argument type="service" id="request_stack" />
             <argument type="service" id="sylius_paypal.provider.paypal_payment_method" />
-            <argument>%sylius_paypal.sandbox%</argument>
             <tag name="kernel.event_listener" event="sylius.payment_method.initialize_create" method="initializeCreate" />
         </service>
 
@@ -317,8 +315,18 @@
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
 
+        <service id="sylius_paypal.creator.onboarding_payment_method" class="Sylius\PayPalPlugin\Creator\PayPalOnboardingPaymentMethodCreator">
+            <argument type="service" id="sylius_paypal.registrar.seller_webhook" />
+            <argument type="service" id="sylius.factory.gateway_config" />
+            <argument type="service" id="sylius.factory.payment_method" />
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument>%sylius_paypal.partner_attribution_id%</argument>
+        </service>
+        <service id="Sylius\PayPalPlugin\Creator\PayPalOnboardingPaymentMethodCreatorInterface" alias="sylius_paypal.creator.onboarding_payment_method" />
+
         <service id="sylius_paypal.twig.extension.paypal" class="Sylius\PayPalPlugin\Twig\PayPalExtension">
             <argument>%sylius_paypal.sandbox%</argument>
+            <argument>%sylius_paypal.partner_js_url%</argument>
             <tag name="twig.extension" />
         </service>
 
@@ -340,6 +348,20 @@
                     name="sylius.live_component.admin"
                     key="sylius_paypal:create_sandbox_modal"
                     template="@SyliusPayPalPlugin/admin/shared/components/paypal_sandbox_modal.html.twig"
+            />
+        </service>
+
+        <service
+                id="sylius_paypal.twig.component.paypal_onboarding_modal"
+                class="Sylius\PayPalPlugin\Twig\Component\PayPalOnboardingModalComponent"
+        >
+            <argument type="service" id="sylius_paypal.provider.onboarding_url" />
+            <argument type="service" id="sylius_paypal.provider.seller_nonce" />
+
+            <tag
+                    name="sylius.live_component.admin"
+                    key="sylius_paypal:create_onboarding_modal"
+                    template="@SyliusPayPalPlugin/admin/shared/components/paypal_onboarding_modal.html.twig"
             />
         </service>
 
