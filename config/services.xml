@@ -352,6 +352,7 @@
         >
             <argument type="service" id="sylius_paypal.provider.onboarding_url" />
             <argument type="service" id="sylius_paypal.provider.seller_nonce" />
+            <argument type="service" id="monolog.logger.paypal" />
 
             <tag
                     name="sylius.live_component.admin"
