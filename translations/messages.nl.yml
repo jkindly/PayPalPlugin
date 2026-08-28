@@ -3,6 +3,7 @@ sylius_paypal:
     billing_info: 'Facturatie adres is hetzefde als de bestelling'
     client_id: 'Client ID'
     client_secret: 'Client Secret'
+    could_not_load_onboarding_url: 'Kan de PayPal-verbindingslink niet laden. Sluit dit venster en probeer het opnieuw.'
     credit_card: 'Credit Card'
     credit_card_number: 'Credit Card nummer'
     cvv: 'CVV'

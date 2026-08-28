@@ -3,6 +3,7 @@ sylius_paypal:
     billing_info: 'Billing address same as order'
     client_id: 'Client ID'
     client_secret: 'Client Secret'
+    could_not_load_onboarding_url: 'Could not load the PayPal connection link. Please, close this window and try again.'
     credit_card: 'Credit Card'
     credit_card_number: 'Credit Card number'
     cvv: 'CVV'
