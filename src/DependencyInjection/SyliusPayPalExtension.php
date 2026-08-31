@@ -28,8 +28,6 @@ final class SyliusPayPalExtension extends Extension implements PrependExtensionI
 {
     public const PAYPAL_FACTORY_NAME = 'sylius_paypal';
 
-    public const PARTNER_LOGO_URL = '';
-
     public function getAlias(): string
     {
         return 'sylius_paypal';
@@ -96,7 +94,6 @@ final class SyliusPayPalExtension extends Extension implements PrependExtensionI
         $container->setParameter('sylius_paypal.sandbox', (bool) $config['sandbox']);
         $container->setParameter('sylius_paypal.prioritized_factory_name', self::PAYPAL_FACTORY_NAME);
         $container->setParameter('sylius_paypal.partner_attribution_id', PayPalSandboxPaymentMethodCreatorInterface::PARTNER_ATTRIBUTION_ID);
-        $container->setParameter('sylius_paypal.partner_logo_url', self::PARTNER_LOGO_URL);
 
         if ($container->getParameter('sylius_paypal.sandbox')) {
             $container->setParameter('sylius_paypal.api_base_url', 'https://api.sandbox.paypal.com/');

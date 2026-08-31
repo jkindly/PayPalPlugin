@@ -42,7 +42,6 @@
         >
             <argument>%sylius_paypal.web_url%</argument>
             <argument type="service" id="sylius_paypal.provider.partner_credentials" />
-            <argument>%sylius_paypal.partner_logo_url%</argument>
             <argument type="service" id="router" />
         </service>
         <service id="Sylius\PayPalPlugin\Provider\PayPalOnboardingUrlProviderInterface" alias="sylius_paypal.provider.onboarding_url" />
