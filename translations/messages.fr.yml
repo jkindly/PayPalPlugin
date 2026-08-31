@@ -3,6 +3,7 @@ sylius_paypal:
     billing_info: 'Utiliser la même adresse de facturation que pour la commande'
     client_id: 'Client ID'
     client_secret: 'Client Secret'
+    could_not_load_onboarding_url: "Impossible de charger le lien de connexion PayPal. Veuillez fermer cette fenêtre et réessayer."
     credit_card: 'Carte de crédit'
     credit_card_number: 'Numéro de carte'
     cvv: 'CVV'
