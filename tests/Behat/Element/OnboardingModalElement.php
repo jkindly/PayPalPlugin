@@ -37,8 +37,8 @@ final class OnboardingModalElement extends Element implements OnboardingModalEle
 
         $link = $this->getDocument()->waitFor(
             10,
-            fn () => $this->findConnectLink() !== null
-                && $this->findConnectLink()->getAttribute('href') !== $previousHref
+            fn () => $this->findConnectLink() !== null &&
+                $this->findConnectLink()->getAttribute('href') !== $previousHref
                 ? $this->findConnectLink()
                 : null,
         );
