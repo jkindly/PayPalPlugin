@@ -41,6 +41,18 @@ final class PayPalSandboxModalComponent
     #[LiveProp]
     public ?PayPalSandboxCredentialsType $paypalSandboxCredentials = null;
 
+    /**
+     * Plain `{% props %}` (twig-only, not backed by a LiveProp) only survive the INITIAL render -
+     * the live-action AJAX protocol only round-trips real LiveProps, so a prop passed solely via
+     * `{% component ... with {modalId: ...} %}` reverts to its `{% props %}` default (here, an
+     * empty id) on a re-render, e.g. after a failed form submission redisplays this same modal.
+     */
+    #[LiveProp]
+    public string $modalId = '';
+
+    #[LiveProp]
+    public ?string $type = null;
+
     public function __construct(
         private readonly FormFactoryInterface $formFactory,
         private readonly PayPalSandboxPaymentMethodCreatorInterface $sandboxPaymentMethodCreator,

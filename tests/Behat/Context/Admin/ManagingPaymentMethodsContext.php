@@ -21,6 +21,7 @@ use Sylius\Behat\Page\Admin\PaymentMethod\CreatePageInterface;
 use Sylius\Behat\Service\NotificationCheckerInterface;
 use Sylius\PayPalPlugin\DependencyInjection\SyliusPayPalExtension;
 use Tests\Sylius\PayPalPlugin\Behat\Element\DownloadPayPalReportElementInterface;
+use Tests\Sylius\PayPalPlugin\Behat\Element\EnablePayPalSandboxElementInterface;
 use Webmozart\Assert\Assert;
 
 final readonly class ManagingPaymentMethodsContext implements Context
@@ -29,6 +30,7 @@ final readonly class ManagingPaymentMethodsContext implements Context
         private DownloadPayPalReportElementInterface $downloadPayPalReportElement,
         private NotificationCheckerInterface $notificationChecker,
         private CreatePageInterface $createPage,
+        private EnablePayPalSandboxElementInterface $enablePayPalSandboxElement,
     ) {
     }
 
@@ -46,6 +48,14 @@ final readonly class ManagingPaymentMethodsContext implements Context
     public function yesterdayReportCsvFileShouldBeSuccessfullyDownloaded(): void
     {
         Assert::true($this->downloadPayPalReportElement->isCsvReportDownloaded());
+    }
+
+    /**
+     * @When I enable PayPal using sandbox credentials :clientId, :clientSecret and :merchantId
+     */
+    public function iEnablePayPalUsingSandboxCredentials(string $clientId, string $clientSecret, string $merchantId): void
+    {
+        $this->enablePayPalSandboxElement->enableWithCredentials($clientId, $clientSecret, $merchantId);
     }
 
     /**

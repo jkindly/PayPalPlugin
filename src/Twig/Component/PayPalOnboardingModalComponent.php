@@ -35,6 +35,19 @@ final class PayPalOnboardingModalComponent
     #[LiveProp]
     public bool $failed = false;
 
+    /**
+     * Plain `{% props %}` (twig-only, not backed by a LiveProp) only survive the INITIAL render -
+     * the live-action AJAX protocol only round-trips real LiveProps, so a prop passed solely via
+     * `{% component ... with {modalId: ...} %}` reverts to its `{% props %}` default (here, an
+     * empty id) on every subsequent re-render, breaking Bootstrap's `data-bs-target` lookup for
+     * anyone trying to reopen the modal after the first `loadOnboardingUrl` call already fired.
+     */
+    #[LiveProp]
+    public string $modalId = '';
+
+    #[LiveProp]
+    public ?string $type = null;
+
     public function __construct(
         private readonly PayPalOnboardingUrlProviderInterface $onboardingUrlProvider,
         private readonly SellerNonceProviderInterface $sellerNonceProvider,
