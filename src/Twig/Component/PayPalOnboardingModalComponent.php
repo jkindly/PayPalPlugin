@@ -27,6 +27,12 @@ final class PayPalOnboardingModalComponent
     use DefaultActionTrait;
 
     #[LiveProp]
+    public ?string $modalId = null;
+
+    #[LiveProp]
+    public ?string $type = null;
+
+    #[LiveProp]
     public string $onboardingUrl = '';
 
     #[LiveProp]
@@ -34,6 +40,13 @@ final class PayPalOnboardingModalComponent
 
     #[LiveProp]
     public bool $failed = false;
+
+    /**
+     * Tracks that the modal is open so a re-render keeps rendering it in its shown state; otherwise the
+     * live-component morph would reset the Bootstrap-managed "show" class and inline display, closing it.
+     */
+    #[LiveProp]
+    public bool $opened = false;
 
     public function __construct(
         private readonly PayPalOnboardingUrlProviderInterface $onboardingUrlProvider,
@@ -45,6 +58,8 @@ final class PayPalOnboardingModalComponent
     #[LiveAction]
     public function loadOnboardingUrl(): void
     {
+        $this->opened = true;
+
         try {
             $this->onboardingUrl = $this->onboardingUrlProvider->generate(
                 $this->sellerNonceProvider->generate(),

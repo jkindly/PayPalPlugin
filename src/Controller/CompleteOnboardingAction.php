@@ -16,7 +16,6 @@ namespace Sylius\PayPalPlugin\Controller;
 use Psr\Log\LoggerInterface;
 use Sylius\PayPalPlugin\Creator\PayPalOnboardingPaymentMethodCreatorInterface;
 use Sylius\PayPalPlugin\Onboarding\Resolver\SellerOnboardingResolverInterface;
-use Sylius\PayPalPlugin\Provider\PayPalPaymentMethodProviderInterface;
 use Sylius\PayPalPlugin\Provider\SellerNonceProviderInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,7 +30,6 @@ final readonly class CompleteOnboardingAction
         private SellerOnboardingResolverInterface $sellerOnboardingResolver,
         private PayPalOnboardingPaymentMethodCreatorInterface $onboardingPaymentMethodCreator,
         private SellerNonceProviderInterface $sellerNonceProvider,
-        private PayPalPaymentMethodProviderInterface $payPalPaymentMethodProvider,
         private UrlGeneratorInterface $urlGenerator,
         private LoggerInterface $logger,
     ) {
@@ -58,12 +56,6 @@ final readonly class CompleteOnboardingAction
             return new JsonResponse(['redirectUrl' => $indexUrl], Response::HTTP_BAD_REQUEST);
         }
 
-        if ($this->payPalPaymentMethodProvider->exists()) {
-            $flashBag->add('error', 'sylius_paypal.more_than_one_seller_not_allowed');
-
-            return new JsonResponse(['redirectUrl' => $indexUrl], Response::HTTP_BAD_REQUEST);
-        }
-
         $sellerNonce = $this->sellerNonceProvider->get();
         if (null === $sellerNonce) {
             $flashBag->add('error', 'sylius_paypal.onboarding_session_expired');
@@ -75,7 +67,10 @@ final readonly class CompleteOnboardingAction
             $result = $this->sellerOnboardingResolver->resolve((string) $data['authCode'], (string) $data['sharedId'], $sellerNonce);
             $paymentMethod = $this->onboardingPaymentMethodCreator->create($result);
         } catch (\Throwable $exception) {
-            $this->logger->error($exception->getMessage());
+            $this->logger->error(
+                sprintf('Could not complete the PayPal onboarding: %s', $exception->getMessage()),
+                ['exception' => $exception],
+            );
             $flashBag->add('error', 'sylius_paypal.could_not_create_paypal_payment_method');
 
             return new JsonResponse(['redirectUrl' => $indexUrl], Response::HTTP_BAD_REQUEST);
@@ -83,7 +78,9 @@ final readonly class CompleteOnboardingAction
 
         $this->sellerNonceProvider->remove();
 
-        if (!$paymentMethod->isEnabled()) {
+        if ($paymentMethod->isEnabled()) {
+            $flashBag->add('success', 'sylius_paypal.production_connected_successfully');
+        } else {
             $flashBag->add('warning', 'sylius_paypal.seller_onboarding_incomplete');
         }
 

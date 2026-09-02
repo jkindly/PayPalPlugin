@@ -14,7 +14,10 @@ declare(strict_types=1);
 namespace Sylius\PayPalPlugin\Creator;
 
 use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\PayPalPlugin\Exception\PayPalWebhookAlreadyRegisteredException;
+use Sylius\PayPalPlugin\Exception\PayPalWebhookUrlNotValidException;
 use Sylius\PayPalPlugin\Model\SellerOnboardingResult;
+use Throwable;
 
 interface PayPalOnboardingPaymentMethodCreatorInterface
 {
@@ -26,5 +29,10 @@ interface PayPalOnboardingPaymentMethodCreatorInterface
 
     public const PAYMENT_METHOD_DESCRIPTION = 'Pay with PayPal';
 
+    /**
+     * @throws PayPalWebhookAlreadyRegisteredException
+     * @throws PayPalWebhookUrlNotValidException
+     * @throws Throwable
+     */
     public function create(SellerOnboardingResult $result): PaymentMethodInterface;
 }

@@ -29,15 +29,17 @@ final class PayPalOnboardingRequestExecutorTest extends TestCase
 {
     private ClientInterface&MockObject $client;
 
+    private LoggerInterface&MockObject $logger;
+
     private PayPalOnboardingRequestExecutor $executor;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->client = $this->createMock(ClientInterface::class);
-        $logger = $this->createMock(LoggerInterface::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
 
-        $this->executor = new PayPalOnboardingRequestExecutor($this->client, $logger);
+        $this->executor = new PayPalOnboardingRequestExecutor($this->client, $this->logger);
     }
 
     #[Test]
@@ -70,6 +72,33 @@ final class PayPalOnboardingRequestExecutorTest extends TestCase
         $this->expectException(PayPalPluginException::class);
 
         $this->executor->execute($request, 'Test');
+    }
+
+    #[Test]
+    public function it_redacts_credentials_from_the_error_log_on_a_non_successful_status(): void
+    {
+        $request = $this->createMock(RequestInterface::class);
+        $response = $this->createMock(ResponseInterface::class);
+        $body = $this->createMock(StreamInterface::class);
+
+        $this->client->method('sendRequest')->willReturn($response);
+        $response->method('getStatusCode')->willReturn(401);
+        $response->method('getBody')->willReturn($body);
+        $body->method('getContents')->willReturn('{"client_secret": "SUPER-SECRET", "access_token": "TOKEN", "error": "invalid"}');
+
+        $this->logger
+            ->expects(self::once())
+            ->method('error')
+            ->with(self::callback(static function (string $message): bool {
+                return !str_contains($message, 'SUPER-SECRET') &&
+                    !str_contains($message, 'TOKEN') &&
+                    str_contains($message, '[redacted]') &&
+                    str_contains($message, 'invalid');
+            }));
+
+        $this->expectException(PayPalPluginException::class);
+
+        $this->executor->execute($request, 'Seller credentials');
     }
 
     #[Test]

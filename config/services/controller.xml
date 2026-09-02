@@ -90,7 +90,6 @@
             <argument type="service" id="sylius_paypal.onboarding.resolver.seller" />
             <argument type="service" id="sylius_paypal.creator.onboarding_payment_method" />
             <argument type="service" id="sylius_paypal.provider.seller_nonce" />
-            <argument type="service" id="sylius_paypal.provider.paypal_payment_method" />
             <argument type="service" id="router" />
             <argument type="service" id="monolog.logger.paypal" />
         </service>

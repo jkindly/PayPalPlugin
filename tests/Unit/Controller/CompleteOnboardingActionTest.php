@@ -23,7 +23,6 @@ use Sylius\PayPalPlugin\Creator\PayPalOnboardingPaymentMethodCreatorInterface;
 use Sylius\PayPalPlugin\Model\OnboardingStatus;
 use Sylius\PayPalPlugin\Model\SellerOnboardingResult;
 use Sylius\PayPalPlugin\Onboarding\Resolver\SellerOnboardingResolverInterface;
-use Sylius\PayPalPlugin\Provider\PayPalPaymentMethodProviderInterface;
 use Sylius\PayPalPlugin\Provider\SellerNonceProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,8 +38,6 @@ final class CompleteOnboardingActionTest extends TestCase
 
     private SellerNonceProviderInterface&MockObject $sellerNonceProvider;
 
-    private PayPalPaymentMethodProviderInterface&MockObject $payPalPaymentMethodProvider;
-
     private UrlGeneratorInterface&MockObject $urlGenerator;
 
     private LoggerInterface&MockObject $logger;
@@ -53,7 +50,6 @@ final class CompleteOnboardingActionTest extends TestCase
         $this->sellerOnboardingResolver = $this->createMock(SellerOnboardingResolverInterface::class);
         $this->onboardingPaymentMethodCreator = $this->createMock(PayPalOnboardingPaymentMethodCreatorInterface::class);
         $this->sellerNonceProvider = $this->createMock(SellerNonceProviderInterface::class);
-        $this->payPalPaymentMethodProvider = $this->createMock(PayPalPaymentMethodProviderInterface::class);
         $this->urlGenerator = $this->createMock(UrlGeneratorInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
 
@@ -61,7 +57,6 @@ final class CompleteOnboardingActionTest extends TestCase
             $this->sellerOnboardingResolver,
             $this->onboardingPaymentMethodCreator,
             $this->sellerNonceProvider,
-            $this->payPalPaymentMethodProvider,
             $this->urlGenerator,
             $this->logger,
         );
@@ -81,11 +76,6 @@ final class CompleteOnboardingActionTest extends TestCase
                 default => throw new \LogicException('Unexpected route: ' . $name),
             },
         );
-
-        $this->payPalPaymentMethodProvider
-            ->expects(self::once())
-            ->method('exists')
-            ->willReturn(false);
 
         $this->sellerNonceProvider->expects(self::once())->method('get')->willReturn('SELLER-NONCE');
         $this->sellerNonceProvider->expects(self::once())->method('remove');
@@ -115,39 +105,11 @@ final class CompleteOnboardingActionTest extends TestCase
     }
 
     #[Test]
-    public function it_returns_bad_request_when_a_paypal_payment_method_already_exists(): void
-    {
-        $request = $this->requestWithBody(['authCode' => 'AUTH-CODE', 'sharedId' => 'SHARED-ID']);
-
-        $this->urlGenerator->method('generate')->with('sylius_admin_payment_method_index')->willReturn('http://admin/payment-methods/');
-
-        $this->payPalPaymentMethodProvider
-            ->expects(self::once())
-            ->method('exists')
-            ->willReturn(true);
-
-        $this->sellerOnboardingResolver->expects(self::never())->method('resolve');
-
-        $response = ($this->action)($request);
-
-        self::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
-        self::assertSame(
-            ['error' => ['sylius_paypal.more_than_one_seller_not_allowed']],
-            $request->getSession()->getFlashBag()->all(),
-        );
-    }
-
-    #[Test]
     public function it_returns_bad_request_when_the_seller_nonce_is_missing(): void
     {
         $request = $this->requestWithBody(['authCode' => 'AUTH-CODE', 'sharedId' => 'SHARED-ID']);
 
         $this->urlGenerator->method('generate')->with('sylius_admin_payment_method_index')->willReturn('http://admin/payment-methods/');
-
-        $this->payPalPaymentMethodProvider
-            ->expects(self::once())
-            ->method('exists')
-            ->willReturn(false);
 
         $this->sellerNonceProvider->expects(self::once())->method('get')->willReturn(null);
         $this->sellerNonceProvider->expects(self::never())->method('remove');
@@ -164,11 +126,6 @@ final class CompleteOnboardingActionTest extends TestCase
         $request = $this->requestWithBody(['authCode' => 'AUTH-CODE', 'sharedId' => 'SHARED-ID']);
 
         $this->urlGenerator->method('generate')->with('sylius_admin_payment_method_index')->willReturn('http://admin/payment-methods/');
-
-        $this->payPalPaymentMethodProvider
-            ->expects(self::once())
-            ->method('exists')
-            ->willReturn(false);
 
         $this->sellerNonceProvider->expects(self::once())->method('get')->willReturn('SELLER-NONCE');
         $this->sellerNonceProvider->expects(self::never())->method('remove');
@@ -192,8 +149,6 @@ final class CompleteOnboardingActionTest extends TestCase
 
         $this->urlGenerator->method('generate')->with('sylius_admin_payment_method_index')->willReturn('http://admin/payment-methods/');
 
-        $this->payPalPaymentMethodProvider->expects(self::never())->method('exists');
-
         $response = ($this->action)($request);
 
         self::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
@@ -206,8 +161,6 @@ final class CompleteOnboardingActionTest extends TestCase
         $request->setSession(new Session(new MockArraySessionStorage()));
 
         $this->urlGenerator->method('generate')->with('sylius_admin_payment_method_index')->willReturn('http://admin/payment-methods/');
-
-        $this->payPalPaymentMethodProvider->expects(self::never())->method('exists');
 
         $response = ($this->action)($request);
 
