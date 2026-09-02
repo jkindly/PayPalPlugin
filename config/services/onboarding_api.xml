@@ -17,11 +17,25 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
 >
     <services>
+        <!-- Bounded timeout: onboarding calls happen synchronously during an admin request,
+             so they must fail fast instead of inheriting the framework's unbounded default. -->
+        <service id="sylius_paypal.http_client.onboarding" class="Symfony\Component\HttpClient\Psr18Client" public="false">
+            <argument type="service">
+                <service class="Symfony\Component\HttpClient\HttpClient">
+                    <factory class="Symfony\Component\HttpClient\HttpClient" method="create" />
+                    <argument type="collection">
+                        <argument key="timeout">2</argument>
+                        <argument key="max_duration">2</argument>
+                    </argument>
+                </service>
+            </argument>
+        </service>
+
         <service
             id="sylius_paypal.api.onboarding_request_executor"
             class="Sylius\PayPalPlugin\Api\PayPalOnboardingRequestExecutor"
         >
-            <argument type="service" id="sylius.http_client" />
+            <argument type="service" id="sylius_paypal.http_client.onboarding" />
             <argument type="service" id="monolog.logger.paypal" />
         </service>
         <service id="Sylius\PayPalPlugin\Api\PayPalOnboardingRequestExecutorInterface" alias="sylius_paypal.api.onboarding_request_executor" />
