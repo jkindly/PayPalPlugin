@@ -180,7 +180,7 @@ final class CompleteOnboardingActionTest extends TestCase
 
         $this->urlGenerator->method('generate')->with('sylius_admin_payment_method_index')->willReturn('http://admin/payment-methods/');
 
-        $this->payPalPaymentMethodProvider->expects(self::never())->method('exists');
+        $this->sellerNonceProvider->expects(self::never())->method('get');
 
         $response = ($this->action)($request);
 
