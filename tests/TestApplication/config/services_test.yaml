@@ -26,3 +26,6 @@ services:
     sylius_paypal.provider.webhook_id.persisting:
         class: Tests\Sylius\PayPalPlugin\Service\DummyWebhookIdProvider
         decorates: sylius_paypal.provider.webhook_id
+
+    sylius_paypal.provider.partner_credentials:
+        class: Tests\Sylius\PayPalPlugin\Service\DummyPartnerCredentialsProvider

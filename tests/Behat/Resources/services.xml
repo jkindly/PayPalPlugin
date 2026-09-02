@@ -13,6 +13,32 @@
             public="false"
         />
 
+        <service
+            id="Tests\Sylius\PayPalPlugin\Behat\Element\EnablePayPalSandboxElement"
+            parent="sylius.behat.element"
+            public="false"
+        />
+
+        <service
+            id="Tests\Sylius\PayPalPlugin\Behat\Element\OnboardingModalElement"
+            parent="sylius.behat.element"
+            public="false"
+        />
+
+        <service
+            id="Tests\Sylius\PayPalPlugin\Behat\Element\PayPalModeSwitchElement"
+            parent="sylius.behat.element"
+            public="false"
+        />
+
+        <service id="Tests\Sylius\PayPalPlugin\Behat\Context\Admin\ManagingOnboardingModalContext">
+            <argument type="service" id="Tests\Sylius\PayPalPlugin\Behat\Element\OnboardingModalElement" />
+        </service>
+
+        <service id="Tests\Sylius\PayPalPlugin\Behat\Context\Admin\ManagingPayPalModeContext">
+            <argument type="service" id="Tests\Sylius\PayPalPlugin\Behat\Element\PayPalModeSwitchElement" />
+        </service>
+
         <service id="Tests\Sylius\PayPalPlugin\Behat\Context\Admin\ManagingOrdersContext">
             <argument type="service" id="sylius_abstraction.state_machine" />
             <argument type="service" id="sylius.manager.order" />
@@ -24,6 +50,7 @@
             <argument type="service" id="Tests\Sylius\PayPalPlugin\Behat\Element\DownloadPayPalReportElement" />
             <argument type="service" id="sylius.behat.notification_checker.admin" />
             <argument type="service" id="sylius.behat.page.admin.payment_method.create" />
+            <argument type="service" id="Tests\Sylius\PayPalPlugin\Behat\Element\EnablePayPalSandboxElement" />
         </service>
 
         <service id="sylius.behat.context.ui.admin.managing_payment_methods" class="Sylius\Behat\Context\Ui\Admin\ManagingPaymentMethodsContext">

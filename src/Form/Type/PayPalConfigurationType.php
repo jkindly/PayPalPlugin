@@ -58,8 +58,12 @@ final class PayPalConfigurationType extends AbstractType
                 ],
                 'choice_value' => static fn (?bool $mode): string => (true === $mode ? PayPalMode::Sandbox : PayPalMode::Production)->value,
             ])
-            ->add('client_id', TextType::class, ['label' => 'sylius_paypal.client_id', 'attr' => ['readonly' => true]])
-            ->add('client_secret', TextType::class, ['label' => 'sylius_paypal.client_secret', 'attr' => ['readonly' => true]])
+            // Disabled, not just readonly: the JS mode-switch preview overwrites these fields' displayed
+            // value client-side when the admin picks a different mode, so a readonly-but-submitted field
+            // would feed that preview value back into the mode being switched away from and corrupt its
+            // stored vault. Disabled fields are never submitted, so the server always sees the real value.
+            ->add('client_id', TextType::class, ['label' => 'sylius_paypal.client_id', 'disabled' => true])
+            ->add('client_secret', TextType::class, ['label' => 'sylius_paypal.client_secret', 'disabled' => true])
             ->add('merchant_id', HiddenType::class, ['label' => 'sylius_paypal.client_secret', 'attr' => ['readonly' => true]])
             ->add('sylius_merchant_id', HiddenType::class, ['label' => 'sylius_paypal.client_secret', 'attr' => ['readonly' => true]])
             ->add('partner_attribution_id', HiddenType::class, ['label' => 'sylius_paypal.partner_attribution_id', 'attr' => ['readonly' => true]])

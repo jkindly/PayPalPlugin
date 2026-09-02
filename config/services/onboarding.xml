@@ -33,6 +33,9 @@
             <argument type="service" id="Psr\Http\Message\RequestFactoryInterface" />
             <argument type="service" id="cache.app" />
             <argument>%sylius_paypal.partner_credentials_url%</argument>
+            <argument>3600</argument>
+            <argument>%sylius_paypal.partner_credentials.fallback_partner_id%</argument>
+            <argument>%sylius_paypal.partner_credentials.fallback_partner_client_id%</argument>
         </service>
         <service id="Sylius\PayPalPlugin\Provider\PartnerCredentialsProviderInterface" alias="sylius_paypal.provider.partner_credentials" />
 
