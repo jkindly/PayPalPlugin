@@ -69,6 +69,31 @@ final class PayPalConfigurationTypeTest extends TypeTestCase
     }
 
     #[Test]
+    public function it_does_not_corrupt_the_vault_when_the_browser_already_swapped_the_readonly_fields_to_preview_the_target_mode(): void
+    {
+        $config = $this->productionConfig();
+        $config['sandbox_credentials'] = [
+            'client_id' => 'SB', 'client_secret' => 'SBS', 'merchant_id' => 'SBM',
+            'sylius_merchant_id' => 'SYLIUS_SANDBOX_MERCHANT_ID', 'partner_attribution_id' => 'bn',
+        ];
+
+        $form = $this->factory->create(PayPalConfigurationType::class, $config);
+        // paypal-mode-switch.js overwrites the readonly client_id/client_secret fields with the target
+        // mode's preview as soon as the admin picks it in the dropdown, before the form is ever submitted.
+        $form->submit($this->submittedProductionFields([
+            'sandbox_mode' => 'sandbox',
+            'client_id' => 'SB',
+            'client_secret' => 'SBS',
+        ]));
+
+        self::assertTrue($form->isValid());
+        $data = $form->getData();
+        self::assertSame('PROD', $data['production_credentials']['client_id']);
+        self::assertSame('PRODS', $data['production_credentials']['client_secret']);
+        self::assertSame('SB', $data['sandbox_credentials']['client_id']);
+    }
+
+    #[Test]
     public function it_blocks_switching_to_a_mode_that_has_no_stored_credentials(): void
     {
         $form = $this->factory->create(PayPalConfigurationType::class, $this->productionConfig());
