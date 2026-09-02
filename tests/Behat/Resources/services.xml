@@ -25,8 +25,18 @@
             public="false"
         />
 
+        <service
+            id="Tests\Sylius\PayPalPlugin\Behat\Element\PayPalModeSwitchElement"
+            parent="sylius.behat.element"
+            public="false"
+        />
+
         <service id="Tests\Sylius\PayPalPlugin\Behat\Context\Admin\ManagingOnboardingModalContext">
             <argument type="service" id="Tests\Sylius\PayPalPlugin\Behat\Element\OnboardingModalElement" />
+        </service>
+
+        <service id="Tests\Sylius\PayPalPlugin\Behat\Context\Admin\ManagingPayPalModeContext">
+            <argument type="service" id="Tests\Sylius\PayPalPlugin\Behat\Element\PayPalModeSwitchElement" />
         </service>
 
         <service id="Tests\Sylius\PayPalPlugin\Behat\Context\Admin\ManagingOrdersContext">

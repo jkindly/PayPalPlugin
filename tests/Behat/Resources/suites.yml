@@ -101,6 +101,7 @@ default:
 
                 - Tests\Sylius\PayPalPlugin\Behat\Context\Admin\ManagingPaymentMethodsContext
                 - Tests\Sylius\PayPalPlugin\Behat\Context\Admin\ManagingOnboardingModalContext
+                - Tests\Sylius\PayPalPlugin\Behat\Context\Admin\ManagingPayPalModeContext
             filters:
                 tags: "@managing_payment_methods&&@ui"
         ui_managing_orders:
