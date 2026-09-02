@@ -51,16 +51,16 @@ final class PayPalCredentialsManager implements PayPalCredentialsManagerInterfac
      */
     private function snapshotActiveIntoVault(array $config): array
     {
-        if (!array_key_exists(self::MODE_KEY, $config)) {
-            return $config;
-        }
-
         $activeCredentials = $this->extractMirroredKeys($config);
         if ([] === $activeCredentials) {
             return $config;
         }
 
-        $config[$this->vaultKey((bool) $config[self::MODE_KEY])] = $activeCredentials;
+        // A config with no "sandbox" key yet is a legacy config predating mode-switching: its active
+        // credentials are production ones (the only mode that existed before), same default as
+        // PayPalActiveModeProvider::isSandbox(). They must be snapshotted here or they are lost for good
+        // the moment this config is next written for the other mode.
+        $config[$this->vaultKey((bool) ($config[self::MODE_KEY] ?? false))] = $activeCredentials;
 
         return $config;
     }
