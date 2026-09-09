@@ -1,0 +1,14 @@
+sylius_twig_hooks:
+    hooks:
+        # Show the PayPal tracking sync state under each shipment's general info on the order page.
+        'sylius_admin.order.show.content.sections.shipments.item.general':
+            paypal_tracking_state:
+                template: '@SyliusPayPalPlugin/admin/order/show/content/sections/shipments/item/general/paypal_tracking_state.html.twig'
+                priority: 50
+
+        # Reuse the core ship-form hookable but render it with a template that also exposes the
+        # carrier selector added by ShipmentShipTypeExtension.
+        'sylius_admin.order.show.content.sections.shipments.item.actions':
+            ship:
+                props:
+                    template: '@SyliusPayPalPlugin/admin/shipment/component/ship.html.twig'

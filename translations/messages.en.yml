@@ -23,3 +23,17 @@ sylius_paypal:
     sftp_username: 'SFTP Username'
     share_data_consent_confirmation: "By clicking Yes, you accept PayPal share data consent"
     tender_type: 'Refunded to the PayPal wallet'
+    form:
+        shipment:
+            carrier: 'Carrier'
+            carrier_name_other: 'Carrier name'
+            select_carrier: 'Select a carrier'
+    shipment_tracking:
+        carrier: 'Carrier'
+        carrier_required: 'Please select a carrier when a tracking number is provided.'
+        carrier_name_other_required: 'Please provide the carrier name when "Other" is selected.'
+        paypal_sync: 'PayPal tracking'
+        state:
+            pending: 'Pending'
+            synced: 'Synced'
+            failed: 'Failed'

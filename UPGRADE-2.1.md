@@ -215,3 +215,43 @@
 
     Neither model class is `readonly` at the class level (each property remains individually `readonly`), so both
     can still be doubled in tests and extended as before.
+
+13. #### PayPal Package Tracking: shipping an order now sends tracking to PayPal (server-side, opt-in per shipment).
+
+    When a shipment transitions to *shipped*, the plugin calls PayPal's Add Tracking API
+    (`POST /v2/checkout/orders/{id}/track`) for that parcel, using the order and capture identifiers already
+    stored in the payment details and the items belonging to that shipment. PayPal then tracks the parcel
+    onward from the carrier network — no ongoing status updates are pushed from Sylius. This builds on the
+    enriched order payload above: the tracking items are matched to the order items by the same `sku`
+    (`ProductVariant::getCode()`).
+
+    **New database table.** A plugin-owned table `sylius_paypal_plugin_shipment_tracking` (keyed by shipment,
+    holding the carrier, PayPal tracker id and sync state) is added — **no change to the core `Shipment`
+    entity**. Run migrations:
+
+    ```bash
+    bin/console doctrine:migrations:migrate
+    ```
+
+    **Admin.** The shipment ship form gains a carrier selector (a curated list from `config/carriers.php`, with
+    an `OTHER` fallback that reveals a free-text carrier name). A carrier is required whenever a tracking number
+    is entered. Each shipment on the order page shows its PayPal sync state (pending / synced / failed).
+
+    **Failure isolation.** Sending tracking is a courtesy to PayPal, not a precondition for shipping: the call
+    runs outside the ship transition's transaction and never blocks or reverts shipping. Failures are recorded
+    on the tracking record (state `failed`, with the error) and can be retried with:
+
+    ```bash
+    bin/console sylius-paypal:send-shipment-tracking
+    ```
+
+    **Optional async.** The call is dispatched as the `Sylius\PayPalPlugin\Message\SendShipmentTracking`
+    message. With no messenger routing configured it is handled synchronously; route it to an async transport
+    for full off-request processing:
+
+    ```yaml
+    framework:
+        messenger:
+            routing:
+                'Sylius\PayPalPlugin\Message\SendShipmentTracking': async
+    ```
