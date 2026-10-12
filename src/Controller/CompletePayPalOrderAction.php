@@ -45,7 +45,7 @@ final readonly class CompletePayPalOrderAction
         ) {
             trigger_deprecation(
                 'sylius/paypal-plugin',
-                '2.1',
+                '2.2',
                 'Not passing $authorizeClientApi, $orderDetailsApi and $threeDSecureVerifier to "%s" constructor' .
                 ' is deprecated and will be prohibited in 3.0. Without them the 3D Secure authentication result' .
                 ' is not verified before the payment is captured.',
@@ -156,7 +156,7 @@ final readonly class CompletePayPalOrderAction
     {
         return new JsonResponse([
             'orderId' => $payPalOrderId,
-            'orderID' => $payPalOrderId, // BC with 2.0. Deprecated in 2.1; use "orderId" instead.
+            'orderID' => $payPalOrderId, // BC with 2.1. Deprecated in 2.2; use "orderId" instead.
             'status' => $payment->getState(),
             'return_url' => $returnUrl,
         ]);

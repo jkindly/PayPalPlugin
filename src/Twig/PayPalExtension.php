@@ -21,6 +21,9 @@ use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\PayPalPlugin\Checker\PayerActionChecker;
 use Sylius\PayPalPlugin\Checker\PayerActionCheckerInterface;
 use Sylius\PayPalPlugin\DependencyInjection\SyliusPayPalExtension;
+use Sylius\PayPalPlugin\Factory\ModeSwitchViewFactoryInterface;
+use Sylius\PayPalPlugin\Model\ModeSwitchView;
+use Sylius\PayPalPlugin\Provider\ActiveModeProviderInterface;
 use Sylius\PayPalPlugin\Provider\CurrentPayPalLocaleProviderInterface;
 use Sylius\PayPalPlugin\Provider\PayPalFundingSourcesConfigurationProviderInterface;
 use Sylius\PayPalPlugin\Provider\PayPalPaymentSourceProviderInterface;
@@ -33,7 +36,8 @@ final class PayPalExtension extends AbstractExtension
     private readonly PayerActionCheckerInterface $payerActionChecker;
 
     public function __construct(
-        private readonly bool $sandbox,
+        private readonly ActiveModeProviderInterface $activeModeProvider,
+        private readonly ModeSwitchViewFactoryInterface $modeSwitchViewFactory,
         private readonly ?PayPalFundingSourcesConfigurationProviderInterface $fundingSourcesConfigurationProvider = null,
         private readonly ?ChannelContextInterface $channelContext = null,
         private readonly ?WebSdkConfigurationProviderInterface $webSdkConfigurationProvider = null,
@@ -46,7 +50,7 @@ final class PayPalExtension extends AbstractExtension
         if (null === $this->fundingSourcesConfigurationProvider) {
             trigger_deprecation(
                 'sylius/paypal-plugin',
-                '2.1',
+                '2.2',
                 'Not passing $fundingSourcesConfigurationProvider to %s constructor is deprecated and will be required in 3.0',
                 self::class,
             );
@@ -54,7 +58,7 @@ final class PayPalExtension extends AbstractExtension
         if (null === $this->channelContext) {
             trigger_deprecation(
                 'sylius/paypal-plugin',
-                '2.1',
+                '2.2',
                 'Not passing $channelContext to %s constructor is deprecated and will be required in 3.0',
                 self::class,
             );
@@ -62,7 +66,7 @@ final class PayPalExtension extends AbstractExtension
         if (null === $this->webSdkConfigurationProvider) {
             trigger_deprecation(
                 'sylius/paypal-plugin',
-                '2.1',
+                '2.2',
                 'Not passing $webSdkConfigurationProvider to %s constructor is deprecated and will be required in 3.0',
                 self::class,
             );
@@ -70,7 +74,7 @@ final class PayPalExtension extends AbstractExtension
         if (null === $this->currentLocaleProvider) {
             trigger_deprecation(
                 'sylius/paypal-plugin',
-                '2.1',
+                '2.2',
                 'Not passing $currentLocaleProvider to %s constructor is deprecated and will be required in 3.0',
                 self::class,
             );
@@ -88,12 +92,21 @@ final class PayPalExtension extends AbstractExtension
             new TwigFunction('sylius_paypal_is_awaiting_payer_action', [$this, 'isAwaitingPayerAction']),
             new TwigFunction('sylius_paypal_is_refunded_to_paypal_wallet', [$this, 'isRefundedToPayPalWallet']),
             new TwigFunction('sylius_paypal_partner_js_url', [$this, 'getPartnerJsUrl']),
+            new TwigFunction('sylius_paypal_mode_switch_view', [$this, 'getModeSwitchView']),
         ];
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    public function getModeSwitchView(array $config): ModeSwitchView
+    {
+        return $this->modeSwitchViewFactory->createFromConfig($config);
     }
 
     public function isSandbox(): bool
     {
-        return $this->sandbox;
+        return $this->activeModeProvider->isSandbox();
     }
 
     public function isMessagingEnabled(): bool

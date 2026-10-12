@@ -23,6 +23,7 @@ use Sylius\PayPalPlugin\Controller\PayWithPayPalFormAction;
 use Sylius\PayPalPlugin\Controller\ProcessPayPalOrderAction;
 use Sylius\PayPalPlugin\Controller\RedirectCancelAction;
 use Sylius\PayPalPlugin\Controller\RedirectReturnAction;
+use Sylius\PayPalPlugin\Controller\RefundPayPalLateCaptureAction;
 use Sylius\PayPalPlugin\Controller\ShippingCallbackAction;
 use Sylius\PayPalPlugin\Controller\UpdatePayPalOrderAction;
 use Sylius\PayPalPlugin\Controller\Webhook\PayPalWebhookAction;
@@ -58,7 +59,7 @@ return static function (ContainerConfigurator $container) {
             service('sylius_paypal.repository.query.paypal_payment'),
             service('sylius_paypal.verifier.webhook_request'),
         ])
-        ->deprecate('sylius/paypal-plugin', '2.1', 'The "%service_id%" service is deprecated, use "sylius_paypal.controller.webhook.paypal_webhook" instead.');
+        ->deprecate('sylius/paypal-plugin', '2.2', 'The "%service_id%" service is deprecated, use "sylius_paypal.controller.webhook.paypal_webhook" instead.');
 
     $services->set('sylius_paypal.controller.cancel_paypal_order', CancelPayPalOrderAction::class)
         ->args([
@@ -73,7 +74,7 @@ return static function (ContainerConfigurator $container) {
             service('doctrine.orm.entity_manager'),
             service('request_stack'),
             service('sylius_abstraction.state_machine'),
-            service('sylius.order_processing.order_payment_processor.after_checkout'),
+            service('sylius.order_processing.order_payment_processor.checkout'),
             service('sylius_paypal.repository.query.paypal_payment'),
         ]);
 
@@ -141,6 +142,7 @@ return static function (ContainerConfigurator $container) {
             service('sylius_paypal.provider.order'),
             service('sylius_paypal.resolver.capture_payment'),
             service('sylius_paypal.provider.paypal_payment_source'),
+            service(PayPalFundingSourcesConfigurationProviderInterface::class),
         ]);
 
     $services->set('sylius_paypal.controller.create_paypal_order_from_cart', CreatePayPalOrderFromCartAction::class)
@@ -182,7 +184,7 @@ return static function (ContainerConfigurator $container) {
             service('sylius_paypal.provider.paypal_payment_page_context'),
             service('router'),
             service('sylius_paypal.checker.payer_action'),
-            '%sylius_paypal.web_url%',
+            service('sylius_paypal.provider.host'),
         ]);
 
     $services->set('sylius_paypal.controller.process_paypal_order', ProcessPayPalOrderAction::class)
@@ -203,6 +205,7 @@ return static function (ContainerConfigurator $container) {
             service('sylius.repository.shipping_method'),
             service('sylius_paypal.factory.express_order_address'),
             service('sylius_paypal.verifier.order_ownership'),
+            service('sylius_paypal.api.update_order'),
         ]);
 
     $services->set('sylius_paypal.controller.update_paypal_order', UpdatePayPalOrderAction::class)
@@ -265,7 +268,7 @@ return static function (ContainerConfigurator $container) {
             service('monolog.logger.paypal'),
             service('sylius_paypal.repository.query.paypal_payment'),
             service('sylius_abstraction.state_machine'),
-            service('sylius.order_processing.order_payment_processor.after_checkout'),
+            service('sylius.order_processing.order_payment_processor.checkout'),
             service('doctrine.orm.entity_manager'),
             service('sylius_paypal.checker.payer_action'),
         ]);
@@ -286,5 +289,14 @@ return static function (ContainerConfigurator $container) {
             service('sylius.resource_controller.request_configuration_factory'),
             service('router'),
             service(CartStorageInterface::class),
+            service(PayPalFundingSourcesConfigurationProviderInterface::class),
+        ]);
+
+    $services->set('sylius_paypal.controller.refund_late_capture', RefundPayPalLateCaptureAction::class)
+        ->args([
+            service('sylius.repository.payment'),
+            service('sylius_paypal.processor.late_capture_refund'),
+            service('security.csrf.token_manager'),
+            service('router'),
         ]);
 };
